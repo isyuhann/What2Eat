@@ -1,13 +1,1048 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>🍽️ When2Eat — 美食轉盤推薦平臺</title>
-    </head>
-  <body>
-    <div id="root"></div>
-    
-    <script type="module" src="/src/main.tsx"></script> 
-  </body>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>What2EAT</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    :root {
+      --bg: #ffeef3;
+      --panel: #fff7fa;
+      --nav-pill: #ffeef3;
+      --primary: #111827;
+      --pink: #f2a2b7;
+      --pink-deep: #e97a96;
+      --text-sub: #7b7b7b;
+      --card-shadow: 0 12px 30px rgba(0,0,0,0.08);
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--primary);
+    }
+
+    .app {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+
+    /* -------- NAV -------- */
+    .nav-shell {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 32px;
+    }
+
+    .nav-pill {
+      background: var(--nav-pill);
+      border-radius: 999px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+      padding: 12px 32px;
+      display: flex;
+      gap: 40px;
+    }
+
+    .nav-link {
+      border: none;
+      background: transparent;
+      font-size: 14px;
+      color: #dd7692;
+      cursor: pointer;
+      position: relative;
+      padding: 4px 0;
+      transition: transform 0.15s ease, text-shadow 0.15s ease;
+    }
+
+    .nav-link:hover {
+      transform: scale(1.05);
+      text-shadow: 0 0 6px rgba(255,255,255,0.8);
+    }
+
+    .nav-link.active::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: -4px;
+      width: 60%;
+      height: 2px;
+      border-radius: 999px;
+      background: #e7889e;
+    }
+
+    /* -------- PAGE 共用 -------- */
+    .page {
+      display: none;
+      margin-top: 12px;
+    }
+    .page--active {
+      display: block;
+    }
+
+    .btn-back {
+      margin-top: 16px;
+      padding: 6px 14px;
+      font-size: 12px;
+      border-radius: 999px;
+      border: 1px solid #e6b9c5;
+      background: #fff;
+      color: #e5889d;
+      cursor: pointer;
+    }
+
+    /* -------- HOME / HERO -------- */
+    .hero {
+      background: var(--panel);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--card-shadow);
+      padding: 40px 40px 48px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .hero-plate {
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 18px 36px rgba(0,0,0,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .hero-text-main {
+      font-size: 40px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .hero-sub {
+      font-size: 14px;
+      color: var(--text-sub);
+    }
+
+    .hero-cta {
+      margin-top: 20px;
+    }
+
+    .btn-primary-lg {
+      padding: 10px 26px;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #f2a2b7, #e77a96);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 14px 30px rgba(231,122,150,0.35);
+    }
+
+    /* -------- ABOUT / CONTACT -------- */
+    .about {
+      background: var(--panel);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--card-shadow);
+      padding: 32px 40px;
+    }
+
+    .about-title {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    .about-plates {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      margin-top: 16px;
+    }
+
+    .about-plate {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 12px 26px rgba(0,0,0,0.16);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.16s ease, box-shadow 0.16s ease;
+      overflow: hidden;
+    }
+
+    .about-plate img {
+      width: 80%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .about-plate:hover {
+      transform: scale(1.06);
+      box-shadow: 0 16px 34px rgba(0,0,0,0.2);
+    }
+
+    /* -------- FILTERS -------- */
+    .panel {
+      background: var(--panel);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--card-shadow);
+      padding: 32px 40px 28px;
+    }
+
+    .panel-title {
+      font-size: 32px;
+      font-weight: 800;
+    }
+
+    .panel-sub {
+      margin-top: 6px;
+      font-size: 14px;
+      color: var(--text-sub);
+    }
+
+    .filter-group {
+      margin-top: 24px;
+    }
+
+    .filter-label {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      padding: 6px 12px;
+      font-size: 13px;
+      border-radius: 999px;
+      border: 1px solid #e3d3d8;
+      background: #ffffff;
+      color: #444;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .chip--active {
+      background: #e4e4e4;
+      color: #333;
+      box-shadow: inset 0 0 0 1px #d0c5c8;
+    }
+
+    .filter-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .btn {
+      padding: 8px 20px;
+      font-size: 14px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #e6b9c5;
+      color: #e5889d;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #f2a2b7, #e77a96);
+      color: #ffffff;
+      box-shadow: 0 14px 30px rgba(231,122,150,0.35);
+    }
+
+    /* -------- LET'S DECIDE -------- */
+    .decide-shell {
+      background: var(--panel);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--card-shadow);
+      padding: 32px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+    }
+
+    .decide-plate {
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      border: 6px solid #f4c7d4;
+      background: #ffffff;
+      box-shadow: 0 18px 36px rgba(0,0,0,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .decide-plate img {
+      width: 90%;
+      object-fit: contain;
+    }
+
+    .decide-text-title {
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .decide-note {
+      font-size: 13px;
+      color: var(--text-sub);
+      margin-bottom: 16px;
+    }
+
+    /* -------- RESULT CAROUSEL -------- */
+    .result-shell {
+      background: var(--panel);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--card-shadow);
+      padding: 24px 24px 32px;
+    }
+
+    .result-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .carousel {
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .carousel-track {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      gap: 16px;
+      overflow: hidden;
+      min-height: 240px;
+    }
+
+    .carousel-arrow {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      border: none;
+      background: #fbe2ea;
+      color: #e07793;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .carousel-arrow:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    /* -------- CARD 共用 -------- */
+    .card {
+      min-width: 260px;
+      max-width: 280px;
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      box-shadow: 0 12px 26px rgba(0,0,0,0.16);
+      padding: 16px 16px 14px;
+      flex-shrink: 0;
+    }
+
+    .card--main {
+      transform: scale(1.06);
+      border: 2px solid #f2a2b7;
+    }
+
+    .card--side {
+      transform: scale(0.94);
+      opacity: 0.8;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .card-sub {
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-bottom: 4px;
+    }
+
+    .badge {
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #fbf0f4;
+      font-size: 11px;
+      color: #e07793;
+    }
+
+    .card-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn-heart {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid #f3c2ce;
+      background: #fff;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .btn-detail {
+      flex: 1;
+      border-radius: 999px;
+      border: none;
+      background: #f6e9da;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    /* -------- RESTAURANT LIST（橫向滑動） -------- */
+    .list-shell {
+      background: var(--panel);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--card-shadow);
+      padding: 24px 24px 18px;
+    }
+
+    .list-row {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    /* -------- FAVORITES -------- */
+    .fav-shell {
+      background: var(--panel);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--card-shadow);
+      padding: 32px 40px;
+    }
+
+    .fav-list {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .fav-item {
+      background: #ffffff;
+      border-radius: 999px;
+      padding: 10px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+      font-size: 14px;
+    }
+
+    /* -------- RWD -------- */
+    @media (max-width: 800px) {
+      .hero,
+      .decide-shell {
+        flex-direction: column;
+        padding: 24px;
+      }
+      .nav-pill {
+        gap: 20px;
+        padding-inline: 18px;
+      }
+      .nav-shell {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- NAV -->
+    <div class="nav-shell">
+      <div class="nav-pill">
+        <!-- 注意：Decide Now 是導到 Filters -->
+        <button class="nav-link" data-page="filters">Decide Now</button>
+        <button class="nav-link" data-page="favorites">Favorites</button>
+        <button class="nav-link" data-page="list">Restaurant List</button>
+        <button class="nav-link" data-page="about">Contact us</button>
+      </div>
+    </div>
+
+    <!-- HOME / WHAT2EAT -->
+    <section id="home" class="page page--active">
+      <div class="hero">
+        <div class="hero-plate">
+          <!-- 這裡可以換成你盤子+Logo的 PNG -->
+          What2EAT
+        </div>
+        <div>
+          <div class="hero-text-main">What2EAT</div>
+          <div class="hero-sub">選擇困難症的福音 ☺</div>
+          <div class="hero-cta">
+            <button class="btn-primary-lg" id="heroDecide">Decide Now</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT / Contact us 第二頁 -->
+    <section id="about" class="page">
+      <div class="about">
+        <div class="about-title">About What2EAT</div>
+        <p style="font-size:14px; color:var(--text-sub); max-width:520px;">
+          幫助台北大學附近的學生，在「正門、後門、側門」之間，
+          快速決定今天要吃什麼。以下圖示可以放你在 Figma 裡畫的信封、
+          問號箱子、空盤等插畫。
+        </p>
+
+        <div class="about-plates" style="margin-top:28px;">
+          <div class="about-plate">
+            <img src="img/about-mail.png" alt="mail icon">
+          </div>
+          <div class="about-plate">
+            <img src="img/about-box.png" alt="box icon">
+          </div>
+          <div class="about-plate">
+            <img src="img/about-plate.png" alt="plate icon">
+          </div>
+        </div>
+
+        <button class="btn-back" data-back>Back</button>
+      </div>
+    </section>
+
+    <!-- FILTERS -->
+    <section id="filters" class="page">
+      <div class="panel">
+        <div class="panel-title">Filters</div>
+        <div class="panel-sub">篩選你的偏好（類型 / 價位 / 區域）</div>
+
+        <div class="filter-group">
+          <div class="filter-label">餐廳類型：</div>
+          <div class="chip-row">
+            <button class="chip chip-toggle" data-group="tag" data-value="">All</button>
+            <button class="chip chip-toggle" data-group="tag" data-value="日式">日式</button>
+            <button class="chip chip-toggle" data-group="tag" data-value="中式">中式</button>
+            <button class="chip chip-toggle" data-group="tag" data-value="韓式">韓式</button>
+            <button class="chip chip-toggle" data-group="tag" data-value="早餐">早餐</button>
+            <button class="chip chip-toggle" data-group="tag" data-value="甜點">甜點</button>
+            <button class="chip chip-toggle" data-group="tag" data-value="飲料">飲料</button>
+            <button class="chip chip-toggle" data-group="tag" data-value="大眾">大眾</button>
+            <button class="chip chip-toggle" data-group="tag" data-value="炸物">炸物</button>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-label">價格範圍：</div>
+          <div class="chip-row">
+            <button class="chip chip-toggle" data-group="price" data-value="$1-200">$</button>
+            <button class="chip chip-toggle" data-group="price" data-value="$200-400">$$</button>
+            <button class="chip chip-toggle" data-group="price" data-value="$400-600">$$$</button>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-label">校門區域：</div>
+          <div class="chip-row">
+            <button class="chip chip-toggle" data-group="area" data-value="">不限</button>
+            <button class="chip chip-toggle" data-group="area" data-value="正門">正門</button>
+            <button class="chip chip-toggle" data-group="area" data-value="後門">後門</button>
+            <button class="chip chip-toggle" data-group="area" data-value="側門">側門</button>
+          </div>
+        </div>
+
+        <div class="filter-actions">
+          <button class="btn btn-outline" id="btnReset">Reset</button>
+          <button class="btn btn-primary" id="btnApply">Apply Filters</button>
+        </div>
+
+        <button class="btn-back" data-back>Back</button>
+      </div>
+    </section>
+
+    <!-- LET'S DECIDE (抽獎前動畫頁) -->
+    <section id="decide" class="page">
+      <div class="decide-shell">
+        <div class="decide-plate">
+          <!-- 依照步驟切換義大利麵圖片：full / half / little / empty -->
+          <img id="spaghettiImg" src="img/pasta-full.png" alt="pasta">
+        </div>
+        <div>
+          <div class="decide-text-title">Let's Decide!</div>
+          <div class="decide-note" id="decideNote">
+            根據你的 Filters，幫你從候選餐廳中抽出一間主推薦，再加幾家備用選擇。
+          </div>
+          <button class="btn btn-primary" id="btnStart">Start</button>
+          <button class="btn-back" data-back>Back</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULT：中間主卡片 + 左右備用，可左右切 -->
+    <section id="result" class="page">
+      <div class="result-shell">
+        <div class="result-title">今天吃這家吧！</div>
+
+        <div class="carousel">
+          <button class="carousel-arrow" id="btnPrev">‹</button>
+
+          <div class="carousel-track" id="resultTrack">
+            <!-- JS 塞左備用 + 中間主結果 + 右備用 -->
+          </div>
+
+          <button class="carousel-arrow" id="btnNext">›</button>
+        </div>
+
+        <button class="btn-back" data-back>Back</button>
+      </div>
+    </section>
+
+    <!-- RESTAURANT LIST：橫向滑動 -->
+    <section id="list" class="page">
+      <div class="list-shell">
+        <div class="result-title">Restaurant List</div>
+        <p style="font-size:12px;color:var(--text-sub);margin-bottom:8px;">
+          可以左右滑動查看所有餐廳。
+        </p>
+        <div class="list-row" id="listRow">
+          <!-- JS 塞卡片 -->
+        </div>
+
+        <button class="btn-back" data-back>Back</button>
+      </div>
+    </section>
+
+    <!-- FAVORITES 收藏頁 -->
+    <section id="favorites" class="page">
+      <div class="fav-shell">
+        <div class="result-title">Favorite Restaurants</div>
+        <p style="font-size:13px;color:var(--text-sub);">
+          你按下 ♥ Favorite 的餐廳會出現在這裡（儲存在瀏覽器 localStorage）。
+        </p>
+        <div class="fav-list" id="favList"></div>
+
+        <button class="btn-back" data-back>Back</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    /* --- 簡化版餐廳資料（示範幾筆；之後可以把 CSV 全部補進來） --- */
+    const RESTAURANTS = [
+      {
+        name: "Qm159 清琳咖啡",
+        address: "237新北市三峽區中山路65號",
+        price: "$200-400",
+        rating: "4.5",
+        reviews: "1,049",
+        tag: "甜點",
+        area: "後門",
+      },
+      {
+        name: "鐵盒子甜點專門店",
+        address: "237新北市三峽區學成路293號",
+        price: "$1-200",
+        rating: "4.5",
+        reviews: "123",
+        tag: "甜點",
+        area: "正門",
+      },
+      {
+        name: "ELSA CAFE",
+        address: "237新北市三峽區國際一街72號",
+        price: "$1-200",
+        rating: "4.7",
+        reviews: "156",
+        tag: "甜點",
+        area: "側門",
+      },
+      {
+        name: "LAIFA Coffee Shot",
+        address: "237新北市三峽區國光街73號",
+        price: "$200-400",
+        rating: "4.6",
+        reviews: "304",
+        tag: "甜點",
+        area: "後門",
+      },
+      {
+        name: "Team Coffee",
+        address: "237新北市三峽區仁愛街2號",
+        price: "$200-400",
+        rating: "4.7",
+        reviews: "481",
+        tag: "甜點",
+        area: "後門",
+      },
+    ];
+    // 之後照這個格式，把你 CSV 的所有餐廳都加進來即可。
+
+    /* --- SPA 導覽 --- */
+    const pages = document.querySelectorAll(".page");
+    const navLinks = document.querySelectorAll(".nav-link");
+    const heroDecideBtn = document.getElementById("heroDecide");
+
+    function showPage(id) {
+      pages.forEach(p => p.classList.toggle("page--active", p.id === id));
+      navLinks.forEach(btn =>
+        btn.classList.toggle("active", btn.dataset.page === id)
+      );
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // nav 點擊
+    navLinks.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const page = btn.dataset.page;
+        if (page === "filters") showPage("filters");
+        if (page === "favorites") {
+          renderFavorites();
+          showPage("favorites");
+        }
+        if (page === "list") {
+          renderList(currentPool.length ? currentPool : RESTAURANTS);
+          showPage("list");
+        }
+        if (page === "about") showPage("about");
+      });
+    });
+
+    // Home 的 Decide Now 按鈕
+    heroDecideBtn.addEventListener("click", () => {
+      showPage("filters");
+      navLinks.forEach(b =>
+        b.classList.toggle("active", b.dataset.page === "filters")
+      );
+    });
+
+    // Back 按鈕：全部導回首頁
+    document.querySelectorAll("[data-back]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        showPage("home");
+        navLinks.forEach(b => b.classList.remove("active"));
+      });
+    });
+
+    /* --- Filter chip toggle --- */
+    document.querySelectorAll(".chip-toggle").forEach(chip => {
+      chip.addEventListener("click", () => {
+        const group = chip.dataset.group;
+
+        // tag 的 All
+        if (group === "tag" && chip.dataset.value === "") {
+          document
+            .querySelectorAll('.chip-toggle[data-group="tag"]')
+            .forEach(c => c.classList.remove("chip--active"));
+          chip.classList.add("chip--active");
+          return;
+        }
+
+        chip.classList.toggle("chip--active");
+
+        if (group === "tag" && chip.classList.contains("chip--active")) {
+          document
+            .querySelectorAll('.chip-toggle[data-group="tag"][data-value=""]')
+            .forEach(c => c.classList.remove("chip--active"));
+        }
+      });
+    });
+
+    const btnReset = document.getElementById("btnReset");
+    const btnApply = document.getElementById("btnApply");
+    const decideNote = document.getElementById("decideNote");
+    const btnStart = document.getElementById("btnStart");
+    const pastaImg = document.getElementById("spaghettiImg");
+    const resultTrack = document.getElementById("resultTrack");
+    const listRow = document.getElementById("listRow");
+    const favList = document.getElementById("favList");
+    const btnPrev = document.getElementById("btnPrev");
+    const btnNext = document.getElementById("btnNext");
+
+    let currentPool = RESTAURANTS.slice();
+    let lastResult = [];
+    let resultIndex = 0; // 正在看的主結果 index
+
+    btnReset.addEventListener("click", () => {
+      document.querySelectorAll(".chip-toggle").forEach(c => {
+        c.classList.remove("chip--active");
+      });
+      currentPool = RESTAURANTS.slice();
+      decideNote.textContent = "已重置條件，會從所有餐廳中抽籤。";
+    });
+
+    btnApply.addEventListener("click", () => {
+      const selectedTags = [...document.querySelectorAll('.chip-toggle[data-group="tag"].chip--active')]
+        .map(c => c.dataset.value)
+        .filter(v => v);
+      const selectedPrices = [...document.querySelectorAll('.chip-toggle[data-group="price"].chip--active')]
+        .map(c => c.dataset.value);
+      const selectedAreas = [...document.querySelectorAll('.chip-toggle[data-group="area"].chip--active')]
+        .map(c => c.dataset.value)
+        .filter(v => v);
+
+      currentPool = RESTAURANTS.filter(r => {
+        const matchTag = !selectedTags.length || selectedTags.includes(r.tag);
+        const matchPrice = !selectedPrices.length || selectedPrices.includes(r.price);
+        const matchArea = !selectedAreas.length || selectedAreas.includes(r.area);
+        return matchTag && matchPrice && matchArea;
+      });
+
+      if (!currentPool.length) currentPool = RESTAURANTS.slice();
+
+      decideNote.textContent = `目前共有 ${currentPool.length} 間候選餐廳，按 Start 開始抽籤！`;
+      showPage("decide");
+      navLinks.forEach(b =>
+        b.classList.toggle("active", b.dataset.page === "filters")
+      );
+    });
+
+    /* --- 抽獎動畫 + 結果 --- */
+    btnStart.addEventListener("click", () => {
+      if (!currentPool.length) currentPool = RESTAURANTS.slice();
+
+      const shuffled = currentPool.slice().sort(() => Math.random() - 0.5);
+      const main = shuffled[0];
+      const others = shuffled.slice(1, 5); // 最多顯示 4 個備用
+      lastResult = [main, ...others];
+      resultIndex = 0;
+
+      const frames = [
+        "img/pasta-full.png",
+        "img/pasta-half.png",
+        "img/pasta-little.png",
+        "img/pasta-empty.png"
+      ];
+
+      let step = 0;
+      btnStart.disabled = true;
+
+      const timer = setInterval(() => {
+        pastaImg.src = frames[Math.min(step, frames.length - 1)];
+        step++;
+        if (step >= frames.length) {
+          clearInterval(timer);
+          btnStart.disabled = false;
+
+          renderResultView();
+          showPage("result");
+          navLinks.forEach(b => b.classList.remove("active"));
+        }
+      }, 400);
+    });
+
+    function renderResultView() {
+      if (!lastResult.length) {
+        resultTrack.innerHTML =
+          "<div style='font-size:13px;color:#999;'>沒有符合條件的餐廳</div>";
+        btnPrev.disabled = true;
+        btnNext.disabled = true;
+        return;
+      }
+
+      const n = lastResult.length;
+      if (resultIndex < 0) resultIndex = 0;
+      if (resultIndex >= n) resultIndex = n - 1;
+
+      const center = lastResult[resultIndex];
+      const leftIndex = n > 1 ? (resultIndex - 1 + n) % n : null;
+      const rightIndex = n > 1 ? (resultIndex + 1) % n : null;
+
+      resultTrack.innerHTML = "";
+      const frag = document.createDocumentFragment();
+
+      // 左側備用
+      if (leftIndex !== null && n > 1) {
+        const leftCard = createRestaurantCard(lastResult[leftIndex], false);
+        leftCard.classList.add("card--side");
+        leftCard.addEventListener("click", () => {
+          resultIndex = leftIndex;
+          renderResultView();
+        });
+        frag.appendChild(leftCard);
+      }
+
+      // 中間主卡片
+      const centerCard = createRestaurantCard(center, true);
+      frag.appendChild(centerCard);
+
+      // 右側備用
+      if (rightIndex !== null && n > 1) {
+        const rightCard = createRestaurantCard(lastResult[rightIndex], false);
+        rightCard.classList.add("card--side");
+        rightCard.addEventListener("click", () => {
+          resultIndex = rightIndex;
+          renderResultView();
+        });
+        frag.appendChild(rightCard);
+      }
+
+      resultTrack.appendChild(frag);
+
+      if (n <= 1) {
+        btnPrev.disabled = true;
+        btnNext.disabled = true;
+      } else {
+        btnPrev.disabled = false;
+        btnNext.disabled = false;
+      }
+    }
+
+    btnPrev.addEventListener("click", () => {
+      if (!lastResult.length) return;
+      resultIndex = (resultIndex - 1 + lastResult.length) % lastResult.length;
+      renderResultView();
+    });
+
+    btnNext.addEventListener("click", () => {
+      if (!lastResult.length) return;
+      resultIndex = (resultIndex + 1) % lastResult.length;
+      renderResultView();
+    });
+
+    /* --- Restaurant List --- */
+    function renderList(list) {
+      listRow.innerHTML = "";
+      list.forEach(r => {
+        const card = createRestaurantCard(r, false);
+        listRow.appendChild(card);
+      });
+    }
+
+    /* --- Favorites 儲存 / 顯示 --- */
+    function getFavNames() {
+      try {
+        return JSON.parse(localStorage.getItem("w2e_favs") || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function setFavNames(arr) {
+      localStorage.setItem("w2e_favs", JSON.stringify(arr));
+    }
+
+    function toggleFav(name) {
+      const favs = getFavNames();
+      const idx = favs.indexOf(name);
+      if (idx >= 0) favs.splice(idx, 1);
+      else favs.push(name);
+      setFavNames(favs);
+      renderFavorites();
+    }
+
+    function renderFavorites() {
+      const favNames = getFavNames();
+      favList.innerHTML = "";
+      const favRestaurants = RESTAURANTS.filter(r => favNames.includes(r.name));
+
+      if (!favRestaurants.length) {
+        favList.innerHTML =
+          "<div style='font-size:13px;color:#999;'>目前還沒有收藏餐廳，去 Restaurant List 或抽籤結果按下 ♥ Favorite 吧！</div>";
+        return;
+      }
+
+      favRestaurants.forEach(r => {
+        const row = document.createElement("div");
+        row.className = "fav-item";
+        row.innerHTML = `
+          <span>${r.name}</span>
+          <span style="font-size:12px;color:#999;">${r.address}</span>
+        `;
+        favList.appendChild(row);
+      });
+    }
+
+    /* --- 建立餐廳卡片 element --- */
+    function createRestaurantCard(r, isMain) {
+      const favNames = getFavNames();
+      const isFav = favNames.includes(r.name);
+      const card = document.createElement("div");
+      card.className = "card" + (isMain ? " card--main" : "");
+      card.innerHTML = `
+        <div class="card-header">
+          <div class="card-title">${r.name}</div>
+          <span class="badge">${r.tag || "餐廳"}</span>
+        </div>
+        <div class="card-sub">Rating：${r.rating} (${r.reviews} reviews)</div>
+        <div class="card-sub">Price：${r.price}</div>
+        <div class="card-sub">Area：${r.area}</div>
+        <div class="card-sub">Address：${r.address}</div>
+        <div class="card-actions">
+          <button class="btn-heart" data-name="${r.name}">
+            <span>${isFav ? "❤️" : "🤍"}</span>
+            <span>Favorite</span>
+          </button>
+          <button class="btn-detail" onclick="alert('這邊之後可以改成跳 Google Map 或詳細頁')">
+            View Detail
+          </button>
+        </div>
+      `;
+      card.querySelector(".btn-heart").addEventListener("click", () => {
+        toggleFav(r.name);
+        // 同步所有心形圖示
+        document.querySelectorAll('.btn-heart[data-name="'+r.name+'"]').forEach(btn => {
+          const favs = getFavNames();
+          const isFavNow = favs.includes(r.name);
+          btn.innerHTML = `<span>${isFavNow ? "❤️" : "🤍"}</span><span>Favorite</span>`;
+        });
+      });
+      return card;
+    }
+
+    // 初始畫面：List & Favorites 先 render 一次
+    renderList(RESTAURANTS);
+    renderFavorites();
+  </script>
+</body>
 </html>
