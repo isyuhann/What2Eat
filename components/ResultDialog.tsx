@@ -8,10 +8,8 @@ import {
   DialogFooter,
   DialogClose,
 } from './ui/dialog';
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
-
-// !!! 警告：請將 'YOUR_GOOGLE_MAPS_API_KEY' 替換成你自己的金鑰 !!!
-const GOOGLE_MAPS_API_KEY = 'YOUR_GOOGLE_MAPS_API_KEY';
+// import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api'; // <-- 不再需要
+// const GOOGLE_MAPS_API_KEY = '...'; // <-- 不再需要
 
 interface Props {
   restaurant: Restaurant | null;
@@ -20,21 +18,13 @@ interface Props {
   onToggleFavorite: (id: string) => void;
 }
 
-const mapContainerStyle = {
-  width: '100%',
-  height: '300px',
-  borderRadius: '0.5rem',
-};
-
 export function ResultDialog({ restaurant, open, onClose, onToggleFavorite }: Props) {
   if (!restaurant) return null;
 
-  const position = {
-    lat: restaurant.lat ?? 25.0330, // 預設緯度 (例如台北車站)
-    lng: restaurant.lng ?? 121.5654, // 預設經度
-  };
-
-  const hasCoords = restaurant.lat !== undefined && restaurant.lng !== undefined;
+  // --- iFrame 嵌入 ---
+  // 我們使用 restaurant.location (地址) 來產生 Google Map 嵌入 URL
+  // encodeURIComponent 會將地址轉換為 URL 安全的格式
+  const embedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(restaurant.location)}&output=embed`;
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -50,22 +40,26 @@ export function ResultDialog({ restaurant, open, onClose, onToggleFavorite }: Pr
           <div className="flex justify-center gap-4 text-sm text-gray-600">
             <span>分類: {restaurant.category}</span>
             <span>價位: {restaurant.priceRange}</span>
-            <span>地址: {restaurant.location}</span>
+            {/* 地址現在由地圖顯示, 這裡可以隱藏 */}
+            {/* <span>地址: {restaurant.location}</span> */}
           </div>
 
-          {/* --- Google Map 實作 --- */}
-          <div className="w-full">
-            <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
-              <GoogleMap
-                mapContainerStyle={mapContainerStyle}
-                center={position}
-                zoom={16}
-              >
-                {hasCoords && <Marker position={position} />}
-              </GoogleMap>
-            </LoadScript>
+          {/* --- Google Map iFrame 實作 --- */}
+          <div className="w-full h-[300px] rounded-lg overflow-hidden border">
+            <iframe
+              width="100%"
+              height="100%"
+              frameBorder="0"
+              scrolling="no"
+              marginHeight={0}
+              marginWidth={0}
+              src={embedUrl}
+              title={restaurant.name}
+              aria-label={restaurant.name}
+              loading="lazy"
+            ></iframe>
           </div>
-          {/* --- Google Map 結束 --- */}
+          {/* --- Google Map iFrame 結束 --- */}
 
         </div>
 
