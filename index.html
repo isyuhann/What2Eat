@@ -384,6 +384,14 @@
       flex-shrink: 0;
     }
 
+    .card-img-shell {
+      width: 100%;
+      height: 120px;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
     .card--main {
       transform: scale(1.06);
       border: 2px solid #f2a2b7;
@@ -392,6 +400,12 @@
     .card--side {
       transform: scale(0.94);
       opacity: 0.8;
+    }
+    
+    .card-img-shell img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     .card-header {
@@ -463,6 +477,38 @@
       padding-bottom: 8px;
     }
 
+    .list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .list-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .list-action-btn {
+      border: none;
+      background: #fbe2ea;
+      color: #e07793;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .list-filter-panel {
+      display: none; /* 預設隱藏 */
+      padding: 16px 0;
+      border-top: 1px solid #fbe2ea;
+      margin-top: 16px;
+    }
+
     /* -------- FAVORITES -------- */
     .fav-shell {
       background: var(--panel);
@@ -487,6 +533,41 @@
       align-items: center;
       box-shadow: 0 6px 16px rgba(0,0,0,0.08);
       font-size: 14px;
+    }
+    
+    .fav-item-info {
+      flex-grow: 1;
+    }
+
+    .fav-item-name {
+      font-weight: 600;
+    }
+
+    .fav-item-address {
+      display: block;
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-top: 2px;
+    }
+
+    .fav-item-actions {
+      display: flex;
+      gap: 8px;
+      padding-left: 16px;
+    }
+
+    .fav-btn {
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 18px;
+      padding: 4px;
+    }
+
+    .fav-btn img {
+      width: 20px;
+      height: 20px;
+      vertical-align: middle; /* 讓圖片垂直置中 */
     }
 
     /* -------- RWD -------- */
@@ -523,8 +604,8 @@
     <section id="home" class="page page--active">
       <div class="hero">
         <div class="hero-plate">
-          <!-- 這裡可以換成你盤子+Logo的 PNG -->
-          What2EAT
+          <!-- 這裡已換成 Logo 圖片 -->
+          <img src="images/plateicon.png" alt="What2EAT Logo" style="width: 80%; height: auto;">
         </div>
         <div>
           <div class="hero-text-main">What2EAT</div>
@@ -548,13 +629,13 @@
 
         <div class="about-plates" style="margin-top:28px;">
           <div class="about-plate">
-            <img src="img/about-mail.png" alt="mail icon">
+            <img src="images/gmailicon.png" alt="mail icon">
           </div>
           <div class="about-plate">
-            <img src="img/about-box.png" alt="box icon">
+            <img src="images/qaboxicon.png" alt="box icon">
           </div>
           <div class="about-plate">
-            <img src="img/about-plate.png" alt="plate icon">
+            <img src="images/forkicon.png" alt="plate icon">
           </div>
         </div>
 
@@ -572,23 +653,23 @@
           <div class="filter-label">餐廳類型：</div>
           <div class="chip-row">
             <button class="chip chip-toggle" data-group="tag" data-value="">All</button>
-            <button class="chip chip-toggle" data-group="tag" data-value="日式">日式</button>
-            <button class="chip chip-toggle" data-group="tag" data-value="中式">中式</button>
-            <button class="chip chip-toggle" data-group="tag" data-value="韓式">韓式</button>
-            <button class="chip chip-toggle" data-group="tag" data-value="早餐">早餐</button>
             <button class="chip chip-toggle" data-group="tag" data-value="甜點">甜點</button>
-            <button class="chip chip-toggle" data-group="tag" data-value="飲料">飲料</button>
-            <button class="chip chip-toggle" data-group="tag" data-value="大眾">大眾</button>
-            <button class="chip chip-toggle" data-group="tag" data-value="炸物">炸物</button>
+            <button class="chip chip-toggle" data-group="tag" data-value="日式">日式</button>
+            <button class="chip chip-toggle" data-group="tag" data-value="韓式">韓式</button>
+            <button class="chip chip-toggle" data-group="tag" data-value="麵食">麵食</button>
+            <button class="chip chip-toggle" data-group="tag" data-value="飯食">飯食</button>
+            <button class="chip chip-toggle" data-group="tag" data-value="健身">健身</button>
+            <button class="chip chip-toggle" data-group="tag" data-value="火鍋">火鍋</button>
+            <button class="chip chip-toggle" data-group="tag" data-value="義式">義式</button>
           </div>
         </div>
 
         <div class="filter-group">
           <div class="filter-label">價格範圍：</div>
           <div class="chip-row">
-            <button class="chip chip-toggle" data-group="price" data-value="$1-200">$</button>
-            <button class="chip chip-toggle" data-group="price" data-value="$200-400">$$</button>
-            <button class="chip chip-toggle" data-group="price" data-value="$400-600">$$$</button>
+            <button class="chip chip-toggle" data-group="price" data-value="$1-200">1～200元</button>
+            <button class="chip chip-toggle" data-group="price" data-value="$200-400">200～400元</button>
+            <button class="chip chip-toggle" data-group="price" data-value="$400-600">400～600元</button>
           </div>
         </div>
 
@@ -616,7 +697,7 @@
       <div class="decide-shell">
         <div class="decide-plate">
           <!-- 依照步驟切換義大利麵圖片：full / half / little / empty -->
-          <img id="spaghettiImg" src="img/pasta-full.png" alt="pasta">
+          <img id="spaghettiImg" src="images/spaicon1.png" alt="pasta">
         </div>
         <div>
           <div class="decide-text-title">Let's Decide!</div>
@@ -651,10 +732,19 @@
     <!-- RESTAURANT LIST：橫向滑動 -->
     <section id="list" class="page">
       <div class="list-shell">
-        <div class="result-title">Restaurant List</div>
-        <p style="font-size:12px;color:var(--text-sub);margin-bottom:8px;">
-          可以左右滑動查看所有餐廳。
-        </p>
+        <div class="list-header">
+          <div>
+            <div class="result-title">Restaurant List</div>
+            <p style="font-size:12px;color:var(--text-sub);">可以左右滑動查看所有餐廳。</p>
+          </div>
+          <div class="list-actions">
+            <button class="list-action-btn" id="listClearBtn" title="清除篩選"><img src="images/clear-alt.png" alt="Clear" style="width:16px"></button>
+            <button class="list-action-btn" id="listFilterBtn" title="篩選列表"><img src="images/filter.png" alt="Filter" style="width:16px"></button>
+          </div>
+        </div>
+
+        <div id="listFilterPanel" class="list-filter-panel"></div>
+
         <div class="list-row" id="listRow">
           <!-- JS 塞卡片 -->
         </div>
@@ -680,53 +770,75 @@
   <script>
     /* --- 簡化版餐廳資料（示範幾筆；之後可以把 CSV 全部補進來） --- */
     const RESTAURANTS = [
-      {
-        name: "Qm159 清琳咖啡",
-        address: "237新北市三峽區中山路65號",
-        price: "$200-400",
-        rating: "4.5",
-        reviews: "1,049",
-        tag: "甜點",
-        area: "後門",
-      },
-      {
-        name: "鐵盒子甜點專門店",
-        address: "237新北市三峽區學成路293號",
-        price: "$1-200",
-        rating: "4.5",
-        reviews: "123",
-        tag: "甜點",
-        area: "正門",
-      },
-      {
-        name: "ELSA CAFE",
-        address: "237新北市三峽區國際一街72號",
-        price: "$1-200",
-        rating: "4.7",
-        reviews: "156",
-        tag: "甜點",
-        area: "側門",
-      },
-      {
-        name: "LAIFA Coffee Shot",
-        address: "237新北市三峽區國光街73號",
-        price: "$200-400",
-        rating: "4.6",
-        reviews: "304",
-        tag: "甜點",
-        area: "後門",
-      },
-      {
-        name: "Team Coffee",
-        address: "237新北市三峽區仁愛街2號",
-        price: "$200-400",
-        rating: "4.7",
-        reviews: "481",
-        tag: "甜點",
-        area: "後門",
-      },
+        { name: "Qm159 清琳咖啡", address: "237新北市三峽區中山路65號", price: "$200-400", rating: "4.5", reviews: "1,049", tag: "甜點", area: "後門", image: "images/coffeeicon.png" },
+        { name: "鐵盒子甜點專門店", address: "237新北市三峽區學成路293號", price: "$1-200", rating: "4.5", reviews: "123", tag: "甜點", area: "正門", image: "images/coffeeicon.png" },
+        { name: "ELSA CAFE", address: "237新北市三峽區國際一街72號", price: "$1-200", rating: "4.7", reviews: "156", tag: "甜點", area: "側門", image: "images/coffeeicon.png" },
+        { name: "LAIFA Coffee Shot", address: "237新北市三峽區國光街73號", price: "$200-400", rating: "4.6", reviews: "304", tag: "甜點", area: "後門", image: "images/coffeeicon.png" },
+        { name: "Team Coffee", address: "237新北市三峽區仁愛街2號", price: "$200-400", rating: "4.7", reviews: "481", tag: "甜點", area: "後門", image: "images/coffeeicon.png" },
+        { name: "入日咖啡", address: "237新北市三峽區永安街171號", price: "$200-400", rating: "4.7", reviews: "174", tag: "甜點", area: "後門", image: "images/coffeeicon.png" },
+        { name: "木本家MUhouse", address: "238新北市樹林區學勤路428號", price: "$200-400", rating: "4.7", reviews: "151", tag: "甜點", area: "正門", image: "images/coffeeicon.png" },
+        { name: "樸樹咖啡", address: "238新北市樹林區學勤路529號2樓", price: "$200-400", rating: "5", reviews: "663", tag: "甜點", area: "正門", image: "images/coffeeicon.png" },
+        { name: "DOHA人寵甜點咖啡廳", address: "237新北市三峽區學勤路178-2號1 樓", price: "$200-400", rating: "5", reviews: "63", tag: "甜點", area: "正門", image: "images/coffeeicon.png" },
+        { name: "凱莉日嚐", address: "237新北市三峽區學成路285號", price: "$1-200", rating: "4.5", reviews: "266", tag: "甜點", area: "正門", image: "images/coffeeicon.png" },
+        { name: "鯨旋咖啡", address: "237新北市三峽區大義路227號", price: "$1-200", rating: "4.6", reviews: "34", tag: "甜點", area: "正門", image: "images/coffeeicon.png" },
+        { name: "大雄料理店", address: "237新北市三峽區國學街51號", price: "$1-200", rating: "3.8", reviews: "485", tag: "日式", area: "側門", image: "images/susiicon.png" },
+        { name: "坐一下吧", address: "237新北市三峽區國際一街80號1樓", price: "$200-400", rating: "3.3", reviews: "267", tag: "日式", area: "側門", image: "images/susiicon.png" },
+        { name: "暮漁町生魚片海鮮丼專賣店", address: "237新北市三峽區大義路199-1號", price: "$200-400", rating: "4.7", reviews: "303", tag: "日式", area: "正門", image: "images/susiicon.png" },
+        { name: "根", address: "237新北市三峽區大觀路1號", price: "$200-400", rating: "4.2", reviews: "326", tag: "日式", area: "正門", image: "images/susiicon.png" },
+        { name: "Mr. 壽司", address: "238新北市樹林區學勤路398號", price: "$400-600", rating: "4.3", reviews: "854", tag: "日式", area: "正門", image: "images/susiicon.png" },
+        { name: "鯓．魚片", address: "237新北市三峽區大德路85號", price: "$200-400", rating: "4.9", reviews: "214", tag: "日式", area: "正門", image: "images/susiicon.png" },
+        { name: "新美園食堂", address: "238新北市樹林區大雅路304號", price: "$400-600", rating: "3.8", reviews: "300", tag: "日式", area: "正門", image: "images/susiicon.png" },
+        { name: "小眼睛歐爸們", address: "237新北市三峽區大觀路12-3號", price: "$200-400", rating: "4.5", reviews: "1,949", tag: "韓式", area: "正門", image: "images/koreanicon.png" },
+        { name: "波之家石鍋料理", address: "237303新北市三峽區大學路151號", price: "$1-200", rating: "4.6", reviews: "19", tag: "韓式", area: "正門", image: "images/koreanicon.png" },
+        { name: "韓讚", address: "237新北市三峽區國際一街47號", price: "$1-200", rating: "3.6", reviews: "743", tag: "韓式", area: "側門", image: "images/koreanicon.png" },
+        { name: "阿啾西拉麵圖書館", address: "237新北市三峽區大觀路28號", price: "$1-200", rating: "5", reviews: "821", tag: "韓式", area: "正門", image: "images/koreanicon.png" },
+        { name: "阿啾西拉麵圖書館", address: "237新北市三峽區大觀路28號", price: "$1-200", rating: "5", reviews: "821", tag: "麵食", area: "正門", image: "images/spaicon1.png" },
+        { name: "老私房牛肉麵", address: "237新北市三峽區國際一街66-1號1樓", price: "$200-400", rating: "4.7", reviews: "1,262", tag: "麵食", area: "側門", image: "images/spaicon1.png" },
+        { name: "麵匡匡拉麵食堂", address: "237新北市三峽區和平街70號", price: "$200-400", rating: "4.6", reviews: "227", tag: "麵食", area: "後門", image: "images/spaicon1.png" },
+        { name: "小巷子清燉牛肉麵", address: "237新北市三峽區大觀路6號", price: "$1-200", rating: "4.8", reviews: "2,338", tag: "麵食", area: "正門", image: "images/spaicon1.png" },
+        { name: "麵G", address: "237新北市三峽區國際一街31號", price: "$1-200", rating: "4.8", reviews: "35", tag: "麵食", area: "側門", image: "images/spaicon1.png" },
+        { name: "隨園麵食館", address: "237新北市三峽區國際一街23-1號", price: "$1-200", rating: "4.1", reviews: "539", tag: "麵食", area: "側門", image: "images/spaicon1.png" },
+        { name: "白甘蔗飯麵館", address: "237新北市三峽區國際一街45號", price: "$1-200", rating: "4.4", reviews: "278", tag: "麵食", area: "側門", image: "images/spaicon1.png" },
+        { name: "蘇記水餃", address: "237新北市三峽區和平街97號", price: "$1-200", rating: "4.1", reviews: "919", tag: "麵食", area: "後門", image: "images/spaicon1.png" },
+        { name: "鳥鳴子雞白湯", address: "237新北市三峽區國際一街33號", price: "$200-400", rating: "4.4", reviews: "278", tag: "麵食", area: "側門", image: "images/spaicon1.png" },
+        { name: "三禾手打烏龍麵", address: "237新北市三峽區大德路109號", price: "$200-400", rating: "4", reviews: "956", tag: "麵食", area: "正門", image: "images/spaicon1.png" },
+        { name: "樂廚房", address: "237新北市三峽區大觀路116號", price: "$1-200", rating: "4.3", reviews: "241", tag: "麵食", area: "正門", image: "images/spaicon1.png" },
+        { name: "木子李", address: "237新北市三峽區中山路42號", price: "$200-400", rating: "4.4", reviews: "317", tag: "麵食", area: "後門", image: "images/spaicon1.png" },
+        { name: "黑霸牛肉麵專賣店", address: "237新北市三峽區大觀路27號", price: "$1-200", rating: "4.4", reviews: "1,026", tag: "麵食", area: "正門", image: "images/spaicon1.png" },
+        { name: "号鳥食趣", address: "237新北市三峽區大觀路7號", price: "$200-400", rating: "4.3", reviews: "639", tag: "麵食", area: "正門", image: "images/spaicon1.png" },
+        { name: "河南砂鍋手工扯麵", address: "237新北市三峽區光明路26號", price: "$1-200", rating: "4.1", reviews: "3,334", tag: "麵食", area: "後門", image: "images/spaicon1.png" },
+        { name: "就這味", address: "237新北市三峽區大觀路30號", price: "$1-200", rating: "4.2", reviews: "363", tag: "麵食", area: "正門", image: "images/spaicon1.png" },
+        { name: "Yummy亞咪義大利麵", address: "237新北市三峽區大觀路109號", price: "$200-400", rating: "4.1", reviews: "485", tag: "麵食", area: "正門", image: "images/spaicon1.png" },
+        { name: "三峽北大湘泊苑", address: "237新北市三峽區國際一街43號", price: "$1-200", rating: "3.9", reviews: "231", tag: "麵食", area: "側門", image: "images/spaicon1.png" },
+        { name: "三峽北大湘泊苑", address: "237新北市三峽區國際一街43號", price: "$1-201", rating: "3.9", reviews: "231", tag: "飯食", area: "側門", image: "images/riceicon.png" },
+        { name: "私嚐の吃飯", address: "238新北市樹林區學勤路322號", price: "$200-400", rating: "4.9", reviews: "1,763", tag: "飯食", area: "正門", image: "images/riceicon.png" },
+        { name: "吉購吉", address: "237新北市三峽區大德路222號", price: "$1-200", rating: "4.2", reviews: "566", tag: "飯食", area: "正門", image: "images/riceicon.png" },
+        { name: "向陽冬瓜肉飯", address: "238新北市樹林區學成路532號", price: "$1-200", rating: "4.3", reviews: "564", tag: "飯食", area: "正門", image: "images/riceicon.png" },
+        { name: "阿郎小吃", address: "237新北市三峽區國學街16號", price: "$1-200", rating: "4.3", reviews: "54", tag: "飯食", area: "側門", image: "images/riceicon.png" },
+        { name: "坐一下吧", address: "237新北市三峽區國際一街80號1樓", price: "$200-400", rating: "3.3", reviews: "267", tag: "飯食", area: "側門", image: "images/riceicon.png" },
+        { name: "大億美食", address: "237新北市三峽區國學街57號", price: "$1-200", rating: "3.4", reviews: "72", tag: "飯食", area: "側門", image: "images/riceicon.png" },
+        { name: "元爵味 黃燜雞米飯", address: "237新北市三峽區國際一街80號1樓", price: "$1-200", rating: "4.8", reviews: "2,273", tag: "飯食", area: "側門", image: "images/riceicon.png" },
+        { name: "誠意鵝肉", address: "237新北市三峽區大觀路20號", price: "$1-200", rating: "3.9", reviews: "311", tag: "飯食", area: "正門", image: "images/riceicon.png" },
+        { name: "一燔歐姆蛋咖哩", address: "237新北市三峽區大德路151號", price: "$1-200", rating: "4.5", reviews: "405", tag: "飯食", area: "正門", image: "images/riceicon.png" },
+        { name: "強尼兄弟", address: "237新北市三峽區大觀路115號1樓", price: "$1-200", rating: "4.3", reviews: "856", tag: "健身", area: "正門", image: "images/plateicon.png" },
+        { name: "能量小姐", address: "237新北市三峽區學成路246號", price: "$1-200", rating: "4.4", reviews: "496", tag: "健身", area: "正門", image: "images/plateicon.png" },
+        { name: "蛋白盒子", address: "237020新北市三峽區國學街37號", price: "$1-200", rating: "3.7", reviews: "49", tag: "健身", area: "側門", image: "images/plateicon.png" },
+        { name: "京簡康", address: "237新北市三峽區學成路250號", price: "$1-200", rating: "3.7", reviews: "172", tag: "健身", area: "正門", image: "images/plateicon.png" },
+        { name: "益柔廚房", address: "237新北市三峽區學府路36號", price: "$200-400", rating: "4.4", reviews: "842", tag: "健身", area: "正門", image: "images/plateicon.png" },
+        { name: "蒙虎白湯小火鍋", address: "237新北市三峽區國際二街21-3號", price: "$1-200", rating: "4.9", reviews: "470", tag: "火鍋", area: "正門", image: "images/koreanicon.png" },
+        { name: "聚", address: "237新北市三峽區學成路398號3樓", price: "$400-600", rating: "4.8", reviews: "10,914", tag: "火鍋", area: "正門", image: "images/koreanicon.png" },
+        { name: "泰鍋古藝", address: "23741新北市三峽區國學街88號", price: "$1-200", rating: "4.7", reviews: "1,401", tag: "火鍋", area: "側門", image: "images/koreanicon.png" },
+        { name: "八鍋小火鍋", address: "237新北市三峽區國際一街10號1樓", price: "$1-200", rating: "4.2", reviews: "913", tag: "火鍋", area: "側門", image: "images/koreanicon.png" },
+        { name: "鍋媽精緻小火鍋", address: "237新北市三峽區國際一街7號1樓", price: "$1-200", rating: "4.4", reviews: "1,306", tag: "火鍋", area: "側門", image: "images/koreanicon.png" },
+        { name: "麗媽四季火鍋", address: "237新北市三峽區國際二街25號", price: "$1-200", rating: "3.8", reviews: "449", tag: "火鍋", area: "側門", image: "images/koreanicon.png" },
+        { name: "六扇門", address: "237新北市三峽區學成路3-1號號", price: "$200-400", rating: "4.2", reviews: "1,383", tag: "火鍋", area: "後門", image: "images/koreanicon.png" },
+        { name: "錢都", address: "237新北市三峽區大學路86-3號", price: "$200-400", rating: "4.3", reviews: "2,902", tag: "火鍋", area: "正門", image: "images/koreanicon.png" },
+        { name: "加分", address: "238新北市樹林區學成路536號2樓", price: "$200-400", rating: "4.2", reviews: "63", tag: "火鍋", area: "正門", image: "images/koreanicon.png" },
+        { name: "号鳥食趣", address: "237新北市三峽區大觀路7號", price: "$200-400", rating: "4.3", reviews: "639", tag: "義式", area: "正門", image: "images/spaicon1.png" },
+        { name: "Yummy亞咪義大利麵", address: "237新北市三峽區大觀路109號", price: "$200-400", rating: "4.1", reviews: "485", tag: "義式", area: "正門", image: "images/spaicon1.png" },
+        { name: "魔法義大利", address: "237新北市三峽區國際二街1號", price: "$200-400", rating: "4.7", reviews: "3,366", tag: "義式", area: "側門", image: "images/spaicon1.png" },
+        { name: "YCHY拾味", address: "237新北市三峽區國際一街27-1號1樓", price: "$1-200", rating: "4.4", reviews: "774", tag: "義式", area: "側門", image: "images/spaicon1.png" },
     ];
-    // 之後照這個格式，把你 CSV 的所有餐廳都加進來即可。
 
     /* --- SPA 導覽 --- */
     const pages = document.querySelectorAll(".page");
@@ -808,6 +920,9 @@
     const favList = document.getElementById("favList");
     const btnPrev = document.getElementById("btnPrev");
     const btnNext = document.getElementById("btnNext");
+    const listFilterBtn = document.getElementById("listFilterBtn");
+    const listFilterPanel = document.getElementById("listFilterPanel");
+    const listClearBtn = document.getElementById("listClearBtn");
 
     let currentPool = RESTAURANTS.slice();
     let lastResult = [];
@@ -838,13 +953,17 @@
         return matchTag && matchPrice && matchArea;
       });
 
-      if (!currentPool.length) currentPool = RESTAURANTS.slice();
-
-      decideNote.textContent = `目前共有 ${currentPool.length} 間候選餐廳，按 Start 開始抽籤！`;
-      showPage("decide");
-      navLinks.forEach(b =>
-        b.classList.toggle("active", b.dataset.page === "filters")
-      );
+      // 如果篩選後沒有任何餐廳，就跳出提示，並且留在原地
+      if (!currentPool.length) {
+        alert("哎呀！找不到符合所有條件的餐廳，請放寬篩選條件再試一次。");
+      } else {
+        // 如果有結果，才更新文字並跳轉頁面
+        decideNote.textContent = `目前共有 ${currentPool.length} 間候選餐廳，按 Start 開始抽籤！`;
+        showPage("decide");
+        navLinks.forEach(b =>
+          b.classList.toggle("active", b.dataset.page === "filters")
+        );
+      }
     });
 
     /* --- 抽獎動畫 + 結果 --- */
@@ -858,10 +977,10 @@
       resultIndex = 0;
 
       const frames = [
-        "img/pasta-full.png",
-        "img/pasta-half.png",
-        "img/pasta-little.png",
-        "img/pasta-empty.png"
+        "images/spaicon1.png",
+        "images/spaicon2.png",
+        "images/spaicon3.png",
+        "images/spaicon4.png"
       ];
 
       let step = 0;
@@ -993,13 +1112,34 @@
       }
 
       favRestaurants.forEach(r => {
-        const row = document.createElement("div");
-        row.className = "fav-item";
-        row.innerHTML = `
-          <span>${r.name}</span>
-          <span style="font-size:12px;color:#999;">${r.address}</span>
+        const item = document.createElement("div");
+        item.className = "fav-item";
+        item.innerHTML = `
+          <div class="fav-item-info">
+            <div class="fav-item-name">${r.name}</div>
+            <div class="fav-item-address">${r.address}</div>
+          </div>
+          <div class="fav-item-actions">
+          </div>
         `;
-        favList.appendChild(row);
+
+        const actionsDiv = item.querySelector('.fav-item-actions');
+
+        // 建立詳情按鈕
+        const btnDetail = document.createElement('button');
+        btnDetail.className = 'fav-btn';
+        btnDetail.innerHTML = '<img src="images/eye.png" alt="View Detail">';
+        btnDetail.onclick = () => alert(`餐廳名稱：${r.name}\n地址：${r.address}\n\n(這裡未來可以串接 Google Map)`);
+        actionsDiv.appendChild(btnDetail);
+
+        // 建立刪除按鈕
+        const btnDelete = document.createElement('button');
+        btnDelete.className = 'fav-btn';
+        btnDelete.innerHTML = '<img src="images/trash.png" alt="Delete">';
+        btnDelete.onclick = () => toggleFav(r.name);
+        actionsDiv.appendChild(btnDelete);
+
+        favList.appendChild(item);
       });
     }
 
@@ -1010,6 +1150,9 @@
       const card = document.createElement("div");
       card.className = "card" + (isMain ? " card--main" : "");
       card.innerHTML = `
+        <div class="card-img-shell">
+          <img src="${r.image}" alt="${r.name}">
+        </div>
         <div class="card-header">
           <div class="card-title">${r.name}</div>
           <span class="badge">${r.tag || "餐廳"}</span>
@@ -1023,26 +1166,86 @@
             <span>${isFav ? "❤️" : "🤍"}</span>
             <span>Favorite</span>
           </button>
-          <button class="btn-detail" onclick="alert('這邊之後可以改成跳 Google Map 或詳細頁')">
+          <button class="btn-detail">
             View Detail
           </button>
         </div>
       `;
-      card.querySelector(".btn-heart").addEventListener("click", () => {
+
+      // 綁定愛心按鈕事件
+      const btnHeart = card.querySelector(".btn-heart");
+      btnHeart.addEventListener("click", () => {
         toggleFav(r.name);
         // 同步所有心形圖示
-        document.querySelectorAll('.btn-heart[data-name="'+r.name+'"]').forEach(btn => {
+        document.querySelectorAll(`.btn-heart[data-name="${r.name}"]`).forEach(btn => {
           const favs = getFavNames();
           const isFavNow = favs.includes(r.name);
           btn.innerHTML = `<span>${isFavNow ? "❤️" : "🤍"}</span><span>Favorite</span>`;
         });
       });
+
+      const btnDetail = card.querySelector(".btn-detail");
+      btnDetail.addEventListener("click", () => {
+        alert(`餐廳名稱：${r.name}\n地址：${r.address}\n\n(這裡未來可以串接 Google Map)`);
+      });
+
       return card;
     }
+
+    /* --- LIST 頁面的篩選功能 --- */
+    function setupListFilter() {
+      // 複製主篩選器的 HTML 結構到列表篩選面板
+      const mainFilterPanel = document.querySelector("#filters .panel").cloneNode(true);
+      // 移除不需要的標題、按鈕和返回鍵
+      mainFilterPanel.querySelector('.panel-title').remove();
+      mainFilterPanel.querySelector('.panel-sub').remove();
+      mainFilterPanel.querySelector('.filter-actions').remove();
+      mainFilterPanel.querySelector('.btn-back').remove();
+      listFilterPanel.appendChild(mainFilterPanel);
+
+      // 為新的 chip 綁定即時篩選事件
+      listFilterPanel.querySelectorAll(".chip-toggle").forEach(chip => {
+        chip.addEventListener("click", () => {
+          // 處理 chip 的 active 狀態切換
+          const group = chip.dataset.group;
+          if (group === "tag" && chip.dataset.value === "") {
+            listFilterPanel.querySelectorAll('.chip-toggle[data-group="tag"]').forEach(c => c.classList.remove("chip--active"));
+            chip.classList.add("chip--active");
+          } else {
+            chip.classList.toggle("chip--active");
+            if (group === "tag" && chip.classList.contains("chip--active")) {
+              listFilterPanel.querySelector('.chip-toggle[data-group="tag"][data-value=""]').classList.remove("chip--active");
+            }
+          }
+          applyListFilter();
+        });
+      });
+    }
+
+    function applyListFilter() {
+      const selectedTags = [...listFilterPanel.querySelectorAll('.chip-toggle[data-group="tag"].chip--active')].map(c => c.dataset.value).filter(v => v);
+      const selectedPrices = [...listFilterPanel.querySelectorAll('.chip-toggle[data-group="price"].chip--active')].map(c => c.dataset.value);
+      const selectedAreas = [...listFilterPanel.querySelectorAll('.chip-toggle[data-group="area"].chip--active')].map(c => c.dataset.value).filter(v => v);
+
+      const filteredList = RESTAURANTS.filter(r => {
+        const matchTag = !selectedTags.length || selectedTags.includes(r.tag);
+        const matchPrice = !selectedPrices.length || selectedPrices.includes(r.price);
+        const matchArea = !selectedAreas.length || selectedAreas.includes(r.area);
+        return matchTag && matchPrice && matchArea;
+      });
+      renderList(filteredList);
+    }
+
+    listFilterBtn.addEventListener("click", () => listFilterPanel.style.display = listFilterPanel.style.display === 'block' ? 'none' : 'block');
+    listClearBtn.addEventListener("click", () => {
+      listFilterPanel.querySelectorAll(".chip--active").forEach(c => c.classList.remove("chip--active"));
+      renderList(RESTAURANTS);
+    });
 
     // 初始畫面：List & Favorites 先 render 一次
     renderList(RESTAURANTS);
     renderFavorites();
+    setupListFilter();
   </script>
 </body>
 </html>
