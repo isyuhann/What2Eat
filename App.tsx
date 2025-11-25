@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react'; // 修正：明確引入 React
 import { Restaurant, FilterState } from './types/restaurant';
 import { mockRestaurants } from './data/mockRestaurants';
 import { FiltersPanel } from './components/FiltersPanel';
@@ -24,7 +24,7 @@ export default function App() {
   const [showResult, setShowResult] = useState(false);
 
   const filteredRestaurants = useMemo(() => {
-    return restaurants.filter((restaurant) => {
+    return restaurants.filter((restaurant: Restaurant) => { // 修正：為參數加上型別
       const categoryMatch =
         appliedFilters.categories.length === 0 ||
         appliedFilters.categories.includes(restaurant.category);
@@ -36,7 +36,7 @@ export default function App() {
   }, [restaurants, appliedFilters]);
 
   const favoriteRestaurants = useMemo(() => {
-    return restaurants.filter((r) => r.isFavorite);
+    return restaurants.filter((r: Restaurant) => r.isFavorite); // 修正：為參數加上型別
   }, [restaurants]);
 
   const handleApplyFilters = () => {
@@ -50,7 +50,7 @@ export default function App() {
 
   const handleToggleFavorite = (restaurantId: string) => {
     setRestaurants((prev) =>
-      prev.map((r) =>
+      prev.map((r: Restaurant) => // 修正：為參數加上型別
         r.id === restaurantId ? { ...r, isFavorite: !r.isFavorite } : r
       )
     );
@@ -78,7 +78,7 @@ export default function App() {
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-8">
         {viewMode === 'home' && (
-          <div className="space-y-8">
+          <section className="space-y-8">
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
@@ -105,14 +105,14 @@ export default function App() {
 
             {/* Preview Section */}
             <div className="bg-white rounded-lg p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h3>符合條件的餐廳</h3>
+              <div className="flex items-center justify-between mb-4"> 
+                <h3 className="text-lg font-semibold">符合條件的餐廳</h3>
                 <span className="text-gray-600">
-                  共 {filteredRestaurants.length} 間
+                  共 {filteredRestaurants.length} 間 
                 </span>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                {filteredRestaurants.slice(0, 8).map((restaurant) => (
+                {filteredRestaurants.slice(0, 8).map((restaurant: Restaurant) => ( // 修正：為參數加上型別
                   <div
                     key={restaurant.id}
                     className="p-3 bg-gray-50 rounded-lg text-center"
@@ -126,14 +126,14 @@ export default function App() {
                 ))}
               </div>
             </div>
-          </div>
+          </section>
         )}
 
         {viewMode === 'favorites' && (
           <div>
             <div className="flex items-center justify-between mb-6">
-              <h2>Favorite Restaurants</h2>
-              <Button
+              <h2 className="text-2xl font-bold">Favorite Restaurants</h2>
+              <Button 
                 variant="outline"
                 onClick={() => setViewMode('home')}
               >
@@ -149,8 +149,8 @@ export default function App() {
 
         {viewMode === 'turntable' && (
           <div>
-            <div className="flex items-center justify-between mb-6">
-              <h2>Spin the Turntable</h2>
+            <div className="flex items-center justify-between mb-6"> 
+              <h2 className="text-2xl font-bold">Spin the Turntable</h2>
               <Button
                 variant="outline"
                 onClick={() => setViewMode('home')}
