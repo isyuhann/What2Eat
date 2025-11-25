@@ -124,15 +124,12 @@
       gap: 40px;
     }
 
-    /* 【修改重點】文字超級白邊 */
     .hero-text-main {
       font-size: 40px;
       font-weight: 800;
       margin-bottom: 8px;
       color: #2c181d; 
-      /* 1. 使用 stroke 描邊 (支援 Webkit 瀏覽器) */
       -webkit-text-stroke: 1.5px #ffffff;
-      /* 2. 使用多層 text-shadow 堆疊出厚實的白邊 (所有瀏覽器都支援) */
       text-shadow: 
         3px 0 0 #fff, -3px 0 0 #fff, 0 3px 0 #fff, 0 -3px 0 #fff,
         2px 2px 0 #fff, -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff;
@@ -156,7 +153,6 @@
     .hero-sub {
       font-size: 14px;
       color: var(--text-sub);
-      /* 副標題也加一點點白邊增加可讀性 */
       text-shadow: 0 0 4px rgba(255,255,255,0.8);
     }
 
@@ -239,7 +235,7 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
-    /* -------- ABOUT / CONTACT -------- */
+    /* -------- ABOUT / CONTACT (修改後：團隊介紹) -------- */
     .about {
       background: var(--panel);
       border-radius: var(--radius-xl);
@@ -251,13 +247,48 @@
       font-size: 32px;
       font-weight: 800;
       margin-bottom: 16px;
+      text-align: left; /* 標題靠左或置中皆可，這裡保留靠左或依需求調整 */
+    }
+    
+    /* 【修改重點】優化文字排版 */
+    .about-desc {
+      font-size: 15px; 
+      color: var(--text-sub); 
+      
+      /* 放寬寬度限制，讓文字能填滿畫面 */
+      max-width: 100%; 
+      
+      /* 增加行高，讓閱讀更舒適 */
+      line-height: 1.8; 
+      
+      /* 關鍵：左右對齊，讓文字像報紙方塊一樣整齊 */
+      text-align: justify; 
+      
+      /* 確保這段文字本身是在父容器中居中的（如果父容器有 flex） */
+      margin: 0 auto 20px; 
+    }
+
+    .team-section-title {
+      margin-top: 32px;
+      font-size: 20px;
+      font-weight: 700;
+      color: #dd7692;
+      text-align: center;
     }
 
     .about-plates {
       display: flex;
-      gap: 24px;
+      gap: 40px;
       justify-content: center;
-      margin-top: 16px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .member-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
     }
 
     .about-plate {
@@ -274,14 +305,20 @@
     }
 
     .about-plate img {
-      width: 80%;
-      height: auto;
-      object-fit: contain;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     .about-plate:hover {
       transform: scale(1.06);
       box-shadow: 0 16px 34px rgba(0,0,0,0.2);
+    }
+
+    .member-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #555;
     }
 
     /* -------- FILTERS -------- */
@@ -705,21 +742,33 @@
     <section id="about" class="page">
       <div class="about">
         <div class="about-title">About What2EAT</div>
-        <p style="font-size:14px; color:var(--text-sub); max-width:520px;">
-          幫助台北大學附近的學生，在「正門、後門、側門」之間，
-          快速決定今天要吃什麼。以下圖示可以放你在 Figma 裡畫的信封、
-          問號箱子、空盤等插畫。
+        <p class="about-desc">
+          專為台北大學學生打造的美食決策助手。我們整合了三峽校區周邊（正門、後門、側門）的各類餐廳資訊，
+          透過直覺的篩選與趣味的隨機抽籤動畫，解決每日最讓人頭痛的「午餐吃什麼」難題。
+          這是一個由學生自發開發的專案，旨在讓校園生活更便利、更有趣。
         </p>
 
-        <div class="about-plates" style="margin-top:28px;">
-          <div class="about-plate">
-            <img src="images/gmailicon.png" alt="mail icon">
+        <div class="team-section-title">Meet the Team</div>
+        <div class="about-plates">
+          <div class="member-item">
+            <div class="about-plate">
+              <img src="images/plateicon.png" alt="黃雨涵"> 
+            </div>
+            <div class="member-name">黃雨涵</div>
           </div>
-          <div class="about-plate">
-            <img src="images/qaboxicon.png" alt="box icon">
+
+          <div class="member-item">
+            <div class="about-plate">
+              <img src="images/至真.png" alt="劉至真">
+            </div>
+            <div class="member-name">劉至真</div>
           </div>
-          <div class="about-plate">
-            <img src="images/forkicon.png" alt="plate icon">
+
+          <div class="member-item">
+            <div class="about-plate">
+              <img src="images/廖苡媃.png" alt="廖苡媃">
+            </div>
+            <div class="member-name">廖苡媃</div>
           </div>
         </div>
 
@@ -1323,13 +1372,15 @@
     renderFavorites();
     setupListFilter();
 
-    /* --- 首頁背景動畫 (JS 終極修正版：白名單 + 不重複翻轉) --- */
+    /* --- 首頁背景動畫 (JS 終極修正版：白名單 + 不重複翻轉 + 不重複圖片) --- */
     const heroBgContainer = document.getElementById("heroBgAnimation");
     let animationInterval = null;
     let foodImages = [];
     let safeDotIndices = [];
-    // 【新增】記錄上一次翻轉的格子索引
+    // 記錄上一次翻轉的格子索引
     let lastFlippedIndex = -1;
+    // 記錄上一次出現的圖片
+    let lastFlippedImage = null;
 
     function setupHeroAnimation() {
       if (animationInterval) clearInterval(animationInterval);
@@ -1417,7 +1468,7 @@
             let randomPos = Math.floor(Math.random() * safeDotIndices.length);
             let targetIndex = safeDotIndices[randomPos];
 
-            // 【修改重點】確保不連續翻轉同一個格子 (如果安全格子大於1個)
+            // 1. 確保不連續翻轉同一個格子
             if (safeDotIndices.length > 1) {
                 while (targetIndex === lastFlippedIndex) {
                     randomPos = Math.floor(Math.random() * safeDotIndices.length);
@@ -1428,12 +1479,21 @@
             const dotToFlip = document.getElementById(`bg-dot-${targetIndex}`);
             
             if (dotToFlip) {
-                const randomImage = foodImages[Math.floor(Math.random() * foodImages.length)];
+                // 2. 確保不連續出現同一張圖片
+                let randomImage = foodImages[Math.floor(Math.random() * foodImages.length)];
+                if (foodImages.length > 1) {
+                    while (randomImage === lastFlippedImage) {
+                        randomImage = foodImages[Math.floor(Math.random() * foodImages.length)];
+                    }
+                }
+
                 dotToFlip.querySelector('.bg-dot-back img').src = randomImage;
                 dotToFlip.classList.add('is-flipped');
                 lastFlippedDotElement = dotToFlip;
+                
                 // 更新記錄
                 lastFlippedIndex = targetIndex;
+                lastFlippedImage = randomImage;
             }
         }
       }, 1000);
