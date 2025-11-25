@@ -31,12 +31,14 @@
       font-family: var(--font-sans);
       background: var(--bg);
       color: var(--primary);
+      overflow-x: hidden;
     }
 
     .app {
       max-width: 1120px;
       margin: 0 auto;
       padding: 24px 16px 40px;
+      position: relative;
     }
 
     /* -------- NAV -------- */
@@ -44,6 +46,8 @@
       display: flex;
       justify-content: center;
       margin-bottom: 32px;
+      position: relative;
+      z-index: 20;
     }
 
     .nav-pill {
@@ -103,16 +107,35 @@
       cursor: pointer;
     }
 
-    /* -------- HOME / HERO -------- */
+    /* -------- HOME / HERO (透明蒙版) -------- */
     .hero {
-      background: var(--panel);
+      position: relative;
+      background: rgba(255, 247, 250, 0.3); 
+      backdrop-filter: none; 
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02);
       border-radius: var(--radius-xl);
-      box-shadow: var(--card-shadow);
-      padding: 40px 40px 48px;
+      padding: 60px 40px;
+      width: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
+      z-index: 10;
       gap: 40px;
+    }
+
+    /* 【修改重點】文字超級白邊 */
+    .hero-text-main {
+      font-size: 40px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: #2c181d; 
+      /* 1. 使用 stroke 描邊 (支援 Webkit 瀏覽器) */
+      -webkit-text-stroke: 1.5px #ffffff;
+      /* 2. 使用多層 text-shadow 堆疊出厚實的白邊 (所有瀏覽器都支援) */
+      text-shadow: 
+        3px 0 0 #fff, -3px 0 0 #fff, 0 3px 0 #fff, 0 -3px 0 #fff,
+        2px 2px 0 #fff, -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff;
     }
 
     .hero-plate {
@@ -127,17 +150,14 @@
       font-size: 32px;
       font-weight: 700;
       text-align: center;
-    }
-
-    .hero-text-main {
-      font-size: 40px;
-      font-weight: 800;
-      margin-bottom: 8px;
+      flex-shrink: 0;
     }
 
     .hero-sub {
       font-size: 14px;
       color: var(--text-sub);
+      /* 副標題也加一點點白邊增加可讀性 */
+      text-shadow: 0 0 4px rgba(255,255,255,0.8);
     }
 
     .hero-cta {
@@ -154,6 +174,69 @@
       font-weight: 600;
       cursor: pointer;
       box-shadow: 0 14px 30px rgba(231,122,150,0.35);
+    }
+    
+    /* -------- 首頁背景動畫 -------- */
+    #home {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-xl);
+    }
+
+    .hero-bg-animation {
+      position: absolute;
+      top: -50px;
+      left: -50px;
+      right: -50px;
+      bottom: -50px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 16px;
+      padding: 24px;
+      z-index: 5; 
+      pointer-events: none;
+    }
+
+    .bg-dot-container {
+      width: 100px;
+      height: 100px;
+      perspective: 1000px;
+      margin: auto;
+    }
+
+    .bg-dot {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s;
+    }
+
+    .bg-dot.is-flipped {
+      transform: rotateY(180deg);
+    }
+
+    .bg-dot-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .bg-dot-front {
+      background-color: rgba(255, 255, 255, 0.55);
+      border: 2px solid rgba(242, 162, 183, 0.25);
+    }
+
+    .bg-dot-back {
+      background-color: #fff;
+      transform: rotateY(180deg);
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
     /* -------- ABOUT / CONTACT -------- */
@@ -567,7 +650,7 @@
     .fav-btn img {
       width: 20px;
       height: 20px;
-      vertical-align: middle; /* 讓圖片垂直置中 */
+      vertical-align: middle;
     }
 
     /* -------- RWD -------- */
@@ -575,7 +658,11 @@
       .hero,
       .decide-shell {
         flex-direction: column;
-        padding: 24px;
+        padding: 40px 24px;
+      }
+      .hero-plate {
+        width: 200px;
+        height: 200px;
       }
       .nav-pill {
         gap: 20px;
@@ -589,10 +676,8 @@
 </head>
 <body>
   <div class="app">
-    <!-- NAV -->
     <div class="nav-shell">
       <div class="nav-pill">
-        <!-- 注意：Decide Now 是導到 Filters -->
         <button class="nav-link" data-page="filters">Decide Now</button>
         <button class="nav-link" data-page="favorites">Favorites</button>
         <button class="nav-link" data-page="list">Restaurant List</button>
@@ -600,11 +685,11 @@
       </div>
     </div>
 
-    <!-- HOME / WHAT2EAT -->
     <section id="home" class="page page--active">
+      <div class="hero-bg-animation" id="heroBgAnimation"></div>
+
       <div class="hero">
         <div class="hero-plate">
-          <!-- 這裡已換成 Logo 圖片 -->
           <img src="images/plateicon.png" alt="What2EAT Logo" style="width: 80%; height: auto;">
         </div>
         <div>
@@ -617,7 +702,6 @@
       </div>
     </section>
 
-    <!-- ABOUT / Contact us 第二頁 -->
     <section id="about" class="page">
       <div class="about">
         <div class="about-title">About What2EAT</div>
@@ -643,7 +727,6 @@
       </div>
     </section>
 
-    <!-- FILTERS -->
     <section id="filters" class="page">
       <div class="panel">
         <div class="panel-title">Filters</div>
@@ -692,11 +775,9 @@
       </div>
     </section>
 
-    <!-- LET'S DECIDE (抽獎前動畫頁) -->
     <section id="decide" class="page">
       <div class="decide-shell">
         <div class="decide-plate">
-          <!-- 依照步驟切換義大利麵圖片：full / half / little / empty -->
           <img id="spaghettiImg" src="images/spaicon1.png" alt="pasta">
         </div>
         <div>
@@ -710,7 +791,6 @@
       </div>
     </section>
 
-    <!-- RESULT：中間主卡片 + 左右備用，可左右切 -->
     <section id="result" class="page">
       <div class="result-shell">
         <div class="result-title">今天吃這家吧！</div>
@@ -719,8 +799,7 @@
           <button class="carousel-arrow" id="btnPrev">‹</button>
 
           <div class="carousel-track" id="resultTrack">
-            <!-- JS 塞左備用 + 中間主結果 + 右備用 -->
-          </div>
+            </div>
 
           <button class="carousel-arrow" id="btnNext">›</button>
         </div>
@@ -729,7 +808,6 @@
       </div>
     </section>
 
-    <!-- RESTAURANT LIST：橫向滑動 -->
     <section id="list" class="page">
       <div class="list-shell">
         <div class="list-header">
@@ -746,14 +824,12 @@
         <div id="listFilterPanel" class="list-filter-panel"></div>
 
         <div class="list-row" id="listRow">
-          <!-- JS 塞卡片 -->
-        </div>
+          </div>
 
         <button class="btn-back" data-back>Back</button>
       </div>
     </section>
 
-    <!-- FAVORITES 收藏頁 -->
     <section id="favorites" class="page">
       <div class="fav-shell">
         <div class="result-title">Favorite Restaurants</div>
@@ -768,7 +844,7 @@
   </div>
 
   <script>
-    /* --- 簡化版餐廳資料（示範幾筆；之後可以把 CSV 全部補進來） --- */
+    /* --- 簡化版餐廳資料 --- */
     const RESTAURANTS = [
         { name: "Qm159 清琳咖啡", address: "237新北市三峽區中山路65號", price: "$200-400", rating: "4.5", reviews: "1,049", tag: "甜點", area: "後門", image: "images/coffeeicon.png" },
         { name: "鐵盒子甜點專門店", address: "237新北市三峽區學成路293號", price: "$1-200", rating: "4.5", reviews: "123", tag: "甜點", area: "正門", image: "images/coffeeicon.png" },
@@ -1246,6 +1322,132 @@
     renderList(RESTAURANTS);
     renderFavorites();
     setupListFilter();
+
+    /* --- 首頁背景動畫 (JS 終極修正版：白名單 + 不重複翻轉) --- */
+    const heroBgContainer = document.getElementById("heroBgAnimation");
+    let animationInterval = null;
+    let foodImages = [];
+    let safeDotIndices = [];
+    // 【新增】記錄上一次翻轉的格子索引
+    let lastFlippedIndex = -1;
+
+    function setupHeroAnimation() {
+      if (animationInterval) clearInterval(animationInterval);
+
+      // 1. 收集所有不重複的食物圖片
+      const imageSet = new Set();
+      RESTAURANTS.forEach(r => {
+        if (r.image && r.image.includes('icon')) {
+          imageSet.add(r.image);
+        }
+      });
+      foodImages = Array.from(imageSet);
+
+      // 2. 產生圓點網格
+      heroBgContainer.innerHTML = '';
+      const containerWidth = heroBgContainer.clientWidth;
+      const containerHeight = heroBgContainer.clientHeight;
+      
+      const dotSize = 100 + 16; 
+      const cols = Math.floor(containerWidth / dotSize);
+
+      if (cols === 0 || containerHeight === 0) {
+        return;
+      }
+
+      const rows = Math.floor(containerHeight / dotSize);
+      const totalDots = cols * rows;
+
+      for (let i = 0; i < totalDots; i++) {
+        const dotContainer = document.createElement('div');
+        dotContainer.className = 'bg-dot-container';
+        dotContainer.setAttribute('data-index', i);
+        dotContainer.innerHTML = `
+          <div class="bg-dot" id="bg-dot-${i}">
+            <div class="bg-dot-face bg-dot-front"></div>
+            <div class="bg-dot-face bg-dot-back">
+              <img src="" alt="food icon" style="width: 80%; height: 80%; object-fit: contain;">
+            </div>
+          </div>
+        `;
+        heroBgContainer.appendChild(dotContainer);
+      }
+
+      // 計算安全格子
+      safeDotIndices = [];
+      const heroPlate = document.querySelector('.hero-plate');
+      
+      if (heroPlate) {
+        const plateRect = heroPlate.getBoundingClientRect();
+        const buffer = 20; 
+        const forbiddenZone = {
+            top: plateRect.top - buffer,
+            bottom: plateRect.bottom + buffer,
+            left: plateRect.left - buffer,
+            right: plateRect.right + buffer
+        };
+
+        document.querySelectorAll('.bg-dot-container').forEach((container) => {
+           const dotRect = container.getBoundingClientRect();
+           const index = parseInt(container.getAttribute('data-index'));
+
+           const isOverlapping = !(
+              dotRect.right < forbiddenZone.left ||
+              dotRect.left > forbiddenZone.right ||
+              dotRect.bottom < forbiddenZone.top ||
+              dotRect.top > forbiddenZone.bottom
+           );
+
+           if (!isOverlapping) {
+             safeDotIndices.push(index);
+           }
+        });
+      } else {
+        for(let i=0; i<totalDots; i++) safeDotIndices.push(i);
+      }
+
+      // 3. 啟動動畫循環
+      let lastFlippedDotElement = null;
+      animationInterval = setInterval(() => {
+        if (lastFlippedDotElement) {
+          lastFlippedDotElement.classList.remove('is-flipped');
+        }
+
+        if (safeDotIndices.length > 0) {
+            let randomPos = Math.floor(Math.random() * safeDotIndices.length);
+            let targetIndex = safeDotIndices[randomPos];
+
+            // 【修改重點】確保不連續翻轉同一個格子 (如果安全格子大於1個)
+            if (safeDotIndices.length > 1) {
+                while (targetIndex === lastFlippedIndex) {
+                    randomPos = Math.floor(Math.random() * safeDotIndices.length);
+                    targetIndex = safeDotIndices[randomPos];
+                }
+            }
+
+            const dotToFlip = document.getElementById(`bg-dot-${targetIndex}`);
+            
+            if (dotToFlip) {
+                const randomImage = foodImages[Math.floor(Math.random() * foodImages.length)];
+                dotToFlip.querySelector('.bg-dot-back img').src = randomImage;
+                dotToFlip.classList.add('is-flipped');
+                lastFlippedDotElement = dotToFlip;
+                // 更新記錄
+                lastFlippedIndex = targetIndex;
+            }
+        }
+      }, 1000);
+    }
+
+    window.addEventListener('load', () => {
+      setupHeroAnimation();
+    });
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(setupHeroAnimation, 200);
+    });
   </script>
 </body>
 </html>
