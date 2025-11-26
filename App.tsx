@@ -1,11 +1,20 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 
+<<<<<<< Updated upstream
 // --- 圖片匯入 (請確認這些檔案在 images 資料夾中) ---
 import logoImage from './images/logo.png'; 
 import plateIcon from './images/plateicon.png';
 import yuhanImage from './images/YuHan.png';
 import zhizhenImage from './images/Jenny.png'; 
 import yirouImage from './images/yirou.png';  
+=======
+// --- 1. 圖片匯入 (請確認這些檔案在 images 資料夾中) ---
+import logoImage from './images/logo.png'; 
+import plateIcon from './images/plateicon.png';
+import yuhanImage from './images/YuHan.png';
+import zhizhenImage from './images/Jenny.png'; // 若檔名是至真.png 請自行修改
+import yirouImage from './images/yirou.png';   // 若檔名是廖苡媃.png 請自行修改
+>>>>>>> Stashed changes
 
 // 類別 Icon
 import coffeeIcon from './images/coffeeicon.png';
@@ -19,7 +28,11 @@ import spaIcon2 from './images/spaicon2.png';
 import spaIcon3 from './images/spaicon3.png';
 import spaIcon4 from './images/spaicon4.png';
 
+<<<<<<< Updated upstream
 // 建立圖示對照表 (用於將資料類別轉為圖片變數)
+=======
+// 建立圖示對照表 (用於將 CSV 的文字轉為圖片變數)
+>>>>>>> Stashed changes
 const ICON_MAP: Record<string, string> = {
   coffeeicon: coffeeIcon,
   susiicon: susiIcon,
@@ -28,10 +41,18 @@ const ICON_MAP: Record<string, string> = {
   riceicon: riceIcon,
   vegetableicon: vegIcon,
   spaicon1: spaIcon1,
+<<<<<<< Updated upstream
   default: plateIcon
 };
 
 // --- 完整餐廳資料 (共 60 筆) ---
+=======
+  // 若 CSV 有其他圖片名稱，預設回退到 logo
+  default: plateIcon
+};
+
+// --- 2. 完整餐廳資料 (根據您的 CSV 轉檔) ---
+>>>>>>> Stashed changes
 const RESTAURANTS = [
   { id: '1', name: '吃萬串燒專賣店', address: '新北市三峽區復興路112號', price: '$$', rating: '4.8', reviews: '120', category: '串燒烤肉店', area: '校外', icon: koreanIcon },
   { id: '2', name: '不然去吃早午餐', address: '新北市三峽區大德路190號', price: '$', rating: '4.5', reviews: '85', category: '早午餐', area: '正門', icon: coffeeIcon },
@@ -191,7 +212,11 @@ export default function App() {
     return RESTAURANTS.filter(r => favorites.includes(r.name));
   }, [favorites]);
 
+<<<<<<< Updated upstream
   // --- 背景動畫 (確保動畫正確執行) ---
+=======
+  // --- 3. 背景動畫 (修復重點) ---
+>>>>>>> Stashed changes
   const heroBgRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -202,11 +227,19 @@ export default function App() {
     const width = container.clientWidth;
     const height = container.clientHeight;
     
+<<<<<<< Updated upstream
+=======
+    // 格子大小，需配合 CSS
+>>>>>>> Stashed changes
     const dotSize = 116; 
     const cols = Math.floor(width / dotSize);
     const rows = Math.floor(height / dotSize);
     const totalDots = cols * rows;
 
+<<<<<<< Updated upstream
+=======
+    // 定義動畫會用到的圖片清單 (使用已導入的變數)
+>>>>>>> Stashed changes
     const animImages = [coffeeIcon, susiIcon, koreanIcon, noodleIcon, riceIcon, vegIcon, spaIcon1];
     const safeIndices: number[] = [];
 
@@ -236,12 +269,20 @@ export default function App() {
       dotWrapper.appendChild(dot);
       container.appendChild(dotWrapper);
       
+<<<<<<< Updated upstream
+=======
+      // 計算不被中間圓盤擋住的安全區域
+>>>>>>> Stashed changes
       const row = Math.floor(i / cols);
       const col = i % cols;
       const centerRow = rows / 2;
       const centerCol = cols / 2;
       
+<<<<<<< Updated upstream
       // 避免中間被遮擋
+=======
+      // 距離中心太近的不加入翻轉名單
+>>>>>>> Stashed changes
       if (Math.abs(row - centerRow) > 1.5 || Math.abs(col - centerCol) > 1.5) {
         safeIndices.push(i);
       }
@@ -252,19 +293,35 @@ export default function App() {
     const interval = setInterval(() => {
         if (safeIndices.length === 0) return;
         
+<<<<<<< Updated upstream
+=======
+        // 復原上一個翻轉的格子
+>>>>>>> Stashed changes
         if (lastIndex !== -1) {
             const lastDot = document.getElementById(`dot-${lastIndex}`);
             if (lastDot) lastDot.classList.remove('is-flipped');
         }
 
+<<<<<<< Updated upstream
         const rand = safeIndices[Math.floor(Math.random() * safeIndices.length)];
         const dot = document.getElementById(`dot-${rand}`);
+=======
+        // 隨機選一個新格子
+        const rand = safeIndices[Math.floor(Math.random() * safeIndices.length)];
+        const dot = document.getElementById(`dot-${rand}`);
+        
+        // 隨機選一張圖
+>>>>>>> Stashed changes
         const randomImgSrc = animImages[Math.floor(Math.random() * animImages.length)];
         
         if (dot) {
             const imgEl = dot.querySelector('img');
             if (imgEl) {
+<<<<<<< Updated upstream
               imgEl.src = randomImgSrc;
+=======
+              imgEl.src = randomImgSrc; // 這裡將 src 設定為正確的圖片路徑
+>>>>>>> Stashed changes
             }
             dot.classList.add('is-flipped');
             lastIndex = rand;
@@ -297,6 +354,7 @@ export default function App() {
 
   return (
     <div className="app-container">
+<<<<<<< Updated upstream
       {/* Navigation - 只在非首頁時顯示 */}
       {viewMode !== 'home' && (
         <div className="nav-shell">
@@ -342,6 +400,33 @@ export default function App() {
               <div className="hero-cta">
                 <button className="btn-primary-lg" onClick={() => setViewMode('filters')}>Decide Now</button>
               </div>
+=======
+      {/* Navigation */}
+      <div className="nav-shell">
+        <div className="nav-pill">
+          <button className={`nav-link ${viewMode === 'filters' ? 'active' : ''}`} onClick={() => setViewMode('filters')}>Decide Now</button>
+          <button className={`nav-link ${viewMode === 'favorites' ? 'active' : ''}`} onClick={() => setViewMode('favorites')}>Favorites</button>
+          <button className={`nav-link ${viewMode === 'list' ? 'active' : ''}`} onClick={() => setViewMode('list')}>Restaurant List</button>
+          <button className={`nav-link ${viewMode === 'about' ? 'active' : ''}`} onClick={() => setViewMode('about')}>Contact us</button>
+        </div>
+      </div>
+
+      {/* HOME */}
+      {viewMode === 'home' && (
+        <section className="page-section active">
+          {/* 這裡是背景動畫的容器 */}
+          <div className="hero-bg-animation" ref={heroBgRef}></div>
+          <div className="hero">
+            <div className="hero-plate">
+              <img src={plateIcon} alt="Logo" style={{ width: '80%', height: 'auto' }} />
+            </div>
+            <div>
+              <div className="hero-text-main">What2EAT</div>
+              <div className="hero-sub">選擇困難症的福音 ☺</div>
+              <div className="hero-cta">
+                <button className="btn-primary-lg" onClick={() => setViewMode('filters')}>Decide Now</button>
+              </div>
+>>>>>>> Stashed changes
             </div>
           </div>
         </section>
@@ -474,6 +559,7 @@ export default function App() {
                 {favoriteList.length === 0 ? <div style={{color:'#999'}}>尚無收藏</div> : favoriteList.map(r => (
                   <div key={r.id} className="fav-item">
                     <div>
+<<<<<<< Updated upstream
                       {/* 改用新 CSS 定義的 class */}
                       <div className="fav-item-name">{r.name}</div>
                       <div className="fav-item-address">{r.address}</div>
@@ -481,6 +567,13 @@ export default function App() {
                     <div style={{ display: 'flex', gap: '8px' }}>
                         {/* 按鈕樣式維持不變，你的 CSS 已經有 .fav-btn */}
                         <button className="fav-btn" onClick={() => toggleFavorite(r.name)}>🗑️</button>
+=======
+                      <div style={{fontWeight: 600}}>{r.name}</div>
+                      <div style={{fontSize: '12px', color: '#7b7b7b'}}>{r.address}</div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                       <button style={{border:'none', background:'transparent', cursor:'pointer'}} onClick={() => toggleFavorite(r.name)}>🗑️</button>
+>>>>>>> Stashed changes
                     </div>
                   </div>
                 ))}
