@@ -521,9 +521,7 @@ export default function App() {
               <div className="team-section-title">Meet the Team</div>
               <div className="about-plates">
                 <div className="member-item">
-                  <div className="about-plate" style={{ width: '120px', height: '120px' }}>
-                    <img src={yuhanImage} alt="黃雨涵"/>
-                  </div>
+                  <div className="about-plate"><img src={yuhanImage} alt="黃雨涵"/></div>
                   <div className="member-name">黃雨涵</div>
                 </div>
                 <div className="member-item">
