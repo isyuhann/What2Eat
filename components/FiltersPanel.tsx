@@ -6,7 +6,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from './ui/collapsible';
-import { useState } from 'react';
+
 
 // 根據 mockRestaurants.ts 的內容
 const CATEGORY_OPTIONS = ['中式', '日式', '義式', '美式', '泰式', '韓式', '越南', '印度'];
