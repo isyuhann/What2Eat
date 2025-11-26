@@ -1,1587 +1,1724 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/png" href="images/logo_thumbnail.png" />
-  <title>What2Eat — 美食轉盤推薦平臺</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <style>
-    :root {
-      --bg: #ffeef3;
-      --panel: #fff7fa;
-      --nav-pill: #ffeef3;
-      --primary: #111827;
-      --pink: #f2a2b7;
-      --pink-deep: #e97a96;
-      --text-sub: #7b7b7b;
-      --card-shadow: 0 12px 30px rgba(0,0,0,0.08);
-      --radius-xl: 24px;
-      --radius-lg: 18px;
-      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      min-height: 100vh;
-      font-family: var(--font-sans);
-      background: var(--bg);
-      color: var(--primary);
-      overflow-x: hidden;
-    }
-
-    .app {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 24px 16px 40px;
-      position: relative;
-    }
-
-    /* -------- NAV -------- */
-    .nav-shell {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 32px;
-      position: relative;
-      z-index: 20;
-    }
-
-    .nav-pill {
-      background: var(--nav-pill);
-      border-radius: 999px;
-      box-shadow: 0 18px 40px rgba(0,0,0,0.12);
-      padding: 12px 32px;
-      display: flex;
-      gap: 40px;
-    }
-
-    .nav-link {
-      border: none;
-      background: transparent;
-      font-size: 14px;
-      color: #dd7692;
-      cursor: pointer;
-      position: relative;
-      padding: 4px 0;
-      transition: transform 0.15s ease, text-shadow 0.15s ease;
-    }
-
-    .nav-link:hover {
-      transform: scale(1.05);
-      text-shadow: 0 0 6px rgba(255,255,255,0.8);
-    }
-
-    .nav-link.active::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: -4px;
-      width: 60%;
-      height: 2px;
-      border-radius: 999px;
-      background: #e7889e;
-    }
-
-    /* -------- PAGE 共用 -------- */
-    .page {
-      display: none;
-      margin-top: 12px;
-    }
-    .page--active {
-      display: block;
-    }
-
-    .btn-back {
-      margin-top: 16px;
-      padding: 6px 14px;
-      font-size: 12px;
-      border-radius: 999px;
-      border: 1px solid #e6b9c5;
-      background: #fff;
-      color: #e5889d;
-      cursor: pointer;
-    }
-
-    /* -------- HOME / HERO -------- */
-    .hero {
-      position: relative;
-      background: rgba(255, 247, 250, 0.3); 
-      backdrop-filter: none; 
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02);
-      border-radius: var(--radius-xl);
-      padding: 60px 40px;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 10;
-      gap: 40px;
-    }
-
-    .hero-text-main {
-      font-size: 40px;
-      font-weight: 800;
-      margin-bottom: 8px;
-      color: #2c181d; 
-      -webkit-text-stroke: 1.5px #ffffff;
-      text-shadow: 
-        3px 0 0 #fff, -3px 0 0 #fff, 0 3px 0 #fff, 0 -3px 0 #fff,
-        2px 2px 0 #fff, -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff;
-    }
-
-    .hero-plate {
-      width: 260px;
-      height: 260px;
-      border-radius: 50%;
-      background: #ffffff;
-      box-shadow: 0 18px 36px rgba(0,0,0,0.18);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 32px;
-      font-weight: 700;
-      text-align: center;
-      flex-shrink: 0;
-    }
-
-    .hero-sub {
-      font-size: 14px;
-      color: var(--text-sub);
-      text-shadow: 0 0 4px rgba(255,255,255,0.8);
-    }
-
-    .hero-cta {
-      margin-top: 20px;
-    }
-
-    .btn-primary-lg {
-      padding: 10px 26px;
-      border-radius: 999px;
-      border: none;
-      background: linear-gradient(135deg, #f2a2b7, #e77a96);
-      color: #fff;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 14px 30px rgba(231,122,150,0.35);
-    }
-    
-    /* -------- 首頁背景動畫 -------- */
-    #home {
-      position: relative;
-      overflow: hidden;
-      border-radius: var(--radius-xl);
-    }
-
-    .hero-bg-animation {
-      position: absolute;
-      top: -50px;
-      left: -50px;
-      right: -50px;
-      bottom: -50px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 16px;
-      padding: 24px;
-      z-index: 5; 
-      pointer-events: none;
-    }
-
-    .bg-dot-container {
-      width: 100px;
-      height: 100px;
-      perspective: 1000px;
-      margin: auto;
-    }
-
-    .bg-dot {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      transform-style: preserve-3d;
-      transition: transform 0.6s;
-    }
-
-    .bg-dot.is-flipped {
-      transform: rotateY(180deg);
-    }
-
-    .bg-dot-face {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .bg-dot-front {
-      background-color: rgba(255, 255, 255, 0.55);
-      border: 2px solid rgba(242, 162, 183, 0.25);
-    }
-
-    .bg-dot-back {
-      background-color: #fff;
-      transform: rotateY(180deg);
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    /* -------- ABOUT -------- */
-    .about {
-      background: var(--panel);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--card-shadow);
-      padding: 32px 40px;
-    }
-
-    .about-title {
-      font-size: 32px;
-      font-weight: 800;
-      margin-bottom: 16px;
-      text-align: left;
-    }
-    
-    .about-desc {
-      font-size: 15px; 
-      color: var(--text-sub); 
-      max-width: 100%; 
-      line-height: 1.8; 
-      text-align: justify; 
-      margin: 0 auto 20px; 
-    }
-
-    .team-section-title {
-      margin-top: 32px;
-      font-size: 20px;
-      font-weight: 700;
-      color: #dd7692;
-      text-align: center;
-    }
-
-    .about-plates {
-      display: flex;
-      gap: 40px;
-      justify-content: center;
-      margin-top: 20px;
-      flex-wrap: wrap;
-    }
-
-    .member-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .about-plate {
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
-      background: #ffffff;
-      box-shadow: 0 12px 26px rgba(0,0,0,0.16);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.16s ease, box-shadow 0.16s ease;
-      overflow: hidden;
-    }
-
-    .about-plate img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .about-plate:hover {
-      transform: scale(1.06);
-      box-shadow: 0 16px 34px rgba(0,0,0,0.2);
-    }
-
-    .member-name {
-      font-size: 15px;
-      font-weight: 600;
-      color: #555;
-    }
-
-    /* -------- FILTERS -------- */
-    .panel {
-      background: var(--panel);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--card-shadow);
-      padding: 32px 40px 28px;
-    }
-
-    .panel-title {
-      font-size: 32px;
-      font-weight: 800;
-    }
-
-    .panel-sub {
-      margin-top: 6px;
-      font-size: 14px;
-      color: var(--text-sub);
-    }
-
-    .filter-group {
-      margin-top: 24px;
-    }
-
-    .filter-label {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
-    .chip-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .chip {
-      padding: 6px 12px;
-      font-size: 13px;
-      border-radius: 999px;
-      border: 1px solid #e3d3d8;
-      background: #ffffff;
-      color: #444;
-      cursor: pointer;
-      transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
-    }
-
-    .chip--active {
-      background: #e4e4e4;
-      color: #333;
-      box-shadow: inset 0 0 0 1px #d0c5c8;
-    }
-
-    .filter-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-      margin-top: 24px;
-    }
-
-    .btn {
-      padding: 8px 20px;
-      font-size: 14px;
-      border-radius: 999px;
-      border: none;
-      cursor: pointer;
-    }
-
-    .btn-outline {
-      background: transparent;
-      border: 1px solid #e6b9c5;
-      color: #e5889d;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #f2a2b7, #e77a96);
-      color: #ffffff;
-      box-shadow: 0 14px 30px rgba(231,122,150,0.35);
-    }
-
-    /* -------- LET'S DECIDE -------- */
-    .decide-shell {
-      background: var(--panel);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--card-shadow);
-      padding: 32px 40px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 32px;
-    }
-
-    .decide-plate {
-      width: 260px;
-      height: 260px;
-      border-radius: 50%;
-      border: 6px solid #f4c7d4;
-      background: #ffffff;
-      box-shadow: 0 18px 36px rgba(0,0,0,0.18);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    .decide-plate img {
-      width: 90%;
-      object-fit: contain;
-    }
-
-    .decide-text-title {
-      font-size: 36px;
-      font-weight: 800;
-      margin-bottom: 12px;
-    }
-
-    .decide-note {
-      font-size: 13px;
-      color: var(--text-sub);
-      margin-bottom: 16px;
-    }
-
-    /* -------- RESULT PAGE -------- */
-    .result-shell {
-      background: var(--panel);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--card-shadow);
-      padding: 24px 24px 32px;
-    }
-
-    .result-title {
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 16px;
-    }
-
-    .carousel {
-      margin-top: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-    }
-
-    .carousel-track {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 16px;
-      overflow: visible;
-      min-height: 240px;
-      padding: 20px 0;
-    }
-
-    .carousel-arrow {
-      width: 32px;
-      height: 32px;
-      border-radius: 999px;
-      border: none;
-      background: #fbe2ea;
-      color: #e07793;
-      font-size: 18px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .carousel-arrow:disabled {
-      opacity: 0.35;
-      cursor: default;
-    }
-
-    /* Result 下方的詳細資訊區塊 */
-    .result-details-grid {
-      display: flex;
-      gap: 20px;
-      margin-top: 32px;
-      padding-top: 24px;
-      border-top: 2px dashed #fceef3;
-    }
-
-    .detail-box {
-      flex: 1;
-      background: #ffffff;
-      border: 2px solid #f2a2b7;
-      border-radius: 24px;
-      padding: 24px;
-      box-shadow: 0 8px 20px rgba(242, 162, 183, 0.15);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .detail-title {
-      font-size: 20px;
-      font-weight: 800;
-      color: #e97a96;
-      margin-bottom: 12px;
-      text-align: center;
-    }
-
-    .detail-content {
-      font-size: 15px;
-      color: #555;
-      line-height: 1.8;
-    }
-
-    .detail-row {
-      display: flex;
-      margin-bottom: 8px;
-    }
-    .detail-label {
-      font-weight: 700;
-      color: #dd7692;
-      width: 60px;
-      flex-shrink: 0;
-    }
-
-    .map-frame {
-      width: 100%;
-      height: 200px;
-      border: none;
-      border-radius: 12px;
-      margin-top: 8px;
-    }
-
-    .btn-map-go {
-      margin-top: 12px;
-      background: #f2a2b7;
-      color: #fff;
-      border: none;
-      border-radius: 99px;
-      padding: 8px 20px;
-      font-size: 14px;
-      cursor: pointer;
-      text-align: center;
-      text-decoration: none;
-      display: block;
-      width: 100%;
-    }
-    .btn-map-go:hover {
-      background: #e97a96;
-    }
-
-    /* -------- CARD 共用 -------- */
-    .card {
-      min-width: 260px;
-      max-width: 280px;
-      background: #ffffff;
-      border-radius: var(--radius-lg);
-      box-shadow: 0 12px 26px rgba(0,0,0,0.16);
-      padding: 16px 16px 14px;
-      flex-shrink: 0;
-      transition: transform 0.3s;
-    }
-
-    .card-img-shell {
-      width: 100%;
-      height: 120px;
-      border-radius: 12px;
-      overflow: hidden;
-      margin-bottom: 12px;
-    }
-
-    .card--main {
-      transform: scale(1.06);
-      border: 2px solid #f2a2b7;
-      z-index: 5;
-    }
-
-    .card--side {
-      transform: scale(0.94);
-      opacity: 0.8;
-      cursor: pointer;
-    }
-    
-    .card-img-shell img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-
-    .card-title {
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    .card-sub {
-      font-size: 12px;
-      color: var(--text-sub);
-      margin-bottom: 4px;
-    }
-
-    .badge {
-      padding: 2px 8px;
-      border-radius: 999px;
-      background: #fbf0f4;
-      font-size: 11px;
-      color: #e07793;
-    }
-
-    /* 【修改重點】讓 Favorite 按鈕滿版 */
-    .card-actions {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .btn-heart {
-      flex: 1;
-      border-radius: 999px;
-      border: 1px solid #f3c2ce;
-      background: #fff;
-      font-size: 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      padding: 6px 0; /* 確保按鈕有點高度 */
-    }
-
-    /* 移除了 .btn-detail 樣式 */
-
-    /* -------- RESTAURANT LIST（橫向滑動） -------- */
-    .list-shell {
-      background: var(--panel);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--card-shadow);
-      padding: 24px 24px 18px;
-    }
-
-    .list-row {
-      display: flex;
-      gap: 16px;
-      overflow-x: auto;
-      padding-bottom: 8px;
-    }
-
-    .list-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .list-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .list-action-btn {
-      border: none;
-      background: #fbe2ea;
-      color: #e07793;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .list-filter-panel {
-      display: none; /* 預設隱藏 */
-      padding: 16px 0;
-      border-top: 1px solid #fbe2ea;
-      margin-top: 16px;
-    }
-
-    /* -------- FAVORITES -------- */
-    .fav-shell {
-      background: var(--panel);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--card-shadow);
-      padding: 32px 40px;
-    }
-
-    .fav-list {
-      margin-top: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .fav-item {
-      background: #ffffff;
-      border-radius: 999px;
-      padding: 10px 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.08);
-      font-size: 14px;
-    }
-    
-    .fav-item-info {
-      flex-grow: 1;
-    }
-
-    .fav-item-name {
-      font-weight: 600;
-    }
-
-    .fav-item-address {
-      display: block;
-      font-size: 12px;
-      color: var(--text-sub);
-      margin-top: 2px;
-    }
-
-    .fav-item-actions {
-      display: flex;
-      gap: 8px;
-      padding-left: 16px;
-    }
-
-    .fav-btn {
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      font-size: 18px;
-      padding: 4px;
-    }
-
-    .fav-btn img {
-      width: 20px;
-      height: 20px;
-      vertical-align: middle;
-    }
-
-    /* -------- RWD -------- */
-    @media (max-width: 800px) {
-      .hero,
-      .decide-shell {
-        flex-direction: column;
-        padding: 40px 24px;
-      }
-      .hero-plate {
-        width: 200px;
-        height: 200px;
-      }
-      .nav-pill {
-        gap: 20px;
-        padding-inline: 18px;
-      }
-      .nav-shell {
-        margin-bottom: 20px;
-      }
-      /* 詳細資訊 RWD */
-      .result-details-grid {
-        flex-direction: column;
-      }
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="images/logo_thumbnail.png" />
+    <title>What2Eat — 美食轉盤推薦平臺</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+        :root {
+            --bg: #ffeef3;
+            --panel: #fff7fa;
+            --nav-pill: #ffeef3;
+            --primary: #111827;
+            --pink: #f2a2b7;
+            --pink-deep: #e97a96;
+            --text-sub: #7b7b7b;
+            --card-shadow: 0 12px 30px rgba(0,0,0,0.08);
+            --radius-xl: 24px;
+            --radius-lg: 18px;
+            --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: var(--font-sans);
+            background: var(--bg);
+            color: var(--primary);
+            overflow-x: hidden;
+        }
+
+        .app {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 24px 16px 40px;
+            position: relative;
+        }
+
+        /* -------- NAV -------- */
+        .nav-shell {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 32px;
+            position: relative;
+            z-index: 20;
+        }
+
+        .nav-pill {
+            background: var(--nav-pill);
+            border-radius: 999px;
+            box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+            padding: 12px 32px;
+            display: flex;
+            gap: 40px;
+        }
+
+        .nav-link {
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            color: #dd7692;
+            cursor: pointer;
+            position: relative;
+            padding: 4px 0;
+            transition: transform 0.15s ease, text-shadow 0.15s ease;
+        }
+
+        .nav-link:hover {
+            transform: scale(1.05);
+            text-shadow: 0 0 6px rgba(255,255,255,0.8);
+        }
+
+        .nav-link.active::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: -4px;
+            width: 60%;
+            height: 2px;
+            border-radius: 999px;
+            background: #e7889e;
+        }
+
+        /* -------- PAGE 共用 -------- */
+        .page {
+            display: none;
+            margin-top: 12px;
+        }
+        .page--active {
+            display: block;
+        }
+
+        .btn-back {
+            margin-top: 16px;
+            padding: 6px 14px;
+            font-size: 12px;
+            border-radius: 999px;
+            border: 1px solid #e6b9c5;
+            background: #fff;
+            color: #e5889d;
+            cursor: pointer;
+        }
+
+        /* -------- HOME / HERO -------- */
+        .hero {
+            position: relative;
+            background: rgba(255, 247, 250, 0.3); 
+            backdrop-filter: none; 
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02);
+            border-radius: var(--radius-xl);
+            padding: 60px 40px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            gap: 40px;
+        }
+
+        .hero-text-main {
+            font-size: 40px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: #2c181d; 
+            -webkit-text-stroke: 1.5px #ffffff;
+            text-shadow: 
+                3px 0 0 #fff, -3px 0 0 #fff, 0 3px 0 #fff, 0 -3px 0 #fff,
+                2px 2px 0 #fff, -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff;
+        }
+
+        .hero-plate {
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 18px 36px rgba(0,0,0,0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .hero-sub {
+            font-size: 14px;
+            color: var(--text-sub);
+            text-shadow: 0 0 4px rgba(255,255,255,0.8);
+        }
+
+        .hero-cta {
+            margin-top: 20px;
+        }
+
+        .btn-primary-lg {
+            padding: 10px 26px;
+            border-radius: 999px;
+            border: none;
+            background: linear-gradient(135deg, #f2a2b7, #e77a96);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 14px 30px rgba(231,122,150,0.35);
+        }
+        
+        /* -------- 首頁背景動畫 -------- */
+        #home {
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--radius-xl);
+        }
+
+        .hero-bg-animation {
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            right: -50px;
+            bottom: -50px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 16px;
+            padding: 24px;
+            z-index: 5; 
+            pointer-events: none;
+        }
+
+        .bg-dot-container {
+            width: 100px;
+            height: 100px;
+            perspective: 1000px;
+            margin: auto;
+        }
+
+        .bg-dot {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+
+        .bg-dot.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        .bg-dot-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bg-dot-front {
+            background-color: rgba(255, 255, 255, 0.55);
+            border: 2px solid rgba(242, 162, 183, 0.25);
+        }
+
+        .bg-dot-back {
+            background-color: #fff;
+            transform: rotateY(180deg);
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* -------- ABOUT -------- */
+        .about {
+            background: var(--panel);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--card-shadow);
+            padding: 32px 40px;
+        }
+
+        .about-title {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            text-align: left;
+        }
+        
+        .about-desc {
+            font-size: 15px; 
+            color: var(--text-sub); 
+            max-width: 100%; 
+            line-height: 1.8; 
+            text-align: justify; 
+            margin: 0 auto 20px; 
+        }
+
+        .team-section-title {
+            margin-top: 32px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #dd7692;
+            text-align: center;
+        }
+
+        .about-plates {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .member-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .about-plate {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 12px 26px rgba(0,0,0,0.16);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.16s ease, box-shadow 0.16s ease;
+            overflow: hidden;
+        }
+
+        .about-plate img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .about-plate:hover {
+            transform: scale(1.06);
+            box-shadow: 0 16px 34px rgba(0,0,0,0.2);
+        }
+
+        .member-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        /* -------- FILTERS -------- */
+        .panel {
+            background: var(--panel);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--card-shadow);
+            padding: 32px 40px 28px;
+        }
+
+        .panel-title {
+            font-size: 32px;
+            font-weight: 800;
+        }
+
+        .panel-sub {
+            margin-top: 6px;
+            font-size: 14px;
+            color: var(--text-sub);
+        }
+
+        .filter-group {
+            margin-top: 24px;
+        }
+
+        .filter-label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .chip {
+            padding: 6px 12px;
+            font-size: 13px;
+            border-radius: 999px;
+            border: 1px solid #e3d3d8;
+            background: #ffffff;
+            color: #444;
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .chip--active {
+            background: #e4e4e4;
+            color: #333;
+            box-shadow: inset 0 0 0 1px #d0c5c8;
+        }
+
+        .filter-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            font-size: 14px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #e6b9c5;
+            color: #e5889d;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f2a2b7, #e77a96);
+            color: #ffffff;
+            box-shadow: 0 14px 30px rgba(231,122,150,0.35);
+        }
+
+        /* -------- LET'S DECIDE -------- */
+        .decide-shell {
+            background: var(--panel);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--card-shadow);
+            padding: 32px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 32px;
+        }
+
+        .decide-plate {
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            border: 6px solid #f4c7d4;
+            background: #ffffff;
+            box-shadow: 0 18px 36px rgba(0,0,0,0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .decide-plate img {
+            width: 90%;
+            object-fit: contain;
+        }
+
+        .decide-text-title {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .decide-note {
+            font-size: 13px;
+            color: var(--text-sub);
+            margin-bottom: 16px;
+        }
+
+        /* -------- RESULT PAGE -------- */
+        .result-shell {
+            background: var(--panel);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--card-shadow);
+            padding: 24px 24px 32px;
+        }
+
+        .result-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .carousel {
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .carousel-track {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            overflow: visible;
+            min-height: 240px;
+            padding: 20px 0;
+        }
+
+        .carousel-arrow {
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            border: none;
+            background: #fbe2ea;
+            color: #e07793;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel-arrow:disabled {
+            opacity: 0.35;
+            cursor: default;
+        }
+
+        /* Result 下方的詳細資訊區塊 */
+        .result-details-grid {
+            display: flex;
+            gap: 20px;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 2px dashed #fceef3;
+        }
+
+        .detail-box {
+            flex: 1;
+            background: #ffffff;
+            border: 2px solid #f2a2b7;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 8px 20px rgba(242, 162, 183, 0.15);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .detail-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #e97a96;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .detail-content {
+            font-size: 15px;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 8px;
+        }
+        .detail-label {
+            font-weight: 700;
+            color: #dd7692;
+            width: 60px;
+            flex-shrink: 0;
+        }
+
+        .map-frame {
+            width: 100%;
+            height: 200px;
+            border: none;
+            border-radius: 12px;
+            margin-top: 8px;
+        }
+
+        .btn-map-go {
+            margin-top: 12px;
+            background: #f2a2b7;
+            color: #fff;
+            border: none;
+            border-radius: 99px;
+            padding: 8px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+        }
+        .btn-map-go:hover {
+            background: #e97a96;
+        }
+
+        /* -------- CARD 共用 -------- */
+        .card {
+            min-width: 260px;
+            max-width: 280px;
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 12px 26px rgba(0,0,0,0.16);
+            padding: 16px 16px 14px;
+            flex-shrink: 0;
+            transition: transform 0.3s;
+        }
+
+        .card-img-shell {
+            width: 100%;
+            height: 120px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .card--main {
+            transform: scale(1.06);
+            border: 2px solid #f2a2b7;
+            z-index: 5;
+        }
+
+        .card--side {
+            transform: scale(0.94);
+            opacity: 0.8;
+            cursor: pointer;
+        }
+        
+        .card-img-shell img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .card-sub {
+            font-size: 12px;
+            color: var(--text-sub);
+            margin-bottom: 4px;
+        }
+
+        .badge {
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #fbf0f4;
+            font-size: 11px;
+            color: #e07793;
+        }
+
+        /* 【修改重點】讓 Favorite 按鈕滿版 */
+        .card-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-heart {
+            flex: 1;
+            border-radius: 999px;
+            border: 1px solid #f3c2ce;
+            background: #fff;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 6px 0; /* 確保按鈕有點高度 */
+        }
+
+        /* 移除了 .btn-detail 樣式 */
+
+        /* -------- RESTAURANT LIST（橫向滑動） -------- */
+        .list-shell {
+            background: var(--panel);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--card-shadow);
+            padding: 24px 24px 18px;
+        }
+
+        .list-row {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .list-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .list-action-btn {
+            border: none;
+            background: #fbe2ea;
+            color: #e07793;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .list-filter-panel {
+            display: none; /* 預設隱藏 */
+            padding: 16px 0;
+            border-top: 1px solid #fbe2ea;
+            margin-top: 16px;
+        }
+
+        /* -------- FAVORITES -------- */
+        .fav-shell {
+            background: var(--panel);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--card-shadow);
+            padding: 32px 40px;
+        }
+
+        .fav-list {
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .fav-item {
+            background: #ffffff;
+            border-radius: 999px;
+            padding: 10px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+            font-size: 14px;
+        }
+        
+        .fav-item-info {
+            flex-grow: 1;
+        }
+
+        .fav-item-name {
+            font-weight: 600;
+        }
+
+        .fav-item-address {
+            display: block;
+            font-size: 12px;
+            color: var(--text-sub);
+            margin-top: 2px;
+        }
+
+        .fav-item-actions {
+            display: flex;
+            gap: 8px;
+            padding-left: 16px;
+        }
+
+        .fav-btn {
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px;
+        }
+
+        .fav-btn img {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+        }
+
+        /* -------- RWD -------- */
+        @media (max-width: 800px) {
+            .hero,
+            .decide-shell {
+                flex-direction: column;
+                padding: 40px 24px;
+            }
+            .hero-plate {
+                width: 200px;
+                height: 200px;
+            }
+            .nav-pill {
+                gap: 20px;
+                padding-inline: 18px;
+            }
+            .nav-shell {
+                margin-bottom: 20px;
+            }
+            /* 詳細資訊 RWD */
+            .result-details-grid {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="app">
-    <div class="nav-shell">
-      <div class="nav-pill">
-        <button class="nav-link" data-page="filters">Decide Now</button>
-        <button class="nav-link" data-page="favorites">Favorites</button>
-        <button class="nav-link" data-page="list">Restaurant List</button>
-        <button class="nav-link" data-page="about">Contact us</button>
-      </div>
+    <div class="app">
+        <div class="nav-shell">
+            <div class="nav-pill">
+                <button class="nav-link active" data-page="home">Home</button> <button class="nav-link" data-page="filters">Decide Now</button>
+                <button class="nav-link" data-page="favorites">Favorites</button>
+                <button class="nav-link" data-page="list">Restaurant List</button>
+                <button class="nav-link" data-page="about">Contact us</button>
+            </div>
+        </div>
+
+        <section id="home" class="page page--active">
+            <div class="hero-bg-animation" id="heroBgAnimation"></div>
+
+            <div class="hero">
+                <div class="hero-plate">
+                    <img src="images/plateicon.png" alt="What2EAT Logo" style="width: 80%; height: auto;">
+                </div>
+                <div>
+                    <div class="hero-text-main">What2EAT</div>
+                    <div class="hero-sub">選擇困難症的福音 ☺</div>
+                    <div class="hero-cta">
+                        <button class="btn-primary-lg" id="heroDecide">Decide Now</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="page">
+            <div class="about">
+                <div class="about-title">About What2EAT</div>
+                <p class="about-desc">
+                    專為台北大學學生打造的美食決策助手。我們整合了三峽校區周邊（正門、後門、側門）的各類餐廳資訊，
+                    透過直覺的篩選與趣味的隨機抽籤動畫，解決每日最讓人頭痛的「午餐吃什麼」難題。
+                    這是一個由學生自發開發的專案，旨在讓校園生活更便利、更有趣。
+                </p>
+
+                <div class="team-section-title">Meet the Team</div>
+                <div class="about-plates">
+                    <div class="member-item">
+                        <div class="about-plate">
+                            <img src="images/plateicon.png" alt="黃雨涵"> 
+                        </div>
+                        <div class="member-name">黃雨涵</div>
+                    </div>
+                    <div class="member-item">
+                        <div class="about-plate">
+                            <img src="images/至真.png" alt="劉至真">
+                        </div>
+                        <div class="member-name">劉至真</div>
+                    </div>
+                    <div class="member-item">
+                        <div class="about-plate">
+                            <img src="images/廖苡媃.png" alt="廖苡媃">
+                        </div>
+                        <div class="member-name">廖苡媃</div>
+                    </div>
+                </div>
+
+                <button class="btn-back" data-back>Back</button>
+            </div>
+        </section>
+
+        <section id="filters" class="page">
+            <div class="panel">
+                <div class="panel-title">Filters</div>
+                <div class="panel-sub">篩選你的偏好（類型 / 價位 / 區域）</div>
+
+                <div class="filter-group">
+                    <div class="filter-label">餐廳類型：</div>
+                    <div class="chip-row">
+                        <button class="chip chip-toggle" data-group="tag" data-value="">All</button>
+                        <button class="chip chip-toggle" data-group="tag" data-value="中式">中式</button>
+                        <button class="chip chip-toggle" data-group="tag" data-value="日式">日式</button>
+                        <button class="chip chip-toggle" data-group="tag" data-value="韓式">韓式</button>
+                        <button class="chip chip-toggle" data-group="tag" data-value="泰式">泰式</button>
+                        <button class="chip chip-toggle" data-group="tag" data-value="西式">西式</button>
+                        <button class="chip chip-toggle" data-group="tag" data-value="義式">義式</button>
+                        <button class="chip chip-toggle" data-group="tag" data-value="火鍋">火鍋</button>
+                        <button class="chip chip-toggle" data-group="tag" data-value="健康餐">健康餐</button>
+                        <button class="chip chip-toggle" data-group="tag" data-value="麵食">麵食</button>
+                        <button class="chip chip-toggle" data-group="tag" data-value="飯食">飯食</button>
+                        <button class="chip chip-toggle" data-group="tag" data-value="甜點">甜點</button>
+                        <button class="chip chip-toggle" data-group="tag" data-value="飲料">飲料</button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <div class="filter-label">價格範圍：</div>
+                    <div class="chip-row">
+                        <button class="chip chip-toggle" data-group="price" data-value="$1-200">1～200元</button>
+                        <button class="chip chip-toggle" data-group="price" data-value="$200-400">200～400元</button>
+                        <button class="chip chip-toggle" data-group="price" data-value="$400-600">400～600元</button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <div class="filter-label">校門區域：</div>
+                    <div class="chip-row">
+                        <button class="chip chip-toggle" data-group="area" data-value="">不限</button>
+                        <button class="chip chip-toggle" data-group="area" data-value="正門">正門</button>
+                        <button class="chip chip-toggle" data-group="area" data-value="後門">後門</button>
+                        <button class="chip chip-toggle" data-group="area" data-value="側門">側門</button>
+                    </div>
+                </div>
+
+                <div class="filter-actions">
+                    <button class="btn btn-outline" id="btnReset">Reset</button>
+                    <button class="btn btn-primary" id="btnApply">Apply Filters</button>
+                </div>
+
+                <button class="btn-back" data-back>Back</button>
+            </div>
+        </section>
+
+        <section id="decide" class="page">
+            <div class="decide-shell">
+                <div class="decide-plate">
+                    <img id="spaghettiImg" src="images/spaicon1.png" alt="pasta">
+                </div>
+                <div>
+                    <div class="decide-text-title">Let's Decide!</div>
+                    <div class="decide-note" id="decideNote">
+                        根據你的 Filters，幫你從候選餐廳中抽出一間主推薦，再加幾家備用選擇。
+                    </div>
+                    <button class="btn btn-primary" id="btnStart">Start</button>
+                    <button class="btn-back" data-back>Back</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="result" class="page">
+            <div class="result-shell">
+                <div class="result-title">今天吃這家吧！</div>
+
+                <div class="carousel">
+                    <button class="carousel-arrow" id="btnPrev">‹</button>
+                    <div class="carousel-track" id="resultTrack">
+                    </div>
+                    <button class="carousel-arrow" id="btnNext">›</button>
+                </div>
+
+                <div class="result-details-grid">
+                    <div class="detail-box detail-box-left">
+                        <div class="detail-title">Details</div>
+                        <div class="detail-content" id="resDetailContent">
+                        </div>
+                    </div>
+                    <div class="detail-box detail-box-right">
+                        <div class="detail-title">Map</div>
+                        <iframe id="resMapFrame" class="map-frame" loading="lazy" allowfullscreen></iframe>
+                        <a id="resMapLink" href="#" target="_blank" class="btn-map-go">前往 Google Maps</a>
+                    </div>
+                </div>
+
+                <button class="btn-back" data-back>Back</button>
+            </div>
+        </section>
+
+        <section id="list" class="page">
+            <div class="list-shell">
+                <div class="list-header">
+                    <div>
+                        <div class="result-title">Restaurant List</div>
+                        <p style="font-size:12px;color:var(--text-sub);">可以左右滑動查看所有餐廳。</p>
+                    </div>
+                    <div class="list-actions">
+                        <button class="list-action-btn" id="listClearBtn" title="清除篩選"><img src="images/clear-alt.png" alt="Clear" style="width:16px"></button>
+                        <button class="list-action-btn" id="listFilterBtn" title="篩選列表"><img src="images/filter.png" alt="Filter" style="width:16px"></button>
+                    </div>
+                </div>
+
+                <div id="listFilterPanel" class="list-filter-panel"></div>
+
+                <div class="list-row" id="listRow">
+                </div>
+
+                <button class="btn-back" data-back>Back</button>
+            </div>
+        </section>
+
+        <section id="favorites" class="page">
+            <div class="fav-shell">
+                <div class="result-title">Favorite Restaurants</div>
+                <p style="font-size:13px;color:var(--text-sub);">
+                    你按下 ♥ Favorite 的餐廳會出現在這裡（儲存在瀏覽器 localStorage）。
+                </p>
+                <div class="fav-list" id="favList"></div>
+
+                <button class="btn-back" data-back>Back</button>
+            </div>
+        </section>
     </div>
 
-    <section id="home" class="page page--active">
-      <div class="hero-bg-animation" id="heroBgAnimation"></div>
+    <script>
+        /* --- 完整餐廳資料集 (已替換為您提供的 71 筆資料) --- */
+        const RESTAURANTS = [
+            // 甜點/飲料/點心 (Sweet/Drink/Dessert)
+            { name: "焦香味甜甜圈專賣店", address: "新北市三峽區大觀路12-5號1樓", price: "$1-200", rating: "4.9", reviews: "107", tag: "甜點", area: "正門", image: "images/coffeeicon.png" },
+            { name: "Yukimasa。一碗幸福好滋味", address: "新北市三峽區大德路135號號1樓", price: "$1-200", rating: "4.7", reviews: "289", tag: "甜點", area: "正門", image: "images/coffeeicon.png" },
+            { name: "點22 港式點心專賣店", address: "新北市三峽區民生街102號", price: "$1-200", rating: "4.4", reviews: "994", tag: "甜點", area: "後門", image: "images/coffeeicon.png" },
+            { name: "愛沐芋芋頭芋圓仙草凍專賣店", address: "新北市三峽區和平街103號", price: "$1-200", rating: "4.5", reviews: "180", tag: "甜點", area: "後門", image: "images/coffeeicon.png" },
+            { name: "糖匠秝果", address: "新北市三峽區國際一街70-1號", price: "$1-200", rating: "4.6", reviews: "139", tag: "甜點", area: "側門", image: "images/coffeeicon.png" },
+            { name: "阿玉姐水果飴", address: "新北市三峽區民權街68號", price: "$1-200", rating: "4.5", reviews: "33", tag: "甜點", area: "後門", image: "images/coffeeicon.png" },
+            { name: "小林甜湯", address: "新北市三峽區國際一街52號", price: "$1-200", rating: "4.4", reviews: "108", tag: "甜點", area: "側門", image: "images/coffeeicon.png" },
+            { name: "北投紅茶", address: "新北市三峽區國學街32號", price: "$1-200", rating: "3.3", reviews: "44", tag: "飲料", area: "側門", image: "images/coffeeicon.png" },
+            { name: "再睡5分鐘", address: "新北市三峽區和平街107號之1", price: "$1-200", rating: "4.8", reviews: "160", tag: "飲料", area: "後門", image: "images/coffeeicon.png" },
+            { name: "珍煮丹", address: "新北市三峽區大學路145號", price: "$1-200", rating: "3.8", reviews: "267", tag: "飲料", area: "正門", image: "images/coffeeicon.png" },
+            { name: "麻古茶坊", address: "新北市三峽區國際一街30號", price: "$1-200", rating: "3.6", reviews: "260", tag: "飲料", area: "正門", image: "images/coffeeicon.png" },
+            { name: "愛沐芋芋頭芋圓仙草凍專賣店", address: "新北市三峽區和平街103號", price: "$1-200", rating: "4.5", reviews: "180", tag: "飲料", area: "後門", image: "images/coffeeicon.png" },
+            { name: "果滋味綜合飲料店", address: "新北市三峽區大德路39號1樓", price: "$1-200", rating: "4.9", reviews: "29", tag: "飲料", area: "正門", image: "images/coffeeicon.png" },
+            { name: "可不可熟成紅茶店", address: "新北市三峽區學成路229號", price: "$1-200", rating: "3.8", reviews: "250", tag: "飲料", area: "正門", image: "images/coffeeicon.png" },
+            { name: "無飲國學店", address: "新北市三峽區國學街5號", price: "$1-200", rating: "4.0", reviews: "59", tag: "飲料", area: "側門", image: "images/coffeeicon.png" },
+            { name: "清心福全", address: "新北市三峽區國際一街36號", price: "$1-200", rating: "4.8", reviews: "165", tag: "飲料", area: "側門", image: "images/coffeeicon.png" },
+            { name: "50嵐", address: "新北市三峽區大學路129號1樓", price: "$1-200", rating: "4.0", reviews: "180", tag: "飲料", area: "正門", image: "images/coffeeicon.png" },
+            { name: "五桐號WooTEA", address: "新北市三峽區國學街39號", price: "$1-200", rating: "3.3", reviews: "103", tag: "飲料", area: "側門", image: "images/coffeeicon.png" },
+            { name: "CoCo都可", address: "新北市三峽區大學路143號", price: "$1-200", rating: "3.2", reviews: "111", tag: "飲料", area: "正門", image: "images/coffeeicon.png" },
+            { name: "迷客夏Milksha", address: "新北市三峽區國際二街33號1樓", price: "$1-200", rating: "3.5", reviews: "363", tag: "飲料", area: "側門", image: "images/coffeeicon.png" },
+            { name: "泡泡龍", address: "新北市三峽區民生街171號", price: "$1-200", rating: "4.0", reviews: "130", tag: "飲料", area: "後門", image: "images/coffeeicon.png" },
 
-      <div class="hero">
-        <div class="hero-plate">
-          <img src="images/plateicon.png" alt="What2EAT Logo" style="width: 80%; height: auto;">
-        </div>
-        <div>
-          <div class="hero-text-main">What2EAT</div>
-          <div class="hero-sub">選擇困難症的福音 ☺</div>
-          <div class="hero-cta">
-            <button class="btn-primary-lg" id="heroDecide">Decide Now</button>
-          </div>
-        </div>
-      </div>
-    </section>
+            // 日式/韓式/泰式 (Japanese/Korean/Thai)
+            { name: "鳥鳴子雞白湯ラーメン", address: "新北市三峽區國際一街33號", price: "$200-400", rating: "4.4", reviews: "280", tag: "日式", area: "側門", image: "images/susiicon.png" },
+            { name: "三禾手打烏龍麵", address: "新北市三峽區大德路109號", price: "$200-400", rating: "4.0", reviews: "957", tag: "日式", area: "正門", image: "images/susiicon.png" },
+            { name: "私嚐の吃飯", address: "新北市樹林區學勤路322號", price: "$200-400", rating: "4.9", reviews: "1,762", tag: "日式", area: "正門", image: "images/susiicon.png" },
+            { name: "吉購吉", address: "新北市三峽區大德路222號", price: "$1-200", rating: "4.2", reviews: "571", tag: "日式", area: "正門", image: "images/susiicon.png" },
+            { name: "一燔歐姆蛋咖哩、炸雞", address: "新北市三峽區大德路151號", price: "$1-200", rating: "4.5", reviews: "406", tag: "日式", area: "正門", image: "images/susiicon.png" },
+            { name: "Miss Energy 能量小姐", address: "新北市三峽區學成路246號", price: "$1-200", rating: "4.4", reviews: "497", tag: "日式", area: "正門", image: "images/susiicon.png" },
+            { name: "蛋白盒子健康餐盒", address: "新北市三峽區國學街37號", price: "$1-200", rating: "3.7", reviews: "50", tag: "日式", area: "側門", image: "images/susiicon.png" },
+            { name: "京簡康", address: "新北市三峽區學成路250號", price: "$1-200", rating: "3.7", reviews: "177", tag: "日式", area: "正門", image: "images/susiicon.png" },
+            { name: "益柔廚房", address: "新北市三峽區學府路36號", price: "$200-400", rating: "4.4", reviews: "845", tag: "日式", area: "正門", image: "images/susiicon.png" },
+            { name: "くら寿司 藏壽司", address: "新北市三峽區學成路398號4樓", price: "$400-600", rating: "4.1", reviews: "1,999", tag: "日式", area: "正門", image: "images/susiicon.png" },
+            { name: "吃萬串燒專賣店", address: "新北市三峽區復興路112號", price: "$200-400", rating: "4.7", reviews: "292", tag: "日式", area: "後門", image: "images/susiicon.png" },
+            { name: "豚將拉麵", address: "新北市三峽區文化路228號", price: "$1-200", rating: "4.0", reviews: "442", tag: "日式", area: "後門", image: "images/susiicon.png" },
+            { name: "旭飛酒場居酒屋", address: "新北市三峽區學成路287號", price: "$400-600", rating: "4.3", reviews: "312", tag: "日式", area: "正門", image: "images/susiicon.png" },
+            { name: "師傅很忙平價鐵板燒", address: "新北市三峽區國際一街3號", price: "$200-400", rating: "3.4", reviews: "482", tag: "日式", area: "正門", image: "images/susiicon.png" },
+            { name: "大埔鐵板燒", address: "新北市三峽區大學路116號", price: "$200-400", rating: "3.7", reviews: "936", tag: "日式", area: "正門", image: "images/susiicon.png" },
+            { name: "鬼匠拉麵", address: "新北市三峽區大學路141號", price: "$1-200", rating: "4.0", reviews: "56", tag: "日式", area: "正門", image: "images/susiicon.png" },
+            { name: "大雄料理店", address: "新北市三峽區國學街51號", price: "$1-200", rating: "3.8", reviews: "489", tag: "日式", area: "側門", image: "images/susiicon.png" },
+            { name: "すき家Sukiya", address: "新北市三峽區大學路150號", price: "$1-200", rating: "3.7", reviews: "1,307", tag: "日式", area: "正門", image: "images/susiicon.png" },
+            { name: "赤田屋咖哩飯", address: "新北市三峽區大學路141號", price: "$1-200", rating: "4.1", reviews: "55", tag: "日式", area: "正門", image: "images/susiicon.png" },
+            { name: "肉享家 Niku Bliss", address: "新北市三峽區國際一街39號", price: "$200-400", rating: "3.9", reviews: "96", tag: "日式", area: "側門", image: "images/susiicon.png" },
 
-    <section id="about" class="page">
-      <div class="about">
-        <div class="about-title">About What2EAT</div>
-        <p class="about-desc">
-          專為台北大學學生打造的美食決策助手。我們整合了三峽校區周邊（正門、後門、側門）的各類餐廳資訊，
-          透過直覺的篩選與趣味的隨機抽籤動畫，解決每日最讓人頭痛的「午餐吃什麼」難題。
-          這是一個由學生自發開發的專案，旨在讓校園生活更便利、更有趣。
-        </p>
+            { name: "韓讚", address: "新北市三峽區國際一街47號", price: "$1-200", rating: "3.6", reviews: "743", tag: "韓式", area: "側門", image: "images/koreanicon.png" },
+            { name: "Miss Energy 能量小姐", address: "新北市三峽區學成路246號", price: "$1-200", rating: "4.4", reviews: "497", tag: "韓式", area: "正門", image: "images/koreanicon.png" },
+            { name: "益柔廚房", address: "新北市三峽區學府路36號", price: "$200-400", rating: "4.4", reviews: "845", tag: "韓式", area: "正門", image: "images/koreanicon.png" },
 
-        <div class="team-section-title">Meet the Team</div>
-        <div class="about-plates">
-          <div class="member-item">
-            <div class="about-plate">
-              <img src="images/plateicon.png" alt="黃雨涵"> 
-            </div>
-            <div class="member-name">黃雨涵</div>
-          </div>
-          <div class="member-item">
-            <div class="about-plate">
-              <img src="images/至真.png" alt="劉至真">
-            </div>
-            <div class="member-name">劉至真</div>
-          </div>
-          <div class="member-item">
-            <div class="about-plate">
-              <img src="images/廖苡媃.png" alt="廖苡媃">
-            </div>
-            <div class="member-name">廖苡媃</div>
-          </div>
-        </div>
+            { name: "強尼兄弟健康廚房", address: "新北市三峽區大觀路115號1樓", price: "$1-200", rating: "4.3", reviews: "857", tag: "泰式", area: "正門", image: "images/thaicon.png" },
+            { name: "泰貳泰式風味料理", address: "新北市三峽區大觀路96之1號", price: "$200-400", rating: "4.7", reviews: "1,185", tag: "泰式", area: "正門", image: "images/thaicon.png" },
 
-        <button class="btn-back" data-back>Back</button>
-      </div>
-    </section>
+            // 中式/飯食/麵食/水餃 (Chinese/Noodle/Rice/Dumpling)
+            { name: "蘇記水餃", address: "新北市三峽區和平街97號", price: "$1-200", rating: "4.1", reviews: "919", tag: "中式", area: "後門", image: "images/noodleicon.png" },
+            { name: "樂廚房 牛肉麵", address: "新北市三峽區大觀路116號", price: "$1-200", rating: "4.3", reviews: "242", tag: "中式", area: "正門", image: "images/noodleicon.png" },
+            { name: "木子李", address: "新北市三峽區中山路42號", price: "$200-400", rating: "4.4", reviews: "323", tag: "中式", area: "後門", image: "images/riceicon.png" },
+            { name: "黑霸牛肉麵專賣店", address: "新北市三峽區大觀路27號", price: "$1-200", rating: "4.4", reviews: "1,027", tag: "中式", area: "正門", image: "images/noodleicon.png" },
+            { name: "就這味", address: "新北市三峽區大觀路30號", price: "$1-200", rating: "4.2", reviews: "366", tag: "中式", area: "正門", image: "images/noodleicon.png" },
+            { name: "三峽北大湘泊苑", address: "新北市三峽區國際一街43號", price: "$1-200", rating: "3.9", reviews: "232", tag: "中式", area: "側門", image: "images/noodleicon.png" },
+            { name: "向陽冬瓜肉飯", address: "新北市樹林區學成路532號", price: "$1-200", rating: "4.3", reviews: "564", tag: "中式", area: "正門", image: "images/riceicon.png" },
+            { name: "阿郎小吃", address: "新北市三峽區國學街16號", price: "$1-200", rating: "4.3", reviews: "54", tag: "中式", area: "側門", image: "images/riceicon.png" },
+            { name: "大億美食", address: "新北市三峽區國學街57號", price: "$1-200", rating: "3.4", reviews: "72", tag: "中式", area: "側門", image: "images/riceicon.png" },
+            { name: "元爵味 黃燜雞米飯", address: "新北市三峽區國際一街8號", price: "$200-400", rating: "4.8", reviews: "2,273", tag: "中式", area: "正門", image: "images/riceicon.png" },
+            { name: "誠意鵝肉", address: "新北市三峽區大觀路20號", price: "$1-200", rating: "3.9", reviews: "312", tag: "中式", area: "正門", image: "images/riceicon.png" },
+            { name: "吃萬串燒專賣店", address: "新北市三峽區復興路112號", price: "$200-400", rating: "4.7", reviews: "292", tag: "中式", area: "後門", image: "images/noodleicon.png" },
+            { name: "官小二酸菜魚", address: "新北市三峽區大德路206號", price: "$200-400", rating: "4.9", reviews: "1,677", tag: "中式", area: "正門", image: "images/noodleicon.png" },
+            { name: "大仁路小吃麵攤", address: "新北市三峽區大仁路35號", price: "$1-200", rating: "4.3", reviews: "328", tag: "中式", area: "後門", image: "images/noodleicon.png" },
+            { name: "雲南小院", address: "新北市三峽區國際一街33-1號", price: "$1-200", rating: "3.8", reviews: "25", tag: "中式", area: "側門", image: "images/noodleicon.png" },
+            { name: "周哥炒翻天", address: "新北市樹林區大成路331號1樓", price: "$1-200", rating: "4.4", reviews: "83", tag: "中式", area: "正門", image: "images/noodleicon.png" },
+            { name: "一品羊羊肉料理", address: "新北市三峽區和平街91-2號", price: "$1-200", rating: "4.1", reviews: "306", tag: "中式", area: "後門", image: "images/noodleicon.png" },
+            { name: "餃大人", address: "新北市三峽區國際一街27號2樓", price: "$1-200", rating: "4.2", reviews: "496", tag: "中式", area: "側門", image: "images/noodleicon.png" },
+            { name: "快樂懷舊排骨", address: "新北市三峽區國際二街13號", price: "$1-200", rating: "3.5", reviews: "75", tag: "中式", area: "側門", image: "images/riceicon.png" },
+            { name: "李記大腸蚵仔麵線", address: "新北市三峽區大觀路363號", price: "$1-200", rating: "3.3", reviews: "128", tag: "中式", area: "正門", image: "images/noodleicon.png" },
+            { name: "四海遊龍", address: "新北市三峽區大學路133號", price: "$1-200", rating: "2.8", reviews: "157", tag: "中式", area: "正門", image: "images/noodleicon.png" },
+            { name: "八方雲集鍋貼水餃專賣店", address: "新北市三峽區國際一街6號", price: "$1-200", rating: "2.9", reviews: "624", tag: "中式", area: "正門", image: "images/noodleicon.png" },
+            { name: "八方雲集", address: "新北市三峽區和平街66號", price: "$1-200", rating: "3.7", reviews: "352", tag: "中式", area: "後門", image: "images/noodleicon.png" },
+            { name: "武記鵝肉", address: "新北市三峽區中山路227號", price: "$1-200", rating: "4.2", reviews: "163", tag: "中式", area: "後門", image: "images/riceicon.png" },
+            { name: "三角鍋燒（煎餃）", address: "新北市三峽區民生街167號1樓", price: "$1-200", rating: "4.4", reviews: "263", tag: "中式", area: "後門", image: "images/noodleicon.png" },
+            { name: "古都燒肉飯", address: "新北市三峽區三樹路203號", price: "$1-200", rating: "4.2", reviews: "692", tag: "中式", area: "正門", image: "images/riceicon.png" },
+            { name: "台灣G湯", address: "新北市三峽區學成路231-1f號", price: "$200-400", rating: "3.9", reviews: "199", tag: "中式", area: "側門", image: "images/noodleicon.png" },
+            { name: "日生珍味", address: "新北市三峽區大仁路1號", price: "$1-200", rating: "3.9", reviews: "61", tag: "中式", area: "後門", image: "images/noodleicon.png" },
+            { name: "九品炒羊肉", address: "新北市三峽區大勇路24號", price: "$1-200", rating: "4.1", reviews: "169", tag: "中式", area: "後門", image: "images/noodleicon.png" },
+            { name: "大三元餃子館", address: "新北市三峽區大勇路1-3號", price: "$1-200", rating: "4.2", reviews: "485", tag: "中式", area: "後門", image: "images/noodleicon.png" },
+            { name: "忠將蔥抓餅", address: "新北市三峽區國學街8號", price: "$1-200", rating: "4.5", reviews: "50", tag: "中式", area: "側門", image: "images/noodleicon.png" },
+            { name: "在心蛋餅舖", address: "新北市三峽區國際一街21號", price: "$1-200", rating: "4.5", reviews: "532", tag: "中式", area: "側門", image: "images/noodleicon.png" },
+            { name: "峽客早午餐", address: "新北市三峽區國學街41號", price: "$1-200", rating: "4.0", reviews: "177", tag: "中式", area: "側門", image: "images/noodleicon.png" },
+            { name: "元氣早餐店", address: "新北市三峽區大觀路105號", price: "$1-200", rating: "4.3", reviews: "142", tag: "中式", area: "正門", image: "images/noodleicon.png" },
+            { name: "韓一美食館", address: "新北市三峽區國際二街3號", price: "$1-200", rating: "4.1", reviews: "200", tag: "中式", area: "正門", image: "images/noodleicon.png" },
+            { name: "粥大福", address: "新北市三峽區大德路196號", price: "$1-200", rating: "4.6", reviews: "389", tag: "中式", area: "正門", image: "images/riceicon.png" },
+            { name: "鬍鬚張魯肉飯", address: "新北市三峽區學成路250號", price: "$1-200", rating: "3.9", reviews: "1,056", tag: "中式", area: "側門", image: "images/riceicon.png" },
+            { name: "福記牛肉麵.豬軟骨飯", address: "新北市三峽區國際一街45號", price: "$1-200", rating: "4.4", reviews: "279", tag: "中式", area: "側門", image: "images/riceicon.png" },
+            { name: "五花馬水餃館", address: "新北市三峽區大學路86-1號", price: "$1-200", rating: "3.7", reviews: "949", tag: "中式", area: "正門", image: "images/noodleicon.png" },
+            { name: "蕉ㄚ吐司", address: "新北市三峽區大觀路120號", price: "$1-200", rating: "4.6", reviews: "479", tag: "中式", area: "正門", image: "images/riceicon.png" },
+            { name: "早安 幸福就該吃得飽", address: "新北市三峽區大德路479號", price: "$1-200", rating: "4.0", reviews: "417", tag: "中式", area: "正門", image: "images/riceicon.png" },
+            { name: "雞博士 G-BOSS", address: "新北市三峽區大觀路315號", price: "$1-200", rating: "4.8", reviews: "56", tag: "中式", area: "正門", image: "images/noodleicon.png" },
+            { name: "好棒棒本舖&蔡家虹手作三明治", address: "新北市三峽區大觀路25號", price: "$1-200", rating: "4.3", reviews: "45", tag: "中式", area: "正門", image: "images/riceicon.png" },
+            { name: "早。自己【北大】", address: "新北市三峽區國際一街66-2號", price: "$1-200", rating: "4.6", reviews: "99", tag: "中式", area: "側門", image: "images/riceicon.png" },
 
-    <section id="filters" class="page">
-      <div class="panel">
-        <div class="panel-title">Filters</div>
-        <div class="panel-sub">篩選你的偏好（類型 / 價位 / 區域）</div>
+            // 火鍋/麻辣燙 (Hotpot)
+            { name: "蒙虎白湯小火鍋", address: "新北市三峽區文化路262號", price: "$1-200", rating: "4.9", reviews: "2,356", tag: "火鍋", area: "後門", image: "images/hotpoticon.png" },
+            { name: "聚", address: "新北市三峽區學成路398號3樓", price: "$400-600", rating: "4.8", reviews: "10,966", tag: "火鍋", area: "正門", image: "images/hotpoticon.png" },
+            { name: "泰鍋古藝", address: "新北市三峽區國學街88號", price: "$1-200", rating: "4.7", reviews: "1,401", tag: "火鍋", area: "側門", image: "images/hotpoticon.png" },
+            { name: "八鍋小火鍋", address: "新北市三峽區國際一街10號1樓", price: "$1-200", rating: "4.2", reviews: "912", tag: "火鍋", area: "側門", image: "images/hotpoticon.png" },
+            { name: "鍋媽精緻小火鍋", address: "新北市三峽區國際一街7號1樓", price: "$1-200", rating: "4.4", reviews: "1,298", tag: "火鍋", area: "側門", image: "images/hotpoticon.png" },
+            { name: "麗媽四季火鍋", address: "新北市三峽區國際二街25號", price: "$1-200", rating: "3.8", reviews: "449", tag: "火鍋", area: "側門", image: "images/hotpoticon.png" },
+            { name: "六扇門時尚湯鍋", address: "新北市三峽區學成路3-1號號", price: "$200-400", rating: "4.2", reviews: "1,388", tag: "火鍋", area: "後門", image: "images/hotpoticon.png" },
+            { name: "錢都日式涮涮鍋", address: "新北市三峽區大學路86-3號", price: "$200-400", rating: "4.3", reviews: "2,933", tag: "火鍋", area: "正門", image: "images/hotpoticon.png" },
+            { name: "加分100%浜中特選昆布鍋物", address: "新北市樹林區學成路536號2樓", price: "$200-400", rating: "4.3", reviews: "77", tag: "火鍋", area: "正門", image: "images/hotpoticon.png" },
+            { name: "滾吧 Qunba 鍋物", address: "新北市樹林區學勤路318號", price: "$200-400", rating: "4.8", reviews: "3,561", tag: "火鍋", area: "正門", image: "images/hotpoticon.png" },
+            { name: "妖壽燒", address: "新北市三峽區中山路184巷店舖2號右2", price: "$200-400", rating: "4.6", reviews: "112", tag: "火鍋", area: "後門", image: "images/hotpoticon.png" },
+            { name: "耀武羊威自助火鍋", address: "新北市三峽區大學路150號2樓", price: "$400-600", rating: "4.5", reviews: "227", tag: "火鍋", area: "正門", image: "images/hotpoticon.png" },
+            { name: "小李飛鍋", address: "新北市三峽區復興路170號", price: "$1-200", rating: "未知", reviews: "未知", tag: "火鍋", area: "後門", image: "images/hotpoticon.png" },
+            { name: "麻醉燙-川味麻辣燙", address: "新北市三峽區和平街38-1號", price: "$1-200", rating: "3.8", reviews: "387", tag: "火鍋", area: "後門", image: "images/hotpoticon.png" },
 
-        <div class="filter-group">
-          <div class="filter-label">餐廳類型：</div>
-          <div class="chip-row">
-            <button class="chip chip-toggle" data-group="tag" data-value="">All</button>
-            <button class="chip chip-toggle" data-group="tag" data-value="甜點">甜點</button>
-            <button class="chip chip-toggle" data-group="tag" data-value="日式">日式</button>
-            <button class="chip chip-toggle" data-group="tag" data-value="韓式">韓式</button>
-            <button class="chip chip-toggle" data-group="tag" data-value="麵食">麵食</button>
-            <button class="chip chip-toggle" data-group="tag" data-value="飯食">飯食</button>
-            <button class="chip chip-toggle" data-group="tag" data-value="健身">健身</button>
-            <button class="chip chip-toggle" data-group="tag" data-value="火鍋">火鍋</button>
-            <button class="chip chip-toggle" data-group="tag" data-value="義式">義式</button>
-          </div>
-        </div>
+            // 義式/西式 (Italian/Western)
+            { name: "号鳥食趣義大利洋食 X 烤泡芙專賣", address: "新北市三峽區大觀路7號", price: "$200-400", rating: "4.3", reviews: "641", tag: "義式", area: "正門", image: "images/spaicon1.png" },
+            { name: "Yummy亞咪義大利麵", address: "新北市三峽區大觀路109號", price: "$200-400", rating: "4.1", reviews: "485", tag: "義式", area: "正門", image: "images/spaicon1.png" },
+            { name: "魔法義大利", address: "新北市三峽區國際二街1號", price: "$200-400", rating: "4.7", reviews: "3,367", tag: "義式", area: "側門", image: "images/spaicon1.png" },
+            { name: "YCHY拾味", address: "新北市三峽區國際一街27-1號1樓", price: "$1-200", rating: "4.4", reviews: "777", tag: "義式", area: "側門", image: "images/spaicon1.png" },
+            { name: "伊垛義式小廚", address: "新北市三峽區國際一街54號", price: "$1-200", rating: "4.3", reviews: "304", tag: "義式", area: "側門", image: "images/spaicon1.png" },
+            { name: "不然去吃早午餐", address: "新北市三峽區大德路190號", price: "$1-200", rating: "4.8", reviews: "80", tag: "西式", area: "正門", image: "images/westernicon.png" },
+            { name: "吃萬串燒專賣店", address: "新北市三峽區復興路112號", price: "$200-400", rating: "4.7", reviews: "292", tag: "西式", area: "後門", image: "images/westernicon.png" },
+            { name: "牛好吃", address: "新北市三峽區國際二街19號", price: "$200-400", rating: "3.8", reviews: "940", tag: "西式", area: "側門", image: "images/westernicon.png" },
+            { name: "Anchor Restaurant 安可美式餐廳", address: "新北市樹林區學成路593號1樓", price: "$200-400", rating: "4.3", reviews: "336", tag: "西式", area: "正門", image: "images/westernicon.png" },
+            { name: "帕司達義式料理", address: "新北市三峽區大觀路18號", price: "$200-400", rating: "4.1", reviews: "599", tag: "西式", area: "正門", image: "images/westernicon.png" },
+            { name: "挑食picky eater", address: "新北市三峽區國際一街23號", price: "$1-200", rating: "4.0", reviews: "21", tag: "西式", area: "側門", image: "images/westernicon.png" },
+            { name: "特點平價牛排", address: "新北市三峽區國際一街25-1號", price: "$200-400", rating: "4.1", reviews: "616", tag: "西式", area: "側門", image: "images/westernicon.png" },
+            { name: "夯牛屋", address: "新北市三峽區國際一街41號", price: "$200-400", rating: "3.9", reviews: "735", tag: "西式", area: "側門", image: "images/westernicon.png" },
+            { name: "La Olive綠橄欖創意蔬食料理", address: "新北市三峽區國際二街35號1 樓", price: "$200-400", rating: "4.4", reviews: "379", tag: "西式", area: "側門", image: "images/westernicon.png" },
+            { name: "麥當勞", address: "新北市三峽區學成路258號", price: "$1-200", rating: "3.9", reviews: "4,446", tag: "西式", area: "側門", image: "images/westernicon.png" },
+            { name: "SUBWAY", address: "新北市三峽區國學街84號", price: "$1-200", rating: "3.5", reviews: "706", tag: "西式", area: "側門", image: "images/westernicon.png" },
+            { name: "肯德基KFC", address: "新北市三峽區大學路150-3號", price: "$200-400", rating: "3.4", reviews: "2,155", tag: "西式", area: "正門", image: "images/westernicon.png" },
+            { name: "慢思 Amour.Sacrifice", address: "新北市三峽區國際二街25 號", price: "$1-200", rating: "4.4", reviews: "409", tag: "西式", area: "側門", image: "images/westernicon.png" },
+            { name: "王子平價牛排", address: "新北市三峽區和平街95號", price: "$200-400", rating: "3.2", reviews: "102", tag: "西式", area: "後門", image: "images/westernicon.png" },
+            { name: "六年五班熱壓吐司", address: "新北市三峽區大仁路63號", price: "$1-200", rating: "3.4", reviews: "44", tag: "西式", area: "後門", image: "images/westernicon.png" },
+            { name: "Hang Ba碳烤土司", address: "新北市三峽區大學路152號", price: "$1-200", rating: "4.2", reviews: "63", tag: "西式", area: "正門", image: "images/westernicon.png" },
+            { name: "享聚餐酒館 Savor Bistro", address: "新北市三峽區國際一街5號2樓", price: "$200-400", rating: "4.8", reviews: "1,485", tag: "西式", area: "側門", image: "images/westernicon.png" },
 
-        <div class="filter-group">
-          <div class="filter-label">價格範圍：</div>
-          <div class="chip-row">
-            <button class="chip chip-toggle" data-group="price" data-value="$1-200">1～200元</button>
-            <button class="chip chip-toggle" data-group="price" data-value="$200-400">200～400元</button>
-            <button class="chip chip-toggle" data-group="price" data-value="$400-600">400～600元</button>
-          </div>
-        </div>
+            // 健康餐 (Healthy Meal)
+            { name: "強尼兄弟健康廚房", address: "新北市三峽區大觀路115號1樓", price: "$1-200", rating: "4.3", reviews: "857", tag: "健康餐", area: "正門", image: "images/vegetableicon.png" },
+            { name: "Miss Energy 能量小姐", address: "新北市三峽區學成路246號", price: "$1-200", rating: "4.4", reviews: "497", tag: "健康餐", area: "正門", image: "images/vegetableicon.png" },
+            { name: "蛋白盒子健康餐盒", address: "新北市三峽區國學街37號", price: "$1-200", rating: "3.7", reviews: "50", tag: "健康餐", area: "側門", image: "images/vegetableicon.png" },
+            { name: "京簡康", address: "新北市三峽區學成路250號", price: "$1-200", rating: "3.7", reviews: "177", tag: "健康餐", area: "正門", image: "images/vegetableicon.png" },
+            { name: "益柔廚房", address: "新北市三峽區學府路36號", price: "$200-400", rating: "4.4", reviews: "845", tag: "健康餐", area: "正門", image: "images/vegetableicon.png" },
 
-        <div class="filter-group">
-          <div class="filter-label">校門區域：</div>
-          <div class="chip-row">
-            <button class="chip chip-toggle" data-group="area" data-value="">不限</button>
-            <button class="chip chip-toggle" data-group="area" data-value="正門">正門</button>
-            <button class="chip chip-toggle" data-group="area" data-value="後門">後門</button>
-            <button class="chip chip-toggle" data-group="area" data-value="側門">側門</button>
-          </div>
-        </div>
+            // 麵食 (Noodle) - 獨立出來的麵食類別
+            { name: "蘇記水餃", address: "新北市三峽區和平街97號", price: "$1-200", rating: "4.1", reviews: "919", tag: "麵食", area: "後門", image: "images/noodleicon.png" },
+            { name: "鳥鳴子雞白湯ラーメン", address: "新北市三峽區國際一街33號", price: "$200-400", rating: "4.4", reviews: "280", tag: "麵食", area: "側門", image: "images/noodleicon.png" },
+            { name: "三禾手打烏龍麵", address: "新北市三峽區大德路109號", price: "$200-400", rating: "4.0", reviews: "957", tag: "麵食", area: "正門", image: "images/noodleicon.png" },
+            { name: "樂廚房 牛肉麵", address: "新北市三峽區大觀路116號", price: "$1-200", rating: "4.3", reviews: "242", tag: "麵食", area: "正門", image: "images/noodleicon.png" },
+            { name: "木子李", address: "新北市三峽區中山路42號", price: "$200-400", rating: "4.4", reviews: "323", tag: "麵食", area: "後門", image: "images/noodleicon.png" },
+            { name: "黑霸牛肉麵專賣店", address: "新北市三峽區大觀路27號", price: "$1-200", rating: "4.4", reviews: "1,027", tag: "麵食", area: "正門", image: "images/noodleicon.png" },
+            { name: "就這味", address: "新北市三峽區大觀路30號", price: "$1-200", rating: "4.2", reviews: "366", tag: "麵食", area: "正門", image: "images/noodleicon.png" },
+            { name: "三峽北大湘泊苑", address: "新北市三峽區國際一街43號", price: "$1-200", rating: "3.9", reviews: "232", tag: "麵食", area: "側門", image: "images/noodleicon.png" },
+            { name: "号鳥食趣義大利洋食 X 烤泡芙專賣", address: "新北市三峽區大觀路7號", price: "$200-400", rating: "4.3", reviews: "641", tag: "麵食", area: "正門", image: "images/noodleicon.png" },
+            { name: "Yummy亞咪義大利麵", address: "新北市三峽區大觀路109號", price: "$200-400", rating: "4.1", reviews: "485", tag: "麵食", area: "正門", image: "images/noodleicon.png" },
+            { name: "魔法義大利", address: "新北市三峽區國際二街1號", price: "$200-400", rating: "4.7", reviews: "3,367", tag: "麵食", area: "側門", image: "images/noodleicon.png" },
+            { name: "YCHY拾味", address: "新北市三峽區國際一街27-1號1樓", price: "$1-200", rating: "4.4", reviews: "777", tag: "麵食", area: "側門", image: "images/noodleicon.png" },
+            { name: "伊垛義式小廚", address: "新北市三峽區國際一街54號", price: "$1-200", rating: "4.3", reviews: "304", tag: "麵食", area: "側門", image: "images/noodleicon.png" },
+            { name: "一品羊羊肉料理", address: "新北市三峽區和平街91-2號", price: "$1-200", rating: "4.1", reviews: "306", tag: "麵食", area: "後門", image: "images/noodleicon.png" },
+            { name: "李記大腸蚵仔麵線", address: "新北市三峽區大觀路363號", price: "$1-200", rating: "3.3", reviews: "128", tag: "麵食", area: "正門", image: "images/noodleicon.png" },
+            { name: "武記鵝肉", address: "新北市三峽區中山路227號", price: "$1-200", rating: "4.2", reviews: "163", tag: "麵食", area: "後門", image: "images/noodleicon.png" },
+            { name: "豚將拉麵", address: "新北市三峽區文化路228號", price: "$1-200", rating: "4.0", reviews: "442", tag: "麵食", area: "後門", image: "images/noodleicon.png" },
+            { name: "日生珍味", address: "新北市三峽區大仁路1號", price: "$1-200", rating: "3.9", reviews: "61", tag: "麵食", area: "後門", image: "images/noodleicon.png" },
+            { name: "九品炒羊肉", address: "新北市三峽區大勇路24號", price: "$1-200", rating: "4.1", reviews: "169", tag: "麵食", area: "後門", image: "images/noodleicon.png" },
+            { name: "鬼匠拉麵", address: "新北市三峽區大學路141號", price: "$1-200", rating: "4.0", reviews: "56", tag: "麵食", area: "正門", image: "images/noodleicon.png" },
+            { name: "大雄料理店", address: "新北市三峽區國學街51號", price: "$1-200", rating: "3.8", reviews: "489", tag: "麵食", area: "側門", image: "images/noodleicon.png" },
+            { name: "有麵煮自助泡麵", address: "新北市三峽區國學街43號", price: "$1-200", rating: "4.9", reviews: "41", tag: "麵食", area: "側門", image: "images/noodleicon.png" },
+            { name: "韓一美食館", address: "新北市三峽區國際二街3號", price: "$1-200", rating: "4.1", reviews: "200", tag: "麵食", area: "正門", image: "images/noodleicon.png" },
+            { name: "福記牛肉麵.豬軟骨飯", address: "新北市三峽區國際一街45號", price: "$1-200", rating: "4.4", reviews: "279", tag: "麵食", area: "側門", image: "images/noodleicon.png" },
+            { name: "勝博殿", address: "新北市三峽區學成路227號", price: "$400-600", rating: "4.0", reviews: "563", tag: "麵食", area: "正門", image: "images/noodleicon.png" },
+            { name: "三角鍋燒（煎餃）", address: "新北市三峽區民生街167號1樓", price: "$1-200", rating: "4.4", reviews: "263", tag: "麵食", area: "後門", image: "images/noodleicon.png" },
+            { name: "享聚餐酒館 Savor Bistro", address: "新北市三峽區國際一街5號2樓", price: "$200-400", rating: "4.8", reviews: "1,485", tag: "麵食", area: "側門", image: "images/noodleicon.png" },
+            { name: "早。自己【北大】", address: "新北市三峽區國際一街66-2號", price: "$1-200", rating: "4.6", reviews: "99", tag: "麵食", area: "側門", image: "images/noodleicon.png" },
 
-        <div class="filter-actions">
-          <button class="btn btn-outline" id="btnReset">Reset</button>
-          <button class="btn btn-primary" id="btnApply">Apply Filters</button>
-        </div>
+            // 飯食 (Rice) - 獨立出來的飯食類別
+            { name: "私嚐の吃飯", address: "新北市樹林區學勤路322號", price: "$200-400", rating: "4.9", reviews: "1,762", tag: "飯食", area: "正門", image: "images/riceicon.png" },
+            { name: "吉購吉", address: "新北市三峽區大德路222號", price: "$1-200", rating: "4.2", reviews: "571", tag: "飯食", area: "正門", image: "images/riceicon.png" },
+            { name: "向陽冬瓜肉飯", address: "新北市樹林區學成路532號", price: "$1-200", rating: "4.3", reviews: "564", tag: "飯食", area: "正門", image: "images/riceicon.png" },
+            { name: "阿郎小吃", address: "新北市三峽區國學街16號", price: "$1-200", rating: "4.3", reviews: "54", tag: "飯食", area: "側門", image: "images/riceicon.png" },
+            { name: "坐一下吧", address: "新北市三峽區國際一街80號1樓", price: "$200-400", rating: "3.3", reviews: "267", tag: "飯食", area: "側門", image: "images/riceicon.png" },
+            { name: "大億美食", address: "新北市三峽區國學街57號", price: "$1-200", rating: "3.4", reviews: "72", tag: "飯食", area: "側門", image: "images/riceicon.png" },
+            { name: "元爵味 黃燜雞米飯", address: "新北市三峽區國際一街8號", price: "$200-400", rating: "4.8", reviews: "2,273", tag: "飯食", area: "正門", image: "images/riceicon.png" },
+            { name: "誠意鵝肉", address: "新北市三峽區大觀路20號", price: "$1-200", rating: "3.9", reviews: "312", tag: "飯食", area: "正門", image: "images/riceicon.png" },
+            { name: "一燔歐姆蛋咖哩、炸雞", address: "新北市三峽區大德路151號", price: "$1-200", rating: "4.5", reviews: "406", tag: "飯食", area: "正門", image: "images/riceicon.png" },
+            { name: "武記鵝肉", address: "新北市三峽區中山路227號", price: "$1-200", rating: "4.2", reviews: "163", tag: "飯食", area: "後門", image: "images/riceicon.png" },
+            { name: "古都燒肉飯", address: "新北市三峽區三樹路203號", price: "$1-200", rating: "4.2", reviews: "692", tag: "飯食", area: "正門", image: "images/riceicon.png" },
+            { name: "日生珍味", address: "新北市三峽區大仁路1號", price: "$1-200", rating: "3.9", reviews: "61", tag: "飯食", area: "後門", image: "images/riceicon.png" },
+            { name: "九品炒羊肉", address: "新北市三峽區大勇路24號", price: "$1-200", rating: "4.1", reviews: "169", tag: "飯食", area: "後門", image: "images/riceicon.png" },
+            { name: "大雄料理店", address: "新北市三峽區國學街51號", price: "$1-200", rating: "3.8", reviews: "489", tag: "飯食", area: "側門", image: "images/riceicon.png" },
+            { name: "韓一美食館", address: "新北市三峽區國際二街3號", price: "$1-200", rating: "4.1", reviews: "200", tag: "飯食", area: "正門", image: "images/riceicon.png" },
+            { name: "粥大福", address: "新北市三峽區大德路196號", price: "$1-200", rating: "4.6", reviews: "389", tag: "飯食", area: "正門", image: "images/riceicon.png" },
+            { name: "鬍鬚張魯肉飯", address: "新北市三峽區學成路250號", price: "$1-200", rating: "3.9", reviews: "1,056", tag: "飯食", area: "側門", image: "images/riceicon.png" },
+            { name: "福記牛肉麵.豬軟骨飯", address: "新北市三峽區國際一街45號", price: "$1-200", rating: "4.4", reviews: "279", tag: "飯食", area: "側門", image: "images/riceicon.png" },
+            { name: "津米烤肉飯", address: "新北市三峽區和平街68號", price: "$1-200", rating: "3.7", reviews: "72", tag: "飯食", area: "後門", image: "images/riceicon.png" },
+            { name: "すき家Sukiya", address: "新北市三峽區大學路150號", price: "$1-200", rating: "3.7", reviews: "1,307", tag: "飯食", area: "正門", image: "images/riceicon.png" },
+            { name: "赤田屋咖哩飯", address: "新北市三峽區大學路141號", price: "$1-200", rating: "4.1", reviews: "55", tag: "飯食", area: "正門", image: "images/riceicon.png" },
+            { name: "肉享家 Niku Bliss", address: "新北市三峽區國際一街39號", price: "$200-400", rating: "3.9", reviews: "96", tag: "飯食", area: "側門", image: "images/riceicon.png" },
+            { name: "早。自己【北大】", address: "新北市三峽區國際一街66-2號", price: "$1-200", rating: "4.6", reviews: "99", tag: "飯食", area: "側門", image: "images/riceicon.png" },
+            { name: "享聚餐酒館 Savor Bistro", address: "新北市三峽區國際一街5號2樓", price: "$200-400", rating: "4.8", reviews: "1,485", tag: "飯食", area: "側門", image: "images/riceicon.png" },
+        ];
+        /* --- RESTAURANTS 資料集結束 --- */
 
-        <button class="btn-back" data-back>Back</button>
-      </div>
-    </section>
+        /* --- SPA 導覽 (JS code remains unchanged) --- */
+        const pages = document.querySelectorAll(".page");
+        const navLinks = document.querySelectorAll(".nav-link");
+        const heroDecideBtn = document.getElementById("heroDecide");
 
-    <section id="decide" class="page">
-      <div class="decide-shell">
-        <div class="decide-plate">
-          <img id="spaghettiImg" src="images/spaicon1.png" alt="pasta">
-        </div>
-        <div>
-          <div class="decide-text-title">Let's Decide!</div>
-          <div class="decide-note" id="decideNote">
-            根據你的 Filters，幫你從候選餐廳中抽出一間主推薦，再加幾家備用選擇。
-          </div>
-          <button class="btn btn-primary" id="btnStart">Start</button>
-          <button class="btn-back" data-back>Back</button>
-        </div>
-      </div>
-    </section>
-
-    <section id="result" class="page">
-      <div class="result-shell">
-        <div class="result-title">今天吃這家吧！</div>
-
-        <div class="carousel">
-          <button class="carousel-arrow" id="btnPrev">‹</button>
-          <div class="carousel-track" id="resultTrack">
-            </div>
-          <button class="carousel-arrow" id="btnNext">›</button>
-        </div>
-
-        <div class="result-details-grid">
-          <div class="detail-box detail-box-left">
-            <div class="detail-title">Details</div>
-            <div class="detail-content" id="resDetailContent">
-              </div>
-          </div>
-          <div class="detail-box detail-box-right">
-            <div class="detail-title">Map</div>
-            <iframe id="resMapFrame" class="map-frame" loading="lazy" allowfullscreen></iframe>
-            <a id="resMapLink" href="#" target="_blank" class="btn-map-go">前往 Google Maps</a>
-          </div>
-        </div>
-
-        <button class="btn-back" data-back>Back</button>
-      </div>
-    </section>
-
-    <section id="list" class="page">
-      <div class="list-shell">
-        <div class="list-header">
-          <div>
-            <div class="result-title">Restaurant List</div>
-            <p style="font-size:12px;color:var(--text-sub);">可以左右滑動查看所有餐廳。</p>
-          </div>
-          <div class="list-actions">
-            <button class="list-action-btn" id="listClearBtn" title="清除篩選"><img src="images/clear-alt.png" alt="Clear" style="width:16px"></button>
-            <button class="list-action-btn" id="listFilterBtn" title="篩選列表"><img src="images/filter.png" alt="Filter" style="width:16px"></button>
-          </div>
-        </div>
-
-        <div id="listFilterPanel" class="list-filter-panel"></div>
-
-        <div class="list-row" id="listRow">
-          </div>
-
-        <button class="btn-back" data-back>Back</button>
-      </div>
-    </section>
-
-    <section id="favorites" class="page">
-      <div class="fav-shell">
-        <div class="result-title">Favorite Restaurants</div>
-        <p style="font-size:13px;color:var(--text-sub);">
-          你按下 ♥ Favorite 的餐廳會出現在這裡（儲存在瀏覽器 localStorage）。
-        </p>
-        <div class="fav-list" id="favList"></div>
-
-        <button class="btn-back" data-back>Back</button>
-      </div>
-    </section>
-  </div>
-
-  <script>
-    /* --- 簡化版餐廳資料 (部分省略) --- */
-    const RESTAURANTS = [
-        { name: "Qm159 清琳咖啡", address: "237新北市三峽區中山路65號", price: "$200-400", rating: "4.5", reviews: "1,049", tag: "甜點", area: "後門", image: "images/coffeeicon.png" },
-        { name: "鐵盒子甜點專門店", address: "237新北市三峽區學成路293號", price: "$1-200", rating: "4.5", reviews: "123", tag: "甜點", area: "正門", image: "images/coffeeicon.png" },
-        { name: "ELSA CAFE", address: "237新北市三峽區國際一街72號", price: "$1-200", rating: "4.7", reviews: "156", tag: "甜點", area: "側門", image: "images/coffeeicon.png" },
-        { name: "LAIFA Coffee Shot", address: "237新北市三峽區國光街73號", price: "$200-400", rating: "4.6", reviews: "304", tag: "甜點", area: "後門", image: "images/coffeeicon.png" },
-        { name: "Team Coffee", address: "237新北市三峽區仁愛街2號", price: "$200-400", rating: "4.7", reviews: "481", tag: "甜點", area: "後門", image: "images/coffeeicon.png" },
-        { name: "入日咖啡", address: "237新北市三峽區永安街171號", price: "$200-400", rating: "4.7", reviews: "174", tag: "甜點", area: "後門", image: "images/coffeeicon.png" },
-        { name: "木本家MUhouse", address: "238新北市樹林區學勤路428號", price: "$200-400", rating: "4.7", reviews: "151", tag: "甜點", area: "正門", image: "images/coffeeicon.png" },
-        { name: "樸樹咖啡", address: "238新北市樹林區學勤路529號2樓", price: "$200-400", rating: "5", reviews: "663", tag: "甜點", area: "正門", image: "images/coffeeicon.png" },
-        { name: "DOHA人寵甜點咖啡廳", address: "237新北市三峽區學勤路178-2號1 樓", price: "$200-400", rating: "5", reviews: "63", tag: "甜點", area: "正門", image: "images/coffeeicon.png" },
-        { name: "凱莉日嚐", address: "237新北市三峽區學成路285號", price: "$1-200", rating: "4.5", reviews: "266", tag: "甜點", area: "正門", image: "images/coffeeicon.png" },
-        { name: "鯨旋咖啡", address: "237新北市三峽區大義路227號", price: "$1-200", rating: "4.6", reviews: "34", tag: "甜點", area: "正門", image: "images/coffeeicon.png" },
-        { name: "大雄料理店", address: "237新北市三峽區國學街51號", price: "$1-200", rating: "3.8", reviews: "485", tag: "日式", area: "側門", image: "images/susiicon.png" },
-        { name: "坐一下吧", address: "237新北市三峽區國際一街80號1樓", price: "$200-400", rating: "3.3", reviews: "267", tag: "日式", area: "側門", image: "images/susiicon.png" },
-        { name: "暮漁町生魚片海鮮丼專賣店", address: "237新北市三峽區大義路199-1號", price: "$200-400", rating: "4.7", reviews: "303", tag: "日式", area: "正門", image: "images/susiicon.png" },
-        { name: "根", address: "237新北市三峽區大觀路1號", price: "$200-400", rating: "4.2", reviews: "326", tag: "日式", area: "正門", image: "images/susiicon.png" },
-        { name: "Mr. 壽司", address: "238新北市樹林區學勤路398號", price: "$400-600", rating: "4.3", reviews: "854", tag: "日式", area: "正門", image: "images/susiicon.png" },
-        { name: "鯓．魚片", address: "237新北市三峽區大德路85號", price: "$200-400", rating: "4.9", reviews: "214", tag: "日式", area: "正門", image: "images/susiicon.png" },
-        { name: "新美園食堂", address: "238新北市樹林區大雅路304號", price: "$400-600", rating: "3.8", reviews: "300", tag: "日式", area: "正門", image: "images/susiicon.png" },
-        { name: "小眼睛歐爸們", address: "237新北市三峽區大觀路12-3號", price: "$200-400", rating: "4.5", reviews: "1,949", tag: "韓式", area: "正門", image: "images/koreanicon.png" },
-        { name: "波之家石鍋料理", address: "237303新北市三峽區大學路151號", price: "$1-200", rating: "4.6", reviews: "19", tag: "韓式", area: "正門", image: "images/koreanicon.png" },
-        { name: "韓讚", address: "237新北市三峽區國際一街47號", price: "$1-200", rating: "3.6", reviews: "743", tag: "韓式", area: "側門", image: "images/koreanicon.png" },
-        { name: "阿啾西拉麵圖書館", address: "237新北市三峽區大觀路28號", price: "$1-200", rating: "5", reviews: "821", tag: "韓式", area: "正門", image: "images/koreanicon.png" },
-        { name: "阿啾西拉麵圖書館", address: "237新北市三峽區大觀路28號", price: "$1-200", rating: "5", reviews: "821", tag: "麵食", area: "正門", image: "images/noodleicon.png" },
-        { name: "老私房牛肉麵", address: "237新北市三峽區國際一街66-1號1樓", price: "$200-400", rating: "4.7", reviews: "1,262", tag: "麵食", area: "側門", image: "images/noodleicon.png" },
-        { name: "麵匡匡拉麵食堂", address: "237新北市三峽區和平街70號", price: "$200-400", rating: "4.6", reviews: "227", tag: "麵食", area: "後門", image: "images/noodleicon.png" },
-        { name: "小巷子清燉牛肉麵", address: "237新北市三峽區大觀路6號", price: "$1-200", rating: "4.8", reviews: "2,338", tag: "麵食", area: "正門", image: "images/noodleicon.png" },
-        { name: "麵G", address: "237新北市三峽區國際一街31號", price: "$1-200", rating: "4.8", reviews: "35", tag: "麵食", area: "側門", image: "images/noodleicon.png" },
-        { name: "隨園麵食館", address: "237新北市三峽區國際一街23-1號", price: "$1-200", rating: "4.1", reviews: "539", tag: "麵食", area: "側門", image: "images/noodleicon.png" },
-        { name: "白甘蔗飯麵館", address: "237新北市三峽區國際一街45號", price: "$1-200", rating: "4.4", reviews: "278", tag: "麵食", area: "側門", image: "images/noodleicon.png" },
-        { name: "蘇記水餃", address: "237新北市三峽區和平街97號", price: "$1-200", rating: "4.1", reviews: "919", tag: "麵食", area: "後門", image: "images/noodleicon.png" },
-        { name: "鳥鳴子雞白湯", address: "237新北市三峽區國際一街33號", price: "$200-400", rating: "4.4", reviews: "278", tag: "麵食", area: "側門", image: "images/noodleicon.png" },
-        { name: "三禾手打烏龍麵", address: "237新北市三峽區大德路109號", price: "$200-400", rating: "4", reviews: "956", tag: "麵食", area: "正門", image: "images/noodleicon.png" },
-        { name: "樂廚房", address: "237新北市三峽區大觀路116號", price: "$1-200", rating: "4.3", reviews: "241", tag: "麵食", area: "正門", image: "images/noodleicon.png" },
-        { name: "木子李", address: "237新北市三峽區中山路42號", price: "$200-400", rating: "4.4", reviews: "317", tag: "麵食", area: "後門", image: "images/noodleicon.png" },
-        { name: "黑霸牛肉麵專賣店", address: "237新北市三峽區大觀路27號", price: "$1-200", rating: "4.4", reviews: "1,026", tag: "麵食", area: "正門", image: "images/noodleicon.png" },
-        { name: "号鳥食趣", address: "237新北市三峽區大觀路7號", price: "$200-400", rating: "4.3", reviews: "639", tag: "麵食", area: "正門", image: "images/noodleicon.png" },
-        { name: "河南砂鍋手工扯麵", address: "237新北市三峽區光明路26號", price: "$1-200", rating: "4.1", reviews: "3,334", tag: "麵食", area: "後門", image: "images/noodleicon.png" },
-        { name: "就這味", address: "237新北市三峽區大觀路30號", price: "$1-200", rating: "4.2", reviews: "363", tag: "麵食", area: "正門", image: "images/noodleicon.png" },
-        { name: "Yummy亞咪義大利麵", address: "237新北市三峽區大觀路109號", price: "$200-400", rating: "4.1", reviews: "485", tag: "麵食", area: "正門", image: "images/noodleicon.png" },
-        { name: "三峽北大湘泊苑", address: "237新北市三峽區國際一街43號", price: "$1-200", rating: "3.9", reviews: "231", tag: "麵食", area: "側門", image: "images/noodleicon.png" },
-        { name: "三峽北大湘泊苑", address: "237新北市三峽區國際一街43號", price: "$1-201", rating: "3.9", reviews: "231", tag: "飯食", area: "側門", image: "images/riceicon.png" },
-        { name: "私嚐の吃飯", address: "238新北市樹林區學勤路322號", price: "$200-400", rating: "4.9", reviews: "1,763", tag: "飯食", area: "正門", image: "images/riceicon.png" },
-        { name: "吉購吉", address: "237新北市三峽區大德路222號", price: "$1-200", rating: "4.2", reviews: "566", tag: "飯食", area: "正門", image: "images/riceicon.png" },
-        { name: "向陽冬瓜肉飯", address: "238新北市樹林區學成路532號", price: "$1-200", rating: "4.3", reviews: "564", tag: "飯食", area: "正門", image: "images/riceicon.png" },
-        { name: "阿郎小吃", address: "237新北市三峽區國學街16號", price: "$1-200", rating: "4.3", reviews: "54", tag: "飯食", area: "側門", image: "images/riceicon.png" },
-        { name: "坐一下吧", address: "237新北市三峽區國際一街80號1樓", price: "$200-400", rating: "3.3", reviews: "267", tag: "飯食", area: "側門", image: "images/riceicon.png" },
-        { name: "大億美食", address: "237新北市三峽區國學街57號", price: "$1-200", rating: "3.4", reviews: "72", tag: "飯食", area: "側門", image: "images/riceicon.png" },
-        { name: "元爵味 黃燜雞米飯", address: "237新北市三峽區國際一街80號1樓", price: "$1-200", rating: "4.8", reviews: "2,273", tag: "飯食", area: "側門", image: "images/riceicon.png" },
-        { name: "誠意鵝肉", address: "237新北市三峽區大觀路20號", price: "$1-200", rating: "3.9", reviews: "311", tag: "飯食", area: "正門", image: "images/riceicon.png" },
-        { name: "一燔歐姆蛋咖哩", address: "237新北市三峽區大德路151號", price: "$1-200", rating: "4.5", reviews: "405", tag: "飯食", area: "正門", image: "images/riceicon.png" },
-        { name: "強尼兄弟", address: "237新北市三峽區大觀路115號1樓", price: "$1-200", rating: "4.3", reviews: "856", tag: "健身", area: "正門", image: "images/vegetableicon.png" },
-        { name: "能量小姐", address: "237新北市三峽區學成路246號", price: "$1-200", rating: "4.4", reviews: "496", tag: "健身", area: "正門", image: "images/vegetableicon.png" },
-        { name: "蛋白盒子", address: "237020新北市三峽區國學街37號", price: "$1-200", rating: "3.7", reviews: "49", tag: "健身", area: "側門", image: "images/vegetableicon.png" },
-        { name: "京簡康", address: "237新北市三峽區學成路250號", price: "$1-200", rating: "3.7", reviews: "172", tag: "健身", area: "正門", image: "images/vegetableicon.png" },
-        { name: "益柔廚房", address: "237新北市三峽區學府路36號", price: "$200-400", rating: "4.4", reviews: "842", tag: "健身", area: "正門", image: "images/vegetableicon.png" },
-        { name: "蒙虎白湯小火鍋", address: "237新北市三峽區國際二街21-3號", price: "$1-200", rating: "4.9", reviews: "470", tag: "火鍋", area: "正門", image: "images/koreanicon.png" },
-        { name: "聚", address: "237新北市三峽區學成路398號3樓", price: "$400-600", rating: "4.8", reviews: "10,914", tag: "火鍋", area: "正門", image: "images/koreanicon.png" },
-        { name: "泰鍋古藝", address: "23741新北市三峽區國學街88號", price: "$1-200", rating: "4.7", reviews: "1,401", tag: "火鍋", area: "側門", image: "images/koreanicon.png" },
-        { name: "八鍋小火鍋", address: "237新北市三峽區國際一街10號1樓", price: "$1-200", rating: "4.2", reviews: "913", tag: "火鍋", area: "側門", image: "images/koreanicon.png" },
-        { name: "鍋媽精緻小火鍋", address: "237新北市三峽區國際一街7號1樓", price: "$1-200", rating: "4.4", reviews: "1,306", tag: "火鍋", area: "側門", image: "images/koreanicon.png" },
-        { name: "麗媽四季火鍋", address: "237新北市三峽區國際二街25號", price: "$1-200", rating: "3.8", reviews: "449", tag: "火鍋", area: "側門", image: "images/koreanicon.png" },
-        { name: "六扇門", address: "237新北市三峽區學成路3-1號號", price: "$200-400", rating: "4.2", reviews: "1,383", tag: "火鍋", area: "後門", image: "images/koreanicon.png" },
-        { name: "錢都", address: "237新北市三峽區大學路86-3號", price: "$200-400", rating: "4.3", reviews: "2,902", tag: "火鍋", area: "正門", image: "images/koreanicon.png" },
-        { name: "加分", address: "238新北市樹林區學成路536號2樓", price: "$200-400", rating: "4.2", reviews: "63", tag: "火鍋", area: "正門", image: "images/koreanicon.png" },
-        { name: "号鳥食趣", address: "237新北市三峽區大觀路7號", price: "$200-400", rating: "4.3", reviews: "639", tag: "義式", area: "正門", image: "images/spaicon1.png" },
-        { name: "Yummy亞咪義大利麵", address: "237新北市三峽區大觀路109號", price: "$200-400", rating: "4.1", reviews: "485", tag: "義式", area: "正門", image: "images/spaicon1.png" },
-        { name: "魔法義大利", address: "237新北市三峽區國際二街1號", price: "$200-400", rating: "4.7", reviews: "3,366", tag: "義式", area: "側門", image: "images/spaicon1.png" },
-        { name: "YCHY拾味", address: "237新北市三峽區國際一街27-1號1樓", price: "$1-200", rating: "4.4", reviews: "774", tag: "義式", area: "側門", image: "images/spaicon1.png" },
-    ];
-
-    /* --- SPA 導覽 --- */
-    const pages = document.querySelectorAll(".page");
-    const navLinks = document.querySelectorAll(".nav-link");
-    const heroDecideBtn = document.getElementById("heroDecide");
-
-    function showPage(id) {
-      pages.forEach(p => p.classList.toggle("page--active", p.id === id));
-      navLinks.forEach(btn =>
-        btn.classList.toggle("active", btn.dataset.page === id)
-      );
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    navLinks.forEach(btn => {
-      btn.addEventListener("click", () => {
-        const page = btn.dataset.page;
-        if (page === "filters") showPage("filters");
-        if (page === "favorites") {
-          renderFavorites();
-          showPage("favorites");
+        function showPage(id) {
+          pages.forEach(p => p.classList.toggle("page--active", p.id === id));
+          navLinks.forEach(btn =>
+            btn.classList.toggle("active", btn.dataset.page === id)
+          );
+          window.scrollTo({ top: 0, behavior: "smooth" });
         }
-        if (page === "list") {
-          renderList(currentPool.length ? currentPool : RESTAURANTS);
-          showPage("list");
-        }
-        if (page === "about") showPage("about");
-      });
-    });
 
-    heroDecideBtn.addEventListener("click", () => {
-      showPage("filters");
-      navLinks.forEach(b =>
-        b.classList.toggle("active", b.dataset.page === "filters")
-      );
-    });
-
-    document.querySelectorAll("[data-back]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        showPage("home");
-        navLinks.forEach(b => b.classList.remove("active"));
-      });
-    });
-
-    /* --- Filter chip toggle --- */
-    document.querySelectorAll(".chip-toggle").forEach(chip => {
-      chip.addEventListener("click", () => {
-        const group = chip.dataset.group;
-        if (group === "tag" && chip.dataset.value === "") {
-          document
-            .querySelectorAll('.chip-toggle[data-group="tag"]')
-            .forEach(c => c.classList.remove("chip--active"));
-          chip.classList.add("chip--active");
-          return;
-        }
-        chip.classList.toggle("chip--active");
-        if (group === "tag" && chip.classList.contains("chip--active")) {
-          document
-            .querySelectorAll('.chip-toggle[data-group="tag"][data-value=""]')
-            .forEach(c => c.classList.remove("chip--active"));
-        }
-      });
-    });
-
-    const btnReset = document.getElementById("btnReset");
-    const btnApply = document.getElementById("btnApply");
-    const decideNote = document.getElementById("decideNote");
-    const btnStart = document.getElementById("btnStart");
-    const pastaImg = document.getElementById("spaghettiImg");
-    const resultTrack = document.getElementById("resultTrack");
-    const listRow = document.getElementById("listRow");
-    const favList = document.getElementById("favList");
-    const btnPrev = document.getElementById("btnPrev");
-    const btnNext = document.getElementById("btnNext");
-    const listFilterBtn = document.getElementById("listFilterBtn");
-    const listFilterPanel = document.getElementById("listFilterPanel");
-    const listClearBtn = document.getElementById("listClearBtn");
-
-    /* 詳細資訊 DOM */
-    const resDetailContent = document.getElementById("resDetailContent");
-    const resMapFrame = document.getElementById("resMapFrame");
-    const resMapLink = document.getElementById("resMapLink");
-
-    let currentPool = RESTAURANTS.slice();
-    let lastResult = [];
-    let resultIndex = 0; 
-
-    btnReset.addEventListener("click", () => {
-      document.querySelectorAll(".chip-toggle").forEach(c => {
-        c.classList.remove("chip--active");
-      });
-      currentPool = RESTAURANTS.slice();
-      decideNote.textContent = "已重置條件，會從所有餐廳中抽籤。";
-    });
-
-    btnApply.addEventListener("click", () => {
-      const selectedTags = [...document.querySelectorAll('.chip-toggle[data-group="tag"].chip--active')]
-        .map(c => c.dataset.value)
-        .filter(v => v);
-      const selectedPrices = [...document.querySelectorAll('.chip-toggle[data-group="price"].chip--active')]
-        .map(c => c.dataset.value);
-      const selectedAreas = [...document.querySelectorAll('.chip-toggle[data-group="area"].chip--active')]
-        .map(c => c.dataset.value)
-        .filter(v => v);
-
-      currentPool = RESTAURANTS.filter(r => {
-        const matchTag = !selectedTags.length || selectedTags.includes(r.tag);
-        const matchPrice = !selectedPrices.length || selectedPrices.includes(r.price);
-        const matchArea = !selectedAreas.length || selectedAreas.includes(r.area);
-        return matchTag && matchPrice && matchArea;
-      });
-
-      if (!currentPool.length) {
-        alert("哎呀！找不到符合所有條件的餐廳，請放寬篩選條件再試一次。");
-      } else {
-        decideNote.textContent = `目前共有 ${currentPool.length} 間候選餐廳，按 Start 開始抽籤！`;
-        showPage("decide");
-        navLinks.forEach(b =>
-          b.classList.toggle("active", b.dataset.page === "filters")
-        );
-      }
-    });
-
-    /* --- 抽獎動畫 + 結果 --- */
-    btnStart.addEventListener("click", () => {
-      if (!currentPool.length) currentPool = RESTAURANTS.slice();
-
-      const shuffled = currentPool.slice().sort(() => Math.random() - 0.5);
-      const main = shuffled[0];
-      const others = shuffled.slice(1, 5); 
-      lastResult = [main, ...others];
-      resultIndex = 0;
-
-      const frames = [
-        "images/spaicon1.png",
-        "images/spaicon2.png",
-        "images/spaicon3.png",
-        "images/spaicon4.png"
-      ];
-
-      let step = 0;
-      btnStart.disabled = true;
-
-      const timer = setInterval(() => {
-        pastaImg.src = frames[Math.min(step, frames.length - 1)];
-        step++;
-        if (step >= frames.length) {
-          clearInterval(timer);
-          btnStart.disabled = false;
-
-          renderResultView();
-          showPage("result");
-          navLinks.forEach(b => b.classList.remove("active"));
-        }
-      }, 400);
-    });
-
-    function renderResultView() {
-      if (!lastResult.length) {
-        resultTrack.innerHTML =
-          "<div style='font-size:13px;color:#999;'>沒有符合條件的餐廳</div>";
-        btnPrev.disabled = true;
-        btnNext.disabled = true;
-        return;
-      }
-
-      const n = lastResult.length;
-      if (resultIndex < 0) resultIndex = 0;
-      if (resultIndex >= n) resultIndex = n - 1;
-
-      const center = lastResult[resultIndex];
-      
-      // 更新詳細資訊區塊 (不需要彈出式視窗了)
-      updateResultDetails(center);
-
-      const leftIndex = n > 1 ? (resultIndex - 1 + n) % n : null;
-      const rightIndex = n > 1 ? (resultIndex + 1) % n : null;
-
-      resultTrack.innerHTML = "";
-      const frag = document.createDocumentFragment();
-
-      // 左側備用
-      if (leftIndex !== null && n > 1) {
-        const leftCard = createRestaurantCard(lastResult[leftIndex], false);
-        leftCard.classList.add("card--side");
-        leftCard.addEventListener("click", () => {
-          resultIndex = leftIndex;
-          renderResultView();
+        navLinks.forEach(btn => {
+          btn.addEventListener("click", () => {
+            const page = btn.dataset.page;
+            if (page === "filters") showPage("filters");
+            if (page === "favorites") {
+              renderFavorites();
+              showPage("favorites");
+            }
+            if (page === "list") {
+              renderList(currentPool.length ? currentPool : RESTAURANTS);
+              showPage("list");
+            }
+            if (page === "about") showPage("about");
+          });
         });
-        frag.appendChild(leftCard);
-      }
 
-      // 中間主卡片
-      const centerCard = createRestaurantCard(center, true);
-      frag.appendChild(centerCard);
-
-      // 右側備用
-      if (rightIndex !== null && n > 1) {
-        const rightCard = createRestaurantCard(lastResult[rightIndex], false);
-        rightCard.classList.add("card--side");
-        rightCard.addEventListener("click", () => {
-          resultIndex = rightIndex;
-          renderResultView();
+        heroDecideBtn.addEventListener("click", () => {
+          showPage("filters");
+          navLinks.forEach(b =>
+            b.classList.toggle("active", b.dataset.page === "filters")
+          );
         });
-        frag.appendChild(rightCard);
-      }
 
-      resultTrack.appendChild(frag);
-
-      if (n <= 1) {
-        btnPrev.disabled = true;
-        btnNext.disabled = true;
-      } else {
-        btnPrev.disabled = false;
-        btnNext.disabled = false;
-      }
-    }
-
-    // 【新功能】更新結果頁下方的詳細資訊
-    function updateResultDetails(r) {
-      // 左邊：文字
-      resDetailContent.innerHTML = `
-        <div class="detail-row"><span class="detail-label">名稱：</span><span>${r.name}</span></div>
-        <div class="detail-row"><span class="detail-label">地址：</span><span>${r.address}</span></div>
-        <div class="detail-row"><span class="detail-label">類型：</span><span>${r.tag || "不限"}</span></div>
-        <div class="detail-row"><span class="detail-label">價位：</span><span>${r.price}</span></div>
-        <div class="detail-row"><span class="detail-label">評分：</span><span>${r.rating} ⭐ (${r.reviews} 則評論)</span></div>
-        <div class="detail-row"><span class="detail-label">區域：</span><span>${r.area}</span></div>
-      `;
-
-      // 右邊：地圖 (利用 Google Maps Embed，自動搜尋名稱+地址)
-      const query = encodeURIComponent(r.name + " " + r.address);
-      resMapFrame.src = `https://maps.google.com/maps?q=${query}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
-      
-      // 設定按鈕連結
-      resMapLink.href = `https://www.google.com/maps/search/?api=1&query=${query}`;
-    }
-
-    btnPrev.addEventListener("click", () => {
-      if (!lastResult.length) return;
-      resultIndex = (resultIndex - 1 + lastResult.length) % lastResult.length;
-      renderResultView();
-    });
-
-    btnNext.addEventListener("click", () => {
-      if (!lastResult.length) return;
-      resultIndex = (resultIndex + 1) % lastResult.length;
-      renderResultView();
-    });
-
-    /* --- Restaurant List --- */
-    function renderList(list) {
-      listRow.innerHTML = "";
-      list.forEach(r => {
-        const card = createRestaurantCard(r, false);
-        listRow.appendChild(card);
-      });
-    }
-
-    /* --- Favorites 儲存 / 顯示 --- */
-    function getFavNames() {
-      try {
-        return JSON.parse(localStorage.getItem("w2e_favs") || "[]");
-      } catch {
-        return [];
-      }
-    }
-
-    function setFavNames(arr) {
-      localStorage.setItem("w2e_favs", JSON.stringify(arr));
-    }
-
-    function toggleFav(name) {
-      const favs = getFavNames();
-      const idx = favs.indexOf(name);
-      if (idx >= 0) favs.splice(idx, 1);
-      else favs.push(name);
-      setFavNames(favs);
-      renderFavorites();
-    }
-
-    function renderFavorites() {
-      const favNames = getFavNames();
-      favList.innerHTML = "";
-      const favRestaurants = RESTAURANTS.filter(r => favNames.includes(r.name));
-
-      if (!favRestaurants.length) {
-        favList.innerHTML =
-          "<div style='font-size:13px;color:#999;'>目前還沒有收藏餐廳，去 Restaurant List 或抽籤結果按下 ♥ Favorite 吧！</div>";
-        return;
-      }
-
-      favRestaurants.forEach(r => {
-        const item = document.createElement("div");
-        item.className = "fav-item";
-        item.innerHTML = `
-          <div class="fav-item-info">
-            <div class="fav-item-name">${r.name}</div>
-            <div class="fav-item-address">${r.address}</div>
-          </div>
-          <div class="fav-item-actions">
-          </div>
-        `;
-
-        const actionsDiv = item.querySelector('.fav-item-actions');
-
-        // 詳情按鈕 (List 裡面的詳情，可以改成跳 alert，或者跳轉 Result 頁，這裡維持簡單 alert 示意)
-        const btnDetail = document.createElement('button');
-        btnDetail.className = 'fav-btn';
-        btnDetail.innerHTML = '<img src="images/eye.png" alt="View Detail">';
-        btnDetail.onclick = () => alert(`餐廳名稱：${r.name}\n地址：${r.address}\n評分：${r.rating}`);
-        actionsDiv.appendChild(btnDetail);
-
-        const btnDelete = document.createElement('button');
-        btnDelete.className = 'fav-btn';
-        btnDelete.innerHTML = '<img src="images/trash.png" alt="Delete">';
-        btnDelete.onclick = () => toggleFav(r.name);
-        actionsDiv.appendChild(btnDelete);
-
-        favList.appendChild(item);
-      });
-    }
-
-    /* --- 建立餐廳卡片 element --- */
-    function createRestaurantCard(r, isMain) {
-      const favNames = getFavNames();
-      const isFav = favNames.includes(r.name);
-      const card = document.createElement("div");
-      card.className = "card" + (isMain ? " card--main" : "");
-      card.innerHTML = `
-        <div class="card-img-shell">
-          <img src="${r.image}" alt="${r.name}">
-        </div>
-        <div class="card-header">
-          <div class="card-title">${r.name}</div>
-          <span class="badge">${r.tag || "餐廳"}</span>
-        </div>
-        <div class="card-sub">Rating：${r.rating} (${r.reviews} reviews)</div>
-        <div class="card-sub">Price：${r.price}</div>
-        <div class="card-sub">Area：${r.area}</div>
-        <div class="card-sub">Address：${r.address}</div>
-        <div class="card-actions">
-          <button class="btn-heart" data-name="${r.name}">
-            <span>${isFav ? "❤️" : "🤍"}</span>
-            <span>Favorite</span>
-          </button>
-          </div>
-      `;
-
-      const btnHeart = card.querySelector(".btn-heart");
-      btnHeart.addEventListener("click", (e) => {
-        e.stopPropagation();
-        toggleFav(r.name);
-        document.querySelectorAll(`.btn-heart[data-name="${r.name}"]`).forEach(btn => {
-          const favs = getFavNames();
-          const isFavNow = favs.includes(r.name);
-          btn.innerHTML = `<span>${isFavNow ? "❤️" : "🤍"}</span><span>Favorite</span>`;
+        document.querySelectorAll("[data-back]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            showPage("home");
+            navLinks.forEach(b => b.classList.remove("active"));
+          });
         });
-      });
 
-      // 原本的 View Detail 事件監聽器已移除
-
-      return card;
-    }
-
-    /* --- LIST 頁面的篩選功能 --- */
-    function setupListFilter() {
-      const mainFilterPanel = document.querySelector("#filters .panel").cloneNode(true);
-      mainFilterPanel.querySelector('.panel-title').remove();
-      mainFilterPanel.querySelector('.panel-sub').remove();
-      mainFilterPanel.querySelector('.filter-actions').remove();
-      mainFilterPanel.querySelector('.btn-back').remove();
-      listFilterPanel.appendChild(mainFilterPanel);
-
-      listFilterPanel.querySelectorAll(".chip-toggle").forEach(chip => {
-        chip.addEventListener("click", () => {
-          const group = chip.dataset.group;
-          if (group === "tag" && chip.dataset.value === "") {
-            listFilterPanel.querySelectorAll('.chip-toggle[data-group="tag"]').forEach(c => c.classList.remove("chip--active"));
-            chip.classList.add("chip--active");
-          } else {
+        /* --- Filter chip toggle --- */
+        document.querySelectorAll(".chip-toggle").forEach(chip => {
+          chip.addEventListener("click", () => {
+            const group = chip.dataset.group;
+            if (group === "tag" && chip.dataset.value === "") {
+              document
+                .querySelectorAll('.chip-toggle[data-group="tag"]')
+                .forEach(c => c.classList.remove("chip--active"));
+              chip.classList.add("chip--active");
+              return;
+            }
             chip.classList.toggle("chip--active");
             if (group === "tag" && chip.classList.contains("chip--active")) {
-              listFilterPanel.querySelector('.chip-toggle[data-group="tag"][data-value=""]').classList.remove("chip--active");
+              document
+                .querySelectorAll('.chip-toggle[data-group="tag"][data-value=""]')
+                .forEach(c => c.classList.remove("chip--active"));
             }
+          });
+        });
+
+        const btnReset = document.getElementById("btnReset");
+        const btnApply = document.getElementById("btnApply");
+        const decideNote = document.getElementById("decideNote");
+        const btnStart = document.getElementById("btnStart");
+        const pastaImg = document.getElementById("spaghettiImg");
+        const resultTrack = document.getElementById("resultTrack");
+        const listRow = document.getElementById("listRow");
+        const favList = document.getElementById("favList");
+        const btnPrev = document.getElementById("btnPrev");
+        const btnNext = document.getElementById("btnNext");
+        const listFilterBtn = document.getElementById("listFilterBtn");
+        const listFilterPanel = document.getElementById("listFilterPanel");
+        const listClearBtn = document.getElementById("listClearBtn");
+
+        /* 詳細資訊 DOM */
+        const resDetailContent = document.getElementById("resDetailContent");
+        const resMapFrame = document.getElementById("resMapFrame");
+        const resMapLink = document.getElementById("resMapLink");
+
+        let currentPool = RESTAURANTS.slice();
+        let lastResult = [];
+        let resultIndex = 0; 
+
+        btnReset.addEventListener("click", () => {
+          document.querySelectorAll(".chip-toggle").forEach(c => {
+            c.classList.remove("chip--active");
+          });
+          currentPool = RESTAURANTS.slice();
+          decideNote.textContent = "已重置條件，會從所有餐廳中抽籤。";
+        });
+
+        btnApply.addEventListener("click", () => {
+          const selectedTags = [...document.querySelectorAll('.chip-toggle[data-group="tag"].chip--active')]
+            .map(c => c.dataset.value)
+            .filter(v => v);
+          const selectedPrices = [...document.querySelectorAll('.chip-toggle[data-group="price"].chip--active')]
+            .map(c => c.dataset.value);
+          const selectedAreas = [...document.querySelectorAll('.chip-toggle[data-group="area"].chip--active')]
+            .map(c => c.dataset.value)
+            .filter(v => v);
+
+          currentPool = RESTAURANTS.filter(r => {
+            const matchTag = !selectedTags.length || selectedTags.includes(r.tag);
+            const matchPrice = !selectedPrices.length || selectedPrices.includes(r.price);
+            const matchArea = !selectedAreas.length || selectedAreas.includes(r.area);
+            return matchTag && matchPrice && matchArea;
+          });
+
+          if (!currentPool.length) {
+            alert("哎呀！找不到符合所有條件的餐廳，請放寬篩選條件再試一次。");
+          } else {
+            decideNote.textContent = `目前共有 ${currentPool.length} 間候選餐廳，按 Start 開始抽籤！`;
+            showPage("decide");
+            navLinks.forEach(b =>
+              b.classList.toggle("active", b.dataset.page === "filters")
+            );
           }
-          applyListFilter();
         });
-      });
-    }
 
-    function applyListFilter() {
-      const selectedTags = [...listFilterPanel.querySelectorAll('.chip-toggle[data-group="tag"].chip--active')].map(c => c.dataset.value).filter(v => v);
-      const selectedPrices = [...listFilterPanel.querySelectorAll('.chip-toggle[data-group="price"].chip--active')].map(c => c.dataset.value);
-      const selectedAreas = [...listFilterPanel.querySelectorAll('.chip-toggle[data-group="area"].chip--active')].map(c => c.dataset.value).filter(v => v);
+        /* --- 抽獎動畫 + 結果 --- */
+        btnStart.addEventListener("click", () => {
+          if (!currentPool.length) currentPool = RESTAURANTS.slice();
 
-      const filteredList = RESTAURANTS.filter(r => {
-        const matchTag = !selectedTags.length || selectedTags.includes(r.tag);
-        const matchPrice = !selectedPrices.length || selectedPrices.includes(r.price);
-        const matchArea = !selectedAreas.length || selectedAreas.includes(r.area);
-        return matchTag && matchPrice && matchArea;
-      });
-      renderList(filteredList);
-    }
+          const shuffled = currentPool.slice().sort(() => Math.random() - 0.5);
+          const main = shuffled[0];
+          const others = shuffled.slice(1, 5); 
+          lastResult = [main, ...others];
+          resultIndex = 0;
 
-    listFilterBtn.addEventListener("click", () => listFilterPanel.style.display = listFilterPanel.style.display === 'block' ? 'none' : 'block');
-    listClearBtn.addEventListener("click", () => {
-      listFilterPanel.querySelectorAll(".chip--active").forEach(c => c.classList.remove("chip--active"));
-      renderList(RESTAURANTS);
-    });
+          const frames = [
+            "images/spaicon1.png",
+            "images/spaicon2.png",
+            "images/spaicon3.png",
+            "images/spaicon4.png"
+          ];
 
-    renderList(RESTAURANTS);
-    renderFavorites();
-    setupListFilter();
+          let step = 0;
+          btnStart.disabled = true;
 
-    /* --- 首頁背景動畫 --- */
-    const heroBgContainer = document.getElementById("heroBgAnimation");
-    let animationInterval = null;
-    let foodImages = [];
-    let safeDotIndices = [];
-    let lastFlippedIndex = -1;
-    let lastFlippedImage = null;
+          const timer = setInterval(() => {
+            pastaImg.src = frames[Math.min(step, frames.length - 1)];
+            step++;
+            if (step >= frames.length) {
+              clearInterval(timer);
+              btnStart.disabled = false;
 
-    function setupHeroAnimation() {
-      if (animationInterval) clearInterval(animationInterval);
+              renderResultView();
+              showPage("result");
+              navLinks.forEach(b => b.classList.remove("active"));
+            }
+          }, 400);
+        });
 
-      const imageSet = new Set();
-      RESTAURANTS.forEach(r => {
-        if (r.image && r.image.includes('icon')) {
-          imageSet.add(r.image);
+        function renderResultView() {
+          if (!lastResult.length) {
+            resultTrack.innerHTML =
+              "<div style='font-size:13px;color:#999;'>沒有符合條件的餐廳</div>";
+            btnPrev.disabled = true;
+            btnNext.disabled = true;
+            return;
+          }
+
+          const n = lastResult.length;
+          if (resultIndex < 0) resultIndex = 0;
+          if (resultIndex >= n) resultIndex = n - 1;
+
+          const center = lastResult[resultIndex];
+          
+          // 更新詳細資訊區塊 (不需要彈出式視窗了)
+          updateResultDetails(center);
+
+          const leftIndex = n > 1 ? (resultIndex - 1 + n) % n : null;
+          const rightIndex = n > 1 ? (resultIndex + 1) % n : null;
+
+          resultTrack.innerHTML = "";
+          const frag = document.createDocumentFragment();
+
+          // 左側備用
+          if (leftIndex !== null && n > 1) {
+            const leftCard = createRestaurantCard(lastResult[leftIndex], false);
+            leftCard.classList.add("card--side");
+            leftCard.addEventListener("click", () => {
+              resultIndex = leftIndex;
+              renderResultView();
+            });
+            frag.appendChild(leftCard);
+          }
+
+          // 中間主卡片
+          const centerCard = createRestaurantCard(center, true);
+          frag.appendChild(centerCard);
+
+          // 右側備用
+          if (rightIndex !== null && n > 1) {
+            const rightCard = createRestaurantCard(lastResult[rightIndex], false);
+            rightCard.classList.add("card--side");
+            rightCard.addEventListener("click", () => {
+              resultIndex = rightIndex;
+              renderResultView();
+            });
+            frag.appendChild(rightCard);
+          }
+
+          resultTrack.appendChild(frag);
+
+          if (n <= 1) {
+            btnPrev.disabled = true;
+            btnNext.disabled = true;
+          } else {
+            btnPrev.disabled = false;
+            btnNext.disabled = false;
+          }
         }
-      });
-      foodImages = Array.from(imageSet);
 
-      heroBgContainer.innerHTML = '';
-      const containerWidth = heroBgContainer.clientWidth;
-      const containerHeight = heroBgContainer.clientHeight;
-      
-      const dotSize = 100 + 16; 
-      const cols = Math.floor(containerWidth / dotSize);
+        // 【新功能】更新結果頁下方的詳細資訊
+        function updateResultDetails(r) {
+          // 左邊：文字
+          resDetailContent.innerHTML = `
+            <div class="detail-row"><span class="detail-label">名稱：</span><span>${r.name}</span></div>
+            <div class="detail-row"><span class="detail-label">地址：</span><span>${r.address}</span></div>
+            <div class="detail-row"><span class="detail-label">類型：</span><span>${r.tag || "不限"}</span></div>
+            <div class="detail-row"><span class="detail-label">價位：</span><span>${r.price}</span></div>
+            <div class="detail-row"><span class="detail-label">評分：</span><span>${r.rating} ⭐ (${r.reviews} 則評論)</span></div>
+            <div class="detail-row"><span class="detail-label">區域：</span><span>${r.area}</span></div>
+          `;
 
-      if (cols === 0 || containerHeight === 0) {
-        return;
-      }
+          // 右邊：地圖 (利用 Google Maps Embed，自動搜尋名稱+地址)
+          const query = encodeURIComponent(r.name + " " + r.address);
+          resMapFrame.src = `https://maps.google.com/maps?q=${query}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+          
+          // 設定按鈕連結
+          resMapLink.href = `https://www.google.com/maps/search/?api=1&query=${query}`;
+        }
 
-      const rows = Math.floor(containerHeight / dotSize);
-      const totalDots = cols * rows;
+        btnPrev.addEventListener("click", () => {
+          if (!lastResult.length) return;
+          resultIndex = (resultIndex - 1 + lastResult.length) % lastResult.length;
+          renderResultView();
+        });
 
-      for (let i = 0; i < totalDots; i++) {
-        const dotContainer = document.createElement('div');
-        dotContainer.className = 'bg-dot-container';
-        dotContainer.setAttribute('data-index', i);
-        dotContainer.innerHTML = `
-          <div class="bg-dot" id="bg-dot-${i}">
-            <div class="bg-dot-face bg-dot-front"></div>
-            <div class="bg-dot-face bg-dot-back">
-              <img src="" alt="food icon" style="width: 80%; height: 80%; object-fit: contain;">
+        btnNext.addEventListener("click", () => {
+          if (!lastResult.length) return;
+          resultIndex = (resultIndex + 1) % lastResult.length;
+          renderResultView();
+        });
+
+        /* --- Restaurant List --- */
+        function renderList(list) {
+          listRow.innerHTML = "";
+          list.forEach(r => {
+            const card = createRestaurantCard(r, false);
+            listRow.appendChild(card);
+          });
+        }
+
+        /* --- Favorites 儲存 / 顯示 --- */
+        function getFavNames() {
+          try {
+            return JSON.parse(localStorage.getItem("w2e_favs") || "[]");
+          } catch {
+            return [];
+          }
+        }
+
+        function setFavNames(arr) {
+          localStorage.setItem("w2e_favs", JSON.stringify(arr));
+        }
+
+        function toggleFav(name) {
+          const favs = getFavNames();
+          const idx = favs.indexOf(name);
+          if (idx >= 0) favs.splice(idx, 1);
+          else favs.push(name);
+          setFavNames(favs);
+          renderFavorites();
+        }
+
+        function renderFavorites() {
+          const favNames = getFavNames();
+          favList.innerHTML = "";
+          const favRestaurants = RESTAURANTS.filter(r => favNames.includes(r.name));
+
+          if (!favRestaurants.length) {
+            favList.innerHTML =
+              "<div style='font-size:13px;color:#999;'>目前還沒有收藏餐廳，去 Restaurant List 或抽籤結果按下 ♥ Favorite 吧！</div>";
+            return;
+          }
+
+          favRestaurants.forEach(r => {
+            const item = document.createElement("div");
+            item.className = "fav-item";
+            item.innerHTML = `
+              <div class="fav-item-info">
+                <div class="fav-item-name">${r.name}</div>
+                <div class="fav-item-address">${r.address}</div>
+              </div>
+              <div class="fav-item-actions">
+              </div>
+            `;
+
+            const actionsDiv = item.querySelector('.fav-item-actions');
+
+            // 詳情按鈕 (List 裡面的詳情，可以改成跳 alert，或者跳轉 Result 頁，這裡維持簡單 alert 示意)
+            const btnDetail = document.createElement('button');
+            btnDetail.className = 'fav-btn';
+            btnDetail.innerHTML = '<img src="images/eye.png" alt="View Detail">';
+            btnDetail.onclick = () => alert(`餐廳名稱：${r.name}\n地址：${r.address}\n評分：${r.rating}`);
+            actionsDiv.appendChild(btnDetail);
+
+            const btnDelete = document.createElement('button');
+            btnDelete.className = 'fav-btn';
+            btnDelete.innerHTML = '<img src="images/trash.png" alt="Delete">';
+            btnDelete.onclick = () => toggleFav(r.name);
+            actionsDiv.appendChild(btnDelete);
+
+            favList.appendChild(item);
+          });
+        }
+
+        /* --- 建立餐廳卡片 element --- */
+        function createRestaurantCard(r, isMain) {
+          const favNames = getFavNames();
+          const isFav = favNames.includes(r.name);
+          const card = document.createElement("div");
+          card.className = "card" + (isMain ? " card--main" : "");
+          card.innerHTML = `
+            <div class="card-img-shell">
+              <img src="${r.image}" alt="${r.name}">
             </div>
-          </div>
-        `;
-        heroBgContainer.appendChild(dotContainer);
-      }
+            <div class="card-header">
+              <div class="card-title">${r.name}</div>
+              <span class="badge">${r.tag || "餐廳"}</span>
+            </div>
+            <div class="card-sub">Rating：${r.rating} (${r.reviews} reviews)</div>
+            <div class="card-sub">Price：${r.price}</div>
+            <div class="card-sub">Area：${r.area}</div>
+            <div class="card-sub">Address：${r.address}</div>
+            <div class="card-actions">
+              <button class="btn-heart" data-name="${r.name}">
+                <span>${isFav ? "❤️" : "🤍"}</span>
+                <span>Favorite</span>
+              </button>
+              </div>
+          `;
 
-      safeDotIndices = [];
-      const heroPlate = document.querySelector('.hero-plate');
-      
-      if (heroPlate) {
-        const plateRect = heroPlate.getBoundingClientRect();
-        const buffer = 20; 
-        const forbiddenZone = {
-            top: plateRect.top - buffer,
-            bottom: plateRect.bottom + buffer,
-            left: plateRect.left - buffer,
-            right: plateRect.right + buffer
-        };
+          const btnHeart = card.querySelector(".btn-heart");
+          btnHeart.addEventListener("click", (e) => {
+            e.stopPropagation();
+            toggleFav(r.name);
+            document.querySelectorAll(`.btn-heart[data-name="${r.name}"]`).forEach(btn => {
+              const favs = getFavNames();
+              const isFavNow = favs.includes(r.name);
+              btn.innerHTML = `<span>${isFavNow ? "❤️" : "🤍"}</span><span>Favorite</span>`;
+            });
+          });
 
-        document.querySelectorAll('.bg-dot-container').forEach((container) => {
-           const dotRect = container.getBoundingClientRect();
-           const index = parseInt(container.getAttribute('data-index'));
+          // 原本的 View Detail 事件監聽器已移除
 
-           const isOverlapping = !(
-              dotRect.right < forbiddenZone.left ||
-              dotRect.left > forbiddenZone.right ||
-              dotRect.bottom < forbiddenZone.top ||
-              dotRect.top > forbiddenZone.bottom
-           );
-
-           if (!isOverlapping) {
-             safeDotIndices.push(index);
-           }
-        });
-      } else {
-        for(let i=0; i<totalDots; i++) safeDotIndices.push(i);
-      }
-
-      let lastFlippedDotElement = null;
-      animationInterval = setInterval(() => {
-        if (lastFlippedDotElement) {
-          lastFlippedDotElement.classList.remove('is-flipped');
+          return card;
         }
 
-        if (safeDotIndices.length > 0) {
-            let randomPos = Math.floor(Math.random() * safeDotIndices.length);
-            let targetIndex = safeDotIndices[randomPos];
+        /* --- LIST 頁面的篩選功能 --- */
+        function setupListFilter() {
+          const mainFilterPanel = document.querySelector("#filters .panel").cloneNode(true);
+          mainFilterPanel.querySelector('.panel-title').remove();
+          mainFilterPanel.querySelector('.panel-sub').remove();
+          mainFilterPanel.querySelector('.filter-actions').remove();
+          mainFilterPanel.querySelector('.btn-back').remove();
+          listFilterPanel.appendChild(mainFilterPanel);
 
-            if (safeDotIndices.length > 1) {
-                while (targetIndex === lastFlippedIndex) {
-                    randomPos = Math.floor(Math.random() * safeDotIndices.length);
-                    targetIndex = safeDotIndices[randomPos];
+          listFilterPanel.querySelectorAll(".chip-toggle").forEach(chip => {
+            chip.addEventListener("click", () => {
+              const group = chip.dataset.group;
+              if (group === "tag" && chip.dataset.value === "") {
+                listFilterPanel.querySelectorAll('.chip-toggle[data-group="tag"]').forEach(c => c.classList.remove("chip--active"));
+                chip.classList.add("chip--active");
+              } else {
+                chip.classList.toggle("chip--active");
+                if (group === "tag" && chip.classList.contains("chip--active")) {
+                  listFilterPanel.querySelector('.chip-toggle[data-group="tag"][data-value=""]').classList.remove("chip--active");
                 }
+              }
+              applyListFilter();
+            });
+          });
+        }
+
+        function applyListFilter() {
+          const selectedTags = [...listFilterPanel.querySelectorAll('.chip-toggle[data-group="tag"].chip--active')].map(c => c.dataset.value).filter(v => v);
+          const selectedPrices = [...listFilterPanel.querySelectorAll('.chip-toggle[data-group="price"].chip--active')].map(c => c.dataset.value);
+          const selectedAreas = [...listFilterPanel.querySelectorAll('.chip-toggle[data-group="area"].chip--active')].map(c => c.dataset.value).filter(v => v);
+
+          const filteredList = RESTAURANTS.filter(r => {
+            const matchTag = !selectedTags.length || selectedTags.includes(r.tag);
+            const matchPrice = !selectedPrices.length || selectedPrices.includes(r.price);
+            const matchArea = !selectedAreas.length || selectedAreas.includes(r.area);
+            return matchTag && matchPrice && matchArea;
+          });
+          renderList(filteredList);
+        }
+
+        listFilterBtn.addEventListener("click", () => listFilterPanel.style.display = listFilterPanel.style.display === 'block' ? 'none' : 'block');
+        listClearBtn.addEventListener("click", () => {
+          listFilterPanel.querySelectorAll(".chip--active").forEach(c => c.classList.remove("chip--active"));
+          renderList(RESTAURANTS);
+        });
+
+        renderList(RESTAURANTS);
+        renderFavorites();
+        setupListFilter();
+
+        /* --- 首頁背景動畫 --- */
+        const heroBgContainer = document.getElementById("heroBgAnimation");
+        let animationInterval = null;
+        let foodImages = [];
+        let safeDotIndices = [];
+        let lastFlippedIndex = -1;
+        let lastFlippedImage = null;
+
+        function setupHeroAnimation() {
+          if (animationInterval) clearInterval(animationInterval);
+
+          const imageSet = new Set();
+          RESTAURANTS.forEach(r => {
+            if (r.image && r.image.includes('icon')) {
+              imageSet.add(r.image);
+            }
+          });
+          foodImages = Array.from(imageSet);
+
+          heroBgContainer.innerHTML = '';
+          const containerWidth = heroBgContainer.clientWidth;
+          const containerHeight = heroBgContainer.clientHeight;
+          
+          const dotSize = 100 + 16; 
+          const cols = Math.floor(containerWidth / dotSize);
+
+          if (cols === 0 || containerHeight === 0) {
+            return;
+          }
+
+          const rows = Math.floor(containerHeight / dotSize);
+          const totalDots = cols * rows;
+
+          for (let i = 0; i < totalDots; i++) {
+            const dotContainer = document.createElement('div');
+            dotContainer.className = 'bg-dot-container';
+            dotContainer.setAttribute('data-index', i);
+            dotContainer.innerHTML = `
+              <div class="bg-dot" id="bg-dot-${i}">
+                <div class="bg-dot-face bg-dot-front"></div>
+                <div class="bg-dot-face bg-dot-back">
+                  <img src="" alt="food icon" style="width: 80%; height: 80%; object-fit: contain;">
+                </div>
+              </div>
+            `;
+            heroBgContainer.appendChild(dotContainer);
+          }
+
+          safeDotIndices = [];
+          const heroPlate = document.querySelector('.hero-plate');
+          
+          if (heroPlate) {
+            const plateRect = heroPlate.getBoundingClientRect();
+            const buffer = 20; 
+            const forbiddenZone = {
+                top: plateRect.top - buffer,
+                bottom: plateRect.bottom + buffer,
+                left: plateRect.left - buffer,
+                right: plateRect.right + buffer
+            };
+
+            document.querySelectorAll('.bg-dot-container').forEach((container) => {
+               const dotRect = container.getBoundingClientRect();
+               const index = parseInt(container.getAttribute('data-index'));
+
+               const isOverlapping = !(
+                 dotRect.right < forbiddenZone.left ||
+                 dotRect.left > forbiddenZone.right ||
+                 dotRect.bottom < forbiddenZone.top ||
+                 dotRect.top > forbiddenZone.bottom
+               );
+
+               if (!isOverlapping) {
+                 safeDotIndices.push(index);
+               }
+            });
+          } else {
+            for(let i=0; i<totalDots; i++) safeDotIndices.push(i);
+          }
+
+          let lastFlippedDotElement = null;
+          animationInterval = setInterval(() => {
+            if (lastFlippedDotElement) {
+              lastFlippedDotElement.classList.remove('is-flipped');
             }
 
-            const dotToFlip = document.getElementById(`bg-dot-${targetIndex}`);
-            
-            if (dotToFlip) {
-                let randomImage = foodImages[Math.floor(Math.random() * foodImages.length)];
-                if (foodImages.length > 1) {
-                    while (randomImage === lastFlippedImage) {
-                        randomImage = foodImages[Math.floor(Math.random() * foodImages.length)];
+            if (safeDotIndices.length > 0) {
+                let randomPos = Math.floor(Math.random() * safeDotIndices.length);
+                let targetIndex = safeDotIndices[randomPos];
+
+                if (safeDotIndices.length > 1) {
+                    while (targetIndex === lastFlippedIndex) {
+                        randomPos = Math.floor(Math.random() * safeDotIndices.length);
+                        targetIndex = safeDotIndices[randomPos];
                     }
                 }
 
-                dotToFlip.querySelector('.bg-dot-back img').src = randomImage;
-                dotToFlip.classList.add('is-flipped');
-                lastFlippedDotElement = dotToFlip;
+                const dotToFlip = document.getElementById(`bg-dot-${targetIndex}`);
                 
-                lastFlippedIndex = targetIndex;
-                lastFlippedImage = randomImage;
+                if (dotToFlip) {
+                    let randomImage = foodImages[Math.floor(Math.random() * foodImages.length)];
+                    if (foodImages.length > 1) {
+                        while (randomImage === lastFlippedImage) {
+                            randomImage = foodImages[Math.floor(Math.random() * foodImages.length)];
+                        }
+                    }
+
+                    dotToFlip.querySelector('.bg-dot-back img').src = randomImage;
+                    dotToFlip.classList.add('is-flipped');
+                    lastFlippedDotElement = dotToFlip;
+                    
+                    lastFlippedIndex = targetIndex;
+                    lastFlippedImage = randomImage;
+                }
             }
+          }, 1000);
         }
-      }, 1000);
-    }
 
-    window.addEventListener('load', () => {
-      setupHeroAnimation();
-    });
+        window.addEventListener('load', () => {
+          setupHeroAnimation();
+        });
 
-    let resizeTimer;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(setupHeroAnimation, 200);
-    });
-  </script>
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(setupHeroAnimation, 200);
+        });
+    </script>
 </body>
 </html>
