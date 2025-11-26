@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/images/logo_thumbnail.png" />
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>What2Eat — 美食轉盤推薦平臺</title>
-    <div id="root"></div>
-    <script type="module" src="/main.tsx"></script>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="images/plateicon.png" />
+  <title>What2Eat — 美食轉盤推薦平臺</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <style>
     :root {
       --bg: #ffeef3;
@@ -110,7 +108,7 @@
       cursor: pointer;
     }
 
-    /* -------- HOME / HERO (透明蒙版) -------- */
+    /* -------- HOME / HERO -------- */
     .hero {
       position: relative;
       background: rgba(255, 247, 250, 0.3); 
@@ -238,7 +236,7 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
-    /* -------- ABOUT / CONTACT (修改後：團隊介紹) -------- */
+    /* -------- ABOUT -------- */
     .about {
       background: var(--panel);
       border-radius: var(--radius-xl);
@@ -250,24 +248,15 @@
       font-size: 32px;
       font-weight: 800;
       margin-bottom: 16px;
-      text-align: left; /* 標題靠左或置中皆可，這裡保留靠左或依需求調整 */
+      text-align: left;
     }
     
-    /* 【修改重點】優化文字排版 */
     .about-desc {
       font-size: 15px; 
       color: var(--text-sub); 
-      
-      /* 放寬寬度限制，讓文字能填滿畫面 */
       max-width: 100%; 
-      
-      /* 增加行高，讓閱讀更舒適 */
       line-height: 1.8; 
-      
-      /* 關鍵：左右對齊，讓文字像報紙方塊一樣整齊 */
       text-align: justify; 
-      
-      /* 確保這段文字本身是在父容器中居中的（如果父容器有 flex） */
       margin: 0 auto 20px; 
     }
 
@@ -445,7 +434,7 @@
       margin-bottom: 16px;
     }
 
-    /* -------- RESULT CAROUSEL -------- */
+    /* -------- RESULT PAGE -------- */
     .result-shell {
       background: var(--panel);
       border-radius: var(--radius-xl);
@@ -471,10 +460,11 @@
       flex: 1;
       display: flex;
       justify-content: center;
-      align-items: stretch;
+      align-items: center;
       gap: 16px;
-      overflow: hidden;
+      overflow: visible;
       min-height: 240px;
+      padding: 20px 0;
     }
 
     .carousel-arrow {
@@ -496,6 +486,78 @@
       cursor: default;
     }
 
+    /* Result 下方的詳細資訊區塊 */
+    .result-details-grid {
+      display: flex;
+      gap: 20px;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 2px dashed #fceef3;
+    }
+
+    .detail-box {
+      flex: 1;
+      background: #ffffff;
+      border: 2px solid #f2a2b7;
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 8px 20px rgba(242, 162, 183, 0.15);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .detail-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #e97a96;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .detail-content {
+      font-size: 15px;
+      color: #555;
+      line-height: 1.8;
+    }
+
+    .detail-row {
+      display: flex;
+      margin-bottom: 8px;
+    }
+    .detail-label {
+      font-weight: 700;
+      color: #dd7692;
+      width: 60px;
+      flex-shrink: 0;
+    }
+
+    .map-frame {
+      width: 100%;
+      height: 200px;
+      border: none;
+      border-radius: 12px;
+      margin-top: 8px;
+    }
+
+    .btn-map-go {
+      margin-top: 12px;
+      background: #f2a2b7;
+      color: #fff;
+      border: none;
+      border-radius: 99px;
+      padding: 8px 20px;
+      font-size: 14px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      display: block;
+      width: 100%;
+    }
+    .btn-map-go:hover {
+      background: #e97a96;
+    }
+
     /* -------- CARD 共用 -------- */
     .card {
       min-width: 260px;
@@ -505,6 +567,7 @@
       box-shadow: 0 12px 26px rgba(0,0,0,0.16);
       padding: 16px 16px 14px;
       flex-shrink: 0;
+      transition: transform 0.3s;
     }
 
     .card-img-shell {
@@ -518,11 +581,13 @@
     .card--main {
       transform: scale(1.06);
       border: 2px solid #f2a2b7;
+      z-index: 5;
     }
 
     .card--side {
       transform: scale(0.94);
       opacity: 0.8;
+      cursor: pointer;
     }
     
     .card-img-shell img {
@@ -556,6 +621,7 @@
       color: #e07793;
     }
 
+    /* 【修改重點】讓 Favorite 按鈕滿版 */
     .card-actions {
       display: flex;
       justify-content: space-between;
@@ -574,16 +640,10 @@
       align-items: center;
       justify-content: center;
       gap: 4px;
+      padding: 6px 0; /* 確保按鈕有點高度 */
     }
 
-    .btn-detail {
-      flex: 1;
-      border-radius: 999px;
-      border: none;
-      background: #f6e9da;
-      font-size: 12px;
-      cursor: pointer;
-    }
+    /* 移除了 .btn-detail 樣式 */
 
     /* -------- RESTAURANT LIST（橫向滑動） -------- */
     .list-shell {
@@ -711,6 +771,10 @@
       .nav-shell {
         margin-bottom: 20px;
       }
+      /* 詳細資訊 RWD */
+      .result-details-grid {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -721,7 +785,7 @@
         <button class="nav-link" data-page="filters">Decide Now</button>
         <button class="nav-link" data-page="favorites">Favorites</button>
         <button class="nav-link" data-page="list">Restaurant List</button>
-        <button class="nav-link" data-page="about">About us</button>
+        <button class="nav-link" data-page="about">Contact us</button>
       </div>
     </div>
 
@@ -746,9 +810,9 @@
       <div class="about">
         <div class="about-title">About What2EAT</div>
         <p class="about-desc">
-          這是我們專為臺北大學學生打造的美食決策助手，整合了三峽校區周邊的各類餐廳資訊，
-          透過直覺的篩選與趣味的隨機抽籤動畫，解決每日最讓人頭痛的「午餐吃什麼」難題！
-          這是一個由學生自發開發的專案，旨在讓校園生活更便利、更有趣～有其他推薦餐廳也歡迎告訴我們窩～
+          專為台北大學學生打造的美食決策助手。我們整合了三峽校區周邊（正門、後門、側門）的各類餐廳資訊，
+          透過直覺的篩選與趣味的隨機抽籤動畫，解決每日最讓人頭痛的「午餐吃什麼」難題。
+          這是一個由學生自發開發的專案，旨在讓校園生活更便利、更有趣。
         </p>
 
         <div class="team-section-title">Meet the Team</div>
@@ -759,14 +823,12 @@
             </div>
             <div class="member-name">黃雨涵</div>
           </div>
-
           <div class="member-item">
             <div class="about-plate">
               <img src="images/至真.png" alt="劉至真">
             </div>
             <div class="member-name">劉至真</div>
           </div>
-
           <div class="member-item">
             <div class="about-plate">
               <img src="images/廖苡媃.png" alt="廖苡媃">
@@ -849,11 +911,22 @@
 
         <div class="carousel">
           <button class="carousel-arrow" id="btnPrev">‹</button>
-
           <div class="carousel-track" id="resultTrack">
             </div>
-
           <button class="carousel-arrow" id="btnNext">›</button>
+        </div>
+
+        <div class="result-details-grid">
+          <div class="detail-box detail-box-left">
+            <div class="detail-title">Details</div>
+            <div class="detail-content" id="resDetailContent">
+              </div>
+          </div>
+          <div class="detail-box detail-box-right">
+            <div class="detail-title">Map</div>
+            <iframe id="resMapFrame" class="map-frame" loading="lazy" allowfullscreen></iframe>
+            <a id="resMapLink" href="#" target="_blank" class="btn-map-go">前往 Google Maps</a>
+          </div>
         </div>
 
         <button class="btn-back" data-back>Back</button>
@@ -896,7 +969,7 @@
   </div>
 
   <script>
-    /* --- 簡化版餐廳資料 --- */
+    /* --- 簡化版餐廳資料 (部分省略) --- */
     const RESTAURANTS = [
         { name: "Qm159 清琳咖啡", address: "237新北市三峽區中山路65號", price: "$200-400", rating: "4.5", reviews: "1,049", tag: "甜點", area: "後門", image: "images/coffeeicon.png" },
         { name: "鐵盒子甜點專門店", address: "237新北市三峽區學成路293號", price: "$1-200", rating: "4.5", reviews: "123", tag: "甜點", area: "正門", image: "images/coffeeicon.png" },
@@ -981,7 +1054,6 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    // nav 點擊
     navLinks.forEach(btn => {
       btn.addEventListener("click", () => {
         const page = btn.dataset.page;
@@ -998,7 +1070,6 @@
       });
     });
 
-    // Home 的 Decide Now 按鈕
     heroDecideBtn.addEventListener("click", () => {
       showPage("filters");
       navLinks.forEach(b =>
@@ -1006,7 +1077,6 @@
       );
     });
 
-    // Back 按鈕：全部導回首頁
     document.querySelectorAll("[data-back]").forEach(btn => {
       btn.addEventListener("click", () => {
         showPage("home");
@@ -1018,8 +1088,6 @@
     document.querySelectorAll(".chip-toggle").forEach(chip => {
       chip.addEventListener("click", () => {
         const group = chip.dataset.group;
-
-        // tag 的 All
         if (group === "tag" && chip.dataset.value === "") {
           document
             .querySelectorAll('.chip-toggle[data-group="tag"]')
@@ -1027,9 +1095,7 @@
           chip.classList.add("chip--active");
           return;
         }
-
         chip.classList.toggle("chip--active");
-
         if (group === "tag" && chip.classList.contains("chip--active")) {
           document
             .querySelectorAll('.chip-toggle[data-group="tag"][data-value=""]')
@@ -1052,9 +1118,14 @@
     const listFilterPanel = document.getElementById("listFilterPanel");
     const listClearBtn = document.getElementById("listClearBtn");
 
+    /* 詳細資訊 DOM */
+    const resDetailContent = document.getElementById("resDetailContent");
+    const resMapFrame = document.getElementById("resMapFrame");
+    const resMapLink = document.getElementById("resMapLink");
+
     let currentPool = RESTAURANTS.slice();
     let lastResult = [];
-    let resultIndex = 0; // 正在看的主結果 index
+    let resultIndex = 0; 
 
     btnReset.addEventListener("click", () => {
       document.querySelectorAll(".chip-toggle").forEach(c => {
@@ -1081,11 +1152,9 @@
         return matchTag && matchPrice && matchArea;
       });
 
-      // 如果篩選後沒有任何餐廳，就跳出提示，並且留在原地
       if (!currentPool.length) {
         alert("哎呀！找不到符合所有條件的餐廳，請放寬篩選條件再試一次。");
       } else {
-        // 如果有結果，才更新文字並跳轉頁面
         decideNote.textContent = `目前共有 ${currentPool.length} 間候選餐廳，按 Start 開始抽籤！`;
         showPage("decide");
         navLinks.forEach(b =>
@@ -1100,7 +1169,7 @@
 
       const shuffled = currentPool.slice().sort(() => Math.random() - 0.5);
       const main = shuffled[0];
-      const others = shuffled.slice(1, 5); // 最多顯示 4 個備用
+      const others = shuffled.slice(1, 5); 
       lastResult = [main, ...others];
       resultIndex = 0;
 
@@ -1142,6 +1211,10 @@
       if (resultIndex >= n) resultIndex = n - 1;
 
       const center = lastResult[resultIndex];
+      
+      // 更新詳細資訊區塊 (不需要彈出式視窗了)
+      updateResultDetails(center);
+
       const leftIndex = n > 1 ? (resultIndex - 1 + n) % n : null;
       const rightIndex = n > 1 ? (resultIndex + 1) % n : null;
 
@@ -1183,6 +1256,26 @@
         btnPrev.disabled = false;
         btnNext.disabled = false;
       }
+    }
+
+    // 【新功能】更新結果頁下方的詳細資訊
+    function updateResultDetails(r) {
+      // 左邊：文字
+      resDetailContent.innerHTML = `
+        <div class="detail-row"><span class="detail-label">名稱：</span><span>${r.name}</span></div>
+        <div class="detail-row"><span class="detail-label">地址：</span><span>${r.address}</span></div>
+        <div class="detail-row"><span class="detail-label">類型：</span><span>${r.tag || "不限"}</span></div>
+        <div class="detail-row"><span class="detail-label">價位：</span><span>${r.price}</span></div>
+        <div class="detail-row"><span class="detail-label">評分：</span><span>${r.rating} ⭐ (${r.reviews} 則評論)</span></div>
+        <div class="detail-row"><span class="detail-label">區域：</span><span>${r.area}</span></div>
+      `;
+
+      // 右邊：地圖 (利用 Google Maps Embed，自動搜尋名稱+地址)
+      const query = encodeURIComponent(r.name + " " + r.address);
+      resMapFrame.src = `https://maps.google.com/maps?q=${query}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+      
+      // 設定按鈕連結
+      resMapLink.href = `https://www.google.com/maps/search/?api=1&query=${query}`;
     }
 
     btnPrev.addEventListener("click", () => {
@@ -1253,14 +1346,13 @@
 
         const actionsDiv = item.querySelector('.fav-item-actions');
 
-        // 建立詳情按鈕
+        // 詳情按鈕 (List 裡面的詳情，可以改成跳 alert，或者跳轉 Result 頁，這裡維持簡單 alert 示意)
         const btnDetail = document.createElement('button');
         btnDetail.className = 'fav-btn';
         btnDetail.innerHTML = '<img src="images/eye.png" alt="View Detail">';
-        btnDetail.onclick = () => alert(`餐廳名稱：${r.name}\n地址：${r.address}\n\n(這裡未來可以串接 Google Map)`);
+        btnDetail.onclick = () => alert(`餐廳名稱：${r.name}\n地址：${r.address}\n評分：${r.rating}`);
         actionsDiv.appendChild(btnDetail);
 
-        // 建立刪除按鈕
         const btnDelete = document.createElement('button');
         btnDelete.className = 'fav-btn';
         btnDelete.innerHTML = '<img src="images/trash.png" alt="Delete">';
@@ -1294,17 +1386,13 @@
             <span>${isFav ? "❤️" : "🤍"}</span>
             <span>Favorite</span>
           </button>
-          <button class="btn-detail">
-            View Detail
-          </button>
-        </div>
+          </div>
       `;
 
-      // 綁定愛心按鈕事件
       const btnHeart = card.querySelector(".btn-heart");
-      btnHeart.addEventListener("click", () => {
+      btnHeart.addEventListener("click", (e) => {
+        e.stopPropagation();
         toggleFav(r.name);
-        // 同步所有心形圖示
         document.querySelectorAll(`.btn-heart[data-name="${r.name}"]`).forEach(btn => {
           const favs = getFavNames();
           const isFavNow = favs.includes(r.name);
@@ -1312,29 +1400,22 @@
         });
       });
 
-      const btnDetail = card.querySelector(".btn-detail");
-      btnDetail.addEventListener("click", () => {
-        alert(`餐廳名稱：${r.name}\n地址：${r.address}\n\n(這裡未來可以串接 Google Map)`);
-      });
+      // 原本的 View Detail 事件監聽器已移除
 
       return card;
     }
 
     /* --- LIST 頁面的篩選功能 --- */
     function setupListFilter() {
-      // 複製主篩選器的 HTML 結構到列表篩選面板
       const mainFilterPanel = document.querySelector("#filters .panel").cloneNode(true);
-      // 移除不需要的標題、按鈕和返回鍵
       mainFilterPanel.querySelector('.panel-title').remove();
       mainFilterPanel.querySelector('.panel-sub').remove();
       mainFilterPanel.querySelector('.filter-actions').remove();
       mainFilterPanel.querySelector('.btn-back').remove();
       listFilterPanel.appendChild(mainFilterPanel);
 
-      // 為新的 chip 綁定即時篩選事件
       listFilterPanel.querySelectorAll(".chip-toggle").forEach(chip => {
         chip.addEventListener("click", () => {
-          // 處理 chip 的 active 狀態切換
           const group = chip.dataset.group;
           if (group === "tag" && chip.dataset.value === "") {
             listFilterPanel.querySelectorAll('.chip-toggle[data-group="tag"]').forEach(c => c.classList.remove("chip--active"));
@@ -1370,25 +1451,21 @@
       renderList(RESTAURANTS);
     });
 
-    // 初始畫面：List & Favorites 先 render 一次
     renderList(RESTAURANTS);
     renderFavorites();
     setupListFilter();
 
-    /* --- 首頁背景動畫 (JS 終極修正版：白名單 + 不重複翻轉 + 不重複圖片) --- */
+    /* --- 首頁背景動畫 --- */
     const heroBgContainer = document.getElementById("heroBgAnimation");
     let animationInterval = null;
     let foodImages = [];
     let safeDotIndices = [];
-    // 記錄上一次翻轉的格子索引
     let lastFlippedIndex = -1;
-    // 記錄上一次出現的圖片
     let lastFlippedImage = null;
 
     function setupHeroAnimation() {
       if (animationInterval) clearInterval(animationInterval);
 
-      // 1. 收集所有不重複的食物圖片
       const imageSet = new Set();
       RESTAURANTS.forEach(r => {
         if (r.image && r.image.includes('icon')) {
@@ -1397,7 +1474,6 @@
       });
       foodImages = Array.from(imageSet);
 
-      // 2. 產生圓點網格
       heroBgContainer.innerHTML = '';
       const containerWidth = heroBgContainer.clientWidth;
       const containerHeight = heroBgContainer.clientHeight;
@@ -1427,7 +1503,6 @@
         heroBgContainer.appendChild(dotContainer);
       }
 
-      // 計算安全格子
       safeDotIndices = [];
       const heroPlate = document.querySelector('.hero-plate');
       
@@ -1460,7 +1535,6 @@
         for(let i=0; i<totalDots; i++) safeDotIndices.push(i);
       }
 
-      // 3. 啟動動畫循環
       let lastFlippedDotElement = null;
       animationInterval = setInterval(() => {
         if (lastFlippedDotElement) {
@@ -1471,7 +1545,6 @@
             let randomPos = Math.floor(Math.random() * safeDotIndices.length);
             let targetIndex = safeDotIndices[randomPos];
 
-            // 1. 確保不連續翻轉同一個格子
             if (safeDotIndices.length > 1) {
                 while (targetIndex === lastFlippedIndex) {
                     randomPos = Math.floor(Math.random() * safeDotIndices.length);
@@ -1482,7 +1555,6 @@
             const dotToFlip = document.getElementById(`bg-dot-${targetIndex}`);
             
             if (dotToFlip) {
-                // 2. 確保不連續出現同一張圖片
                 let randomImage = foodImages[Math.floor(Math.random() * foodImages.length)];
                 if (foodImages.length > 1) {
                     while (randomImage === lastFlippedImage) {
@@ -1494,7 +1566,6 @@
                 dotToFlip.classList.add('is-flipped');
                 lastFlippedDotElement = dotToFlip;
                 
-                // 更新記錄
                 lastFlippedIndex = targetIndex;
                 lastFlippedImage = randomImage;
             }
