@@ -311,7 +311,7 @@ export default function App() {
             <button className={`nav-link ${viewMode === 'filters' ? 'active' : ''}`} onClick={() => setViewMode('filters')}>Decide Now</button>
             <button className={`nav-link ${viewMode === 'favorites' ? 'active' : ''}`} onClick={() => setViewMode('favorites')}>Favorites</button>
             <button className={`nav-link ${viewMode === 'list' ? 'active' : ''}`} onClick={() => setViewMode('list')}>Restaurant List</button>
-            <button className={`nav-link ${viewMode === 'about' ? 'active' : ''}`} onClick={() => setViewMode('about')}>Contact us</button>
+            <button className={`nav-link ${viewMode === 'about' ? 'active' : ''}`} onClick={() => setViewMode('about')}>About us</button>
           </div>
         </div>
       )}
@@ -338,7 +338,7 @@ export default function App() {
             
             <div>
               {/* 標題 - 改為全小寫 */}
-              <div className="hero-text-main">what2eat</div>
+              <div className="hero-text-main">What2Eat</div>
               
               {/* Slogan - 更新文案，並加入 margin 拉開與按鈕的距離 */}
               <div className="hero-sub" style={{ margin: '16px 0 40px', fontSize: '16px', lineHeight: '1.6' }}>
@@ -513,15 +513,17 @@ export default function App() {
       {viewMode === 'about' && (
         <section className="page-section active">
            <div className="about">
-              <div className="about-title">About What2EAT</div>
+              <div className="about-title">About What2Eat</div>
               <p className="about-desc">
-                專為台北大學學生打造的美食決策助手。我們整合了三峽校區周邊（正門、後門、側門）的各類餐廳資訊，
+                專為臺北大學學生打造的美食決策助手。我們整合了三峽校區周邊（正門、後門、側門）的各類餐廳資訊，
                 透過直覺的篩選與趣味的隨機抽籤動畫，解決每日最讓人頭痛的「午餐吃什麼」難題。
               </p>
               <div className="team-section-title">Meet the Team</div>
               <div className="about-plates">
                 <div className="member-item">
-                  <div className="about-plate"><img src={yuhanImage} alt="黃雨涵"/></div>
+                  <div className="about-plate" style={{ width: '120px', height: '120px' }}>
+                    <img src={yuhanImage} alt="黃雨涵"/>
+                  </div>
                   <div className="member-name">黃雨涵</div>
                 </div>
                 <div className="member-item">
@@ -537,7 +539,7 @@ export default function App() {
            </div>
         </section>
       )}
-      {/* 👇 在這裡插入 Modal 程式碼 👇 */}
+      {/* 👇 Modal 程式碼 👇 */}
       {selectedRestaurant && (
         <div className="modal-overlay" onClick={() => setSelectedRestaurant(null)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
