@@ -1,11 +1,16 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 
-// 圖片匯入 (請確認這些檔案存在於 src/images/ 下，若無請用現有圖片替代)
+// 圖片匯入 
 import logoImage from './images/logo.png'; 
 import plateIcon from './images/plateicon.png';
 import yuhanImage from './images/YuHan.png';
 import zhizhenImage from './images/Jenny.png'; 
 import yirouImage from './images/yirou.png';  
+
+// 功能圖示
+import trashIcon from './images/trashcan.png';
+import filterIcon from './images/filter.png';
+import clearIcon from './images/clear-alt.png';
 
 // 類別 Icon
 import coffeeIcon from './images/coffeeicon.png';
@@ -18,10 +23,9 @@ import spaIcon1 from './images/spaicon1.png';
 import spaIcon2 from './images/spaicon2.png';
 import spaIcon3 from './images/spaicon3.png';
 import spaIcon4 from './images/spaicon4.png';
-// 新增的 Icon (若無檔案，請先指到既有的 icon，例如 vegIcon 或 riceIcon)
-import hotpotIcon from './images/hotpoticon.png'; // 需確認檔案是否存在
-import thaiIcon from './images/thaicon.png';     // 需確認檔案是否存在
-import westernIcon from './images/westernicon.png'; // 需確認檔案是否存在
+import hotpotIcon from './images/hotpoticon.png'; 
+import thaiIcon from './images/thaicon.png';     
+import westernIcon from './images/westernicon.png';
 
 // 1. 建立圖示對照表 (根據夥伴 HTML 中的 image 路徑邏輯)
 const ICON_MAP: Record<string, string> = {
@@ -38,7 +42,7 @@ const ICON_MAP: Record<string, string> = {
   default: plateIcon
 };
 
-// 2. 完整餐廳資料 (從夥伴 HTML 移植，已包含新分類)
+// 2. 完整餐廳資料
 const RESTAURANTS = [
     // 甜點/飲料/點心
     { id: '1', name: "焦香味甜甜圈專賣店", address: "新北市三峽區大觀路12-5號1樓", price: "$1-200", rating: "4.9", reviews: "107", category: "甜點", area: "正門", image: "images/coffeeicon.png" },
@@ -200,6 +204,8 @@ export default function App() {
   const [spinResult, setSpinResult] = useState<any>(null);
   const [isSpinning, setIsSpinning] = useState(false);
   const [currentSpaImg, setCurrentSpaImg] = useState(spaIcon1);
+  const [resultIndex, setResultIndex] = useState(0);
+  
   const [showListFilter, setShowListFilter] = useState(false);
   const [listFilters, setListFilters] = useState<{categories: string[], prices: string[], areas: string[]}>({
     categories: [], prices: [], areas: []
@@ -221,11 +227,9 @@ export default function App() {
     
     targetSet(prev => {
       const list = prev[type];
-      // 如果 value 是空字串 (All/不限)，則清空該類別的篩選
       if (value === "") {
         return { ...prev, [type]: [] };
       }
-      
       const newList = list.includes(value) ? list.filter(v => v !== value) : [...list, value];
       return { ...prev, [type]: newList };
     });
@@ -262,6 +266,7 @@ export default function App() {
         const main = shuffled[0];
         const others = shuffled.slice(1, 5);
         setSpinResult([main, ...others]);
+        setResultIndex(0);
         setIsSpinning(false);
         setViewMode('result');
       }
@@ -281,7 +286,7 @@ export default function App() {
     return RESTAURANTS.filter(r => favorites.includes(r.name));
   }, [favorites]);
 
-  // --- 背景動畫 (確保動畫正確執行) ---
+  // 背景動畫
   const heroBgRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -297,14 +302,12 @@ export default function App() {
     const rows = Math.floor(height / dotSize);
     const totalDots = cols * rows;
 
-    // 更新動畫圖片清單，加入新圖示
     const animImages = [
       coffeeIcon, susiIcon, koreanIcon, noodleIcon, riceIcon, vegIcon, 
       spaIcon1, hotpotIcon, thaiIcon, westernIcon
     ];
     const safeIndices: number[] = [];
 
-    // 建立格子
     for (let i = 0; i < totalDots; i++) {
       const dotWrapper = document.createElement('div');
       dotWrapper.className = 'bg-dot-container';
@@ -335,31 +338,25 @@ export default function App() {
       const centerRow = rows / 2;
       const centerCol = cols / 2;
       
-      // 避免中間被遮擋
       if (Math.abs(row - centerRow) > 1.5 || Math.abs(col - centerCol) > 1.5) {
         safeIndices.push(i);
       }
     }
 
-    // 動畫 Loop
     let lastIndex = -1;
     const interval = setInterval(() => {
         if (safeIndices.length === 0) return;
-        
         if (lastIndex !== -1) {
             const lastDot = document.getElementById(`dot-${lastIndex}`);
             if (lastDot) lastDot.classList.remove('is-flipped');
         }
-
         const rand = safeIndices[Math.floor(Math.random() * safeIndices.length)];
         const dot = document.getElementById(`dot-${rand}`);
         const randomImgSrc = animImages[Math.floor(Math.random() * animImages.length)];
         
         if (dot) {
             const imgEl = dot.querySelector('img');
-            if (imgEl) {
-              imgEl.src = randomImgSrc;
-            }
+            if (imgEl) { imgEl.src = randomImgSrc; }
             dot.classList.add('is-flipped');
             lastIndex = rand;
         }
@@ -368,10 +365,10 @@ export default function App() {
     return () => clearInterval(interval);
   }, [viewMode]);
 
+  // 渲染卡片函式 (更新：加入 Detail 按鈕)
   const renderCard = (r: any, isMain = false) => (
     <div key={r.id} className={`card ${isMain ? 'card--main' : ''}`}>
       <div className="card-img-shell">
-        {/* 使用 ICON_MAP 確保正確顯示圖片 */}
         <img src={ICON_MAP[r.image] || ICON_MAP['default']} alt={r.name} />
       </div>
       <div className="card-header">
@@ -385,23 +382,23 @@ export default function App() {
         <button className="btn-heart" onClick={() => toggleFavorite(r.name)}>
           {favorites.includes(r.name) ? '❤️ Fav' : '🤍 Fav'}
         </button>
+        {/* 👇 新增的 Detail 按鈕：點擊後觸發全域彈窗 */}
+        <button className="btn-detail" onClick={() => setSelectedRestaurant(r)}>
+          Detail
+        </button>
       </div>
     </div>
   );
 
-  // 3. 定義完整的篩選選項 (類別與價位)
   const CATEGORY_OPTIONS = ['中式','日式','韓式','泰式','西式','火鍋','健康餐','飯食','麵食','甜點','飲料','咖啡廳'];
   const PRICE_OPTIONS = ['$1-200', '$200-400', '$400-600'];
   const AREA_OPTIONS = ['正門', '側門', '後門/老街'];
 
   return (
     <div className="app-container">
-    {/* Navigation - 只在非首頁時顯示 */}
       {viewMode !== 'home' && (
         <div className="nav-shell">
-          {/* Logo (點擊可回首頁) */}
-          <img src={logoImage} alt="what2eat" className="nav-logo" onClick={() => setViewMode('home')} />
-          
+          <img src={logoImage} alt="What2Eat" className="nav-logo" onClick={() => setViewMode('home')} />
           <div className="nav-pill">
             <button className={`nav-link ${viewMode === 'filters' ? 'active' : ''}`} onClick={() => setViewMode('filters')}>Decide Now</button>
             <button className={`nav-link ${viewMode === 'favorites' ? 'active' : ''}`} onClick={() => setViewMode('favorites')}>Favorites</button>
@@ -410,28 +407,20 @@ export default function App() {
           </div>
         </div>
       )}
+
       {/* HOME */}
       {viewMode === 'home' && (
         <section className="page-section active">
-          {/* 背景動畫 (維持原樣) */}
           <div className="hero-bg-animation" ref={heroBgRef}></div>
-          
-          {/* Hero Content */}
           <div className="hero" style={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            alignItems: 'center', 
-            textAlign: 'center', 
-            justifyContent: 'center',
-            minHeight: '60vh'
+            display: 'flex', flexDirection: 'column', alignItems: 'center', 
+            textAlign: 'center', justifyContent: 'center', minHeight: '60vh'
           }}>
-            
             <div className="hero-plate" style={{ marginBottom: '32px' }}>
               <img src={plateIcon} alt="Logo" style={{ width: '80%', height: 'auto' }} />
             </div>
-            
             <div>
-              <div className="hero-text-main">what2eat</div>
+              <div className="hero-text-main">What2Eat</div>
               <div className="hero-sub" style={{ margin: '16px 0 40px', fontSize: '16px', lineHeight: '1.6' }}>
                 Stop Overthinking, Start Eating.<br/>
                 別再糾結，直接開動！
@@ -449,7 +438,7 @@ export default function App() {
         <section className="page-section active">
           <div className="panel">
             <div className="panel-title">Filters</div>
-            <div className="panel-sub">篩選你的偏好（類型 / 價位 / 區域）</div>
+            <div className="panel-sub">篩選你的偏好（類型 / 價位 / 區域），也可以直接隨機抽取！</div>
 
             <div className="filter-group">
               <div className="filter-label">餐廳類型：</div>
@@ -518,16 +507,56 @@ export default function App() {
           <div className="result-shell">
             <div className="result-title">今天吃這家吧！</div>
             
-            {/* 主要推薦 */}
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '32px' }}>
-               {renderCard(spinResult[0], true)}
+            <div className="carousel">
+               <button className="carousel-arrow" disabled={spinResult.length <= 1} onClick={() => setResultIndex(prev => (prev - 1 + spinResult.length) % spinResult.length)}>‹</button>
+               <div className="carousel-track">
+                  {spinResult.length > 1 && (
+                    <div className="card card--side" onClick={() => setResultIndex((resultIndex - 1 + spinResult.length) % spinResult.length)}>
+                      {renderCard(spinResult[(resultIndex - 1 + spinResult.length) % spinResult.length], false)}
+                    </div>
+                  )}
+                  <div style={{ zIndex: 10 }}>{renderCard(spinResult[resultIndex], true)}</div>
+                  {spinResult.length > 1 && (
+                    <div className="card card--side" onClick={() => setResultIndex((resultIndex + 1) % spinResult.length)}>
+                      {renderCard(spinResult[(resultIndex + 1) % spinResult.length], false)}
+                    </div>
+                  )}
+               </div>
+               <button className="carousel-arrow" disabled={spinResult.length <= 1} onClick={() => setResultIndex(prev => (prev + 1) % spinResult.length)}>›</button>
             </div>
 
-            {/* 備選餐廳 */}
-            <div className="panel-sub" style={{ fontWeight: 'bold', marginBottom: '12px' }}>或是這幾家也不錯...</div>
-            <div className="result-grid">
-               {spinResult.slice(1).map((r: any) => renderCard(r, false))}
-            </div>
+            {(() => {
+              const r = spinResult[resultIndex];
+              return (
+                <div className="result-details-grid">
+                  <div className="detail-box">
+                    <div className="detail-title">Details</div>
+                    <div className="detail-content">
+                      <div className="detail-row"><span className="detail-label">名稱：</span><span>{r.name}</span></div>
+                      <div className="detail-row"><span className="detail-label">地址：</span><span>{r.address}</span></div>
+                      <div className="detail-row"><span className="detail-label">類型：</span><span>{r.category}</span></div>
+                      <div className="detail-row"><span className="detail-label">價位：</span><span>{r.price}</span></div>
+                      <div className="detail-row"><span className="detail-label">評分：</span><span>{r.rating} ⭐ ({r.reviews} 則評論)</span></div>
+                      <div className="detail-row"><span className="detail-label">區域：</span><span>{r.area}</span></div>
+                    </div>
+                  </div>
+                  <div className="detail-box">
+                    <div className="detail-title">Map</div>
+                    <iframe 
+                      className="map-frame" loading="lazy" title="map"
+                      src={`https://maps.google.com/maps?q=${encodeURIComponent(r.name + " " + r.address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                    ></iframe>
+                    <a 
+                      className="btn-map-go"
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.name + " " + r.address)}`}
+                      target="_blank" rel="noreferrer"
+                    >
+                      前往 Google Maps
+                    </a>
+                  </div>
+                </div>
+              );
+            })()}
 
             <div style={{ marginTop: '40px', textAlign: 'center' }}>
                <button className="btn btn-primary" onClick={startSpin}>再抽一次</button>
@@ -546,11 +575,27 @@ export default function App() {
                  <div className="result-title">Restaurant List</div>
                  <p className="panel-sub">可以左右滑動查看所有餐廳。</p>
                </div>
+               {/* 👇 更新：列表動作區 (清除 & 篩選圓形按鈕) */}
                <div className="list-actions">
-                 <button className="btn btn-outline" style={{padding:'4px 12px'}} onClick={() => setShowListFilter(!showListFilter)}>🔍 Filter</button>
+                 {/* 清除篩選按鈕 */}
+                 <button 
+                   className="list-action-btn" 
+                   title="清除篩選"
+                   onClick={() => setListFilters({categories:[], prices:[], areas:[]})}
+                 >
+                   <img src={clearIcon} alt="Clear" />
+                 </button>
+                 
+                 {/* 開啟篩選器按鈕 */}
+                 <button 
+                   className="list-action-btn" 
+                   title="開啟篩選"
+                   onClick={() => setShowListFilter(!showListFilter)}
+                 >
+                   <img src={filterIcon} alt="Filter" />
+                 </button>
                </div>
             </div>
-            
             {showListFilter && (
                <div className="list-filter-panel" style={{ display: 'block', marginBottom: '16px', padding: '16px', borderTop:'1px solid #ffeef3' }}>
                   <div className="chip-row">
@@ -562,7 +607,6 @@ export default function App() {
                   </div>
                </div>
             )}
-
             <div className="list-row">
                {filteredList.map(r => renderCard(r))}
             </div>
@@ -579,19 +623,17 @@ export default function App() {
              <div className="fav-list" style={{ marginTop: '16px' }}>
                 {favoriteList.length === 0 ? <div style={{color:'#999'}}>尚無收藏</div> : favoriteList.map(r => (
                   <div key={r.id} className="fav-item">
-                    <div 
-                      style={{ flex: 1, cursor: 'pointer' }} 
-                      onClick={() => setSelectedRestaurant(r)}
-                    >
+                    <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => setSelectedRestaurant(r)}>
                       <div className="fav-item-name">{r.name}</div>
                       <div className="fav-item-address">{r.address}</div>
                     </div>
-                    
                     <div style={{ display: 'flex', gap: '8px' }}>
+                        {/* 👇 更新：垃圾桶現在是圖片 */}
                         <button className="fav-btn" onClick={(e) => {
-                          e.stopPropagation(); 
-                          toggleFavorite(r.name);
-                        }}>🗑️</button>
+                          e.stopPropagation(); toggleFavorite(r.name);
+                        }}>
+                          <img src={trashIcon} alt="Delete" />
+                        </button>
                     </div>
                   </div>
                 ))}
@@ -605,11 +647,37 @@ export default function App() {
       {viewMode === 'about' && (
         <section className="page-section active">
            <div className="about">
-              <div className="about-title">About what2eat</div>
-              <p className="about-desc">
-                專為臺北大學學生打造的美食決策助手。我們整合了三峽校區周邊（正門、後門/老街、側門）的各類餐廳資訊，
-                透過直覺的篩選與趣味的隨機抽籤動畫，解決每日最讓人頭痛的「午餐吃什麼」難題。
-              </p>
+              <div className="about-title">About What2Eat</div>
+<div style={{ marginBottom: '24px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: '700', color: '#333', marginBottom: '8px' }}>💡 專案緣起</h3>
+                <p className="about-desc" style={{ marginBottom: '16px' }}>
+                  「午餐吃什麼？」大概是每個人每天最常問、也最難回答的問題。
+                  <br/>
+                  為了拯救廣大選擇困難症患者，我們開發了 <strong>What2Eat</strong> —— 一款專為北大師生打造的美食決策助手。整合了三峽校區周邊（正門、側門、後門）的在地美食資訊，讓決定下一餐變得輕鬆又有趣。
+                </p>
+              </div>
+
+              <div style={{ marginBottom: '24px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: '700', color: '#333', marginBottom: '8px' }}>✨ 特色功能</h3>
+                <ul style={{ listStyle: 'none', padding: 0, color: '#666', fontSize: '15px', lineHeight: '1.8' }}>
+                  <li>🍀 <strong>趣味轉盤決策</strong>：透過可愛的義大利麵動畫，隨機抽出你的命定美食。</li>
+                  <li>🔍 <strong>多重條件篩選</strong>：支援依照「餐廳類型」、「預算範圍」、「校門區域」精準過濾。</li>
+                  <li>❤️ <strong>我的最愛清單</strong>：一鍵收藏喜歡的店家，資料自動儲存不遺失。</li>
+                  <li>🗺️ <strong>地圖一鍵導航</strong>：整合 Google Maps API，查看評價並直接開啟導航。</li>
+                </ul>
+              </div>
+
+              <div style={{ marginBottom: '32px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: '700', color: '#333', marginBottom: '8px' }}>🛠️ 使用技術</h3>
+                <p className="about-desc">
+                  本專案採用現代化前端技術堆疊開發：
+                  <br/>
+                  <span className="badge" style={{marginRight:'4px'}}>React</span>
+                  <span className="badge" style={{marginRight:'4px'}}>TypeScript</span>
+                  <span className="badge" style={{marginRight:'4px'}}>Tailwind CSS</span>
+                  <span className="badge">Vite</span>
+                </p>
+              </div>
               <div className="team-section-title">Meet the Team</div>
               <div className="about-plates">
                 <div className="member-item">
@@ -635,7 +703,6 @@ export default function App() {
         <div className="modal-overlay" onClick={() => setSelectedRestaurant(null)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <button className="btn-close-absolute" onClick={() => setSelectedRestaurant(null)}>×</button>
-            
             <div className="modal-header">
               <div className="modal-title">{selectedRestaurant.name}</div>
               <div className="modal-meta">
@@ -645,33 +712,22 @@ export default function App() {
               </div>
               <div className="modal-date">資料擷取日期：2025/11/25</div>
             </div>
-
             <div style={{color: '#555', fontSize: '15px', display:'flex', alignItems:'center', gap:'6px', justifyContent:'center'}}>
                📍 {selectedRestaurant.address}
             </div>
-
             <div className="modal-map-container">
               <iframe 
-                width="100%" 
-                height="100%" 
-                frameBorder="0" 
-                style={{border:0}} 
-                loading="lazy"
+                width="100%" height="100%" frameBorder="0" style={{border:0}} loading="lazy"
                 src={`https://maps.google.com/maps?q=${encodeURIComponent(selectedRestaurant.name + ' ' + selectedRestaurant.address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
                 title="Google Map"
               ></iframe>
             </div>
-
             <div style={{ textAlign: 'center' }}>
               <a 
                 href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedRestaurant.name + ' ' + selectedRestaurant.address)}`} 
-                target="_blank" 
-                rel="noreferrer"
-                style={{ textDecoration: 'none' }}
+                target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}
               >
-                <button className="btn btn-primary" style={{ width: '100%' }}>
-                  🌏 開啟 Google Maps 導航
-                </button>
+                <button className="btn btn-primary" style={{ width: '100%' }}>🌏 開啟 Google Maps 導航</button>
               </a>
             </div>
           </div>
