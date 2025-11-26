@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "name": "website-planning",
   "private": true,
   "version": "0.0.0",
@@ -34,10 +33,5 @@
     "tailwindcss": "^3.4.3",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"
-=======
-  "dependencies": {
-    "@types/react": "^19.2.7",
-    "react": "^19.2.0"
->>>>>>> 466cb97ef4cf24bf05df1f5810767509d0407948
   }
 }

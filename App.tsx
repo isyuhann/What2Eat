@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'; // 修正：明確引入 React
+import { useState, useMemo } from 'react';
 import { Restaurant, FilterState } from './types/restaurant';
 import { mockRestaurants } from './data/mockRestaurants';
 import { FiltersPanel } from './components/FiltersPanel';
@@ -6,6 +6,7 @@ import { TurntableWheel } from './components/TurntableWheel';
 import { ResultDialog } from './components/ResultDialog';
 import { FavoritesList } from './components/FavoritesList';
 import { Button } from './components/ui/button';
+import logoImage from './images/logo.png';
 
 type ViewMode = 'home' | 'favorites' | 'turntable';
 
@@ -24,7 +25,7 @@ export default function App() {
   const [showResult, setShowResult] = useState(false);
 
   const filteredRestaurants = useMemo(() => {
-    return restaurants.filter((restaurant: Restaurant) => { // 修正：為參數加上型別
+    return restaurants.filter((restaurant) => {
       const categoryMatch =
         appliedFilters.categories.length === 0 ||
         appliedFilters.categories.includes(restaurant.category);
@@ -36,7 +37,7 @@ export default function App() {
   }, [restaurants, appliedFilters]);
 
   const favoriteRestaurants = useMemo(() => {
-    return restaurants.filter((r: Restaurant) => r.isFavorite); // 修正：為參數加上型別
+    return restaurants.filter((r) => r.isFavorite);
   }, [restaurants]);
 
   const handleApplyFilters = () => {
@@ -50,11 +51,10 @@ export default function App() {
 
   const handleToggleFavorite = (restaurantId: string) => {
     setRestaurants((prev) =>
-      prev.map((r: Restaurant) => // 修正：為參數加上型別
+      prev.map((r) =>
         r.id === restaurantId ? { ...r, isFavorite: !r.isFavorite } : r
       )
     );
-    // Update selected restaurant if it's the one being toggled
     if (selectedRestaurant && selectedRestaurant.id === restaurantId) {
       setSelectedRestaurant({ ...selectedRestaurant, isFavorite: !selectedRestaurant.isFavorite });
     }
@@ -67,31 +67,48 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm py-6 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-3xl mb-2">What2Eat</h1>
-          <p className="text-gray-600">選擇困難症的救星 ✨</p>
+      {/* ▼▼▼ Header 修改開始 ▼▼▼ */}
+      <header className="bg-white shadow-sm py-4 px-6 sticky top-0 z-50">
+        <div className="max-w-4xl mx-auto flex items-center gap-4">
+          {/* Logo 圖片 */}
+          <img 
+            src={logoImage} 
+            alt="What2Eat Logo" 
+            className="w-12 h-12 object-contain cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => setViewMode('home')}
+          />
+          
+          {/* 標題文字區塊 */}
+          <div className="text-left">
+            <h1 
+              className="text-2xl font-bold text-gray-800 leading-tight cursor-pointer"
+              onClick={() => setViewMode('home')}
+            >
+              What2Eat
+            </h1>
+            <p className="text-xs text-gray-500">選擇困難症的救星 ✨</p>
+          </div>
         </div>
       </header>
+      {/* ▲▲▲ Header 修改結束 ▲▲▲ */}
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-8">
         {viewMode === 'home' && (
-          <section className="space-y-8">
+          <div className="space-y-8">
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 onClick={() => setViewMode('favorites')}
-                className="bg-white border-2 border-[#E89BA8] text-[#E89BA8] hover:bg-[#FFF0F3] px-8 py-6"
+                className="bg-white border-2 border-[#E89BA8] text-[#E89BA8] hover:bg-[#FFF0F3] px-8 py-6 rounded-full text-lg"
               >
-                Favorites
+                ❤️ 我的收藏
               </Button>
               <Button
                 onClick={() => setViewMode('turntable')}
-                className="bg-[#E89BA8] hover:bg-[#D88A98] text-white px-8 py-6"
+                className="bg-[#E89BA8] hover:bg-[#D88A98] text-white px-8 py-6 rounded-full text-lg shadow-lg hover:shadow-xl transition-all"
               >
-                Spin the Turntable
+                🍀 轉動轉盤
               </Button>
             </div>
 
@@ -105,35 +122,35 @@ export default function App() {
 
             {/* Preview Section */}
             <div className="bg-white rounded-lg p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4"> 
-                <h3 className="text-lg font-semibold">符合條件的餐廳</h3>
-                <span className="text-gray-600">
-                  共 {filteredRestaurants.length} 間 
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-gray-700">符合條件的餐廳</h3>
+                <span className="text-gray-500 text-sm bg-gray-100 px-3 py-1 rounded-full">
+                  共 {filteredRestaurants.length} 間
                 </span>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                {filteredRestaurants.slice(0, 8).map((restaurant: Restaurant) => ( // 修正：為參數加上型別
+                {filteredRestaurants.slice(0, 8).map((restaurant) => (
                   <div
                     key={restaurant.id}
-                    className="p-3 bg-gray-50 rounded-lg text-center"
+                    className="p-4 bg-gray-50 rounded-xl text-center hover:bg-[#FFF0F3] transition-colors cursor-default border border-transparent hover:border-[#E89BA8]"
                   >
-                    <div className="w-12 h-12 bg-[#FFE4E8] rounded-full flex items-center justify-center mx-auto mb-2">
+                    <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-2 shadow-sm">
                       <span className="text-xl">🍜</span>
                     </div>
-                    <p className="text-sm truncate">{restaurant.name}</p>
-                    <p className="text-xs text-gray-500">{restaurant.category}</p>
+                    <p className="font-medium text-gray-800 truncate">{restaurant.name}</p>
+                    <p className="text-xs text-gray-500 mt-1">{restaurant.category}</p>
                   </div>
                 ))}
               </div>
             </div>
-          </section>
+          </div>
         )}
 
         {viewMode === 'favorites' && (
           <div>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold">Favorite Restaurants</h2>
-              <Button 
+              <h2 className="text-2xl font-bold text-gray-800">❤️ Favorite Restaurants</h2>
+              <Button
                 variant="outline"
                 onClick={() => setViewMode('home')}
               >
@@ -149,8 +166,8 @@ export default function App() {
 
         {viewMode === 'turntable' && (
           <div>
-            <div className="flex items-center justify-between mb-6"> 
-              <h2 className="text-2xl font-bold">Spin the Turntable</h2>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gray-800">🍀 Spin the Turntable</h2>
               <Button
                 variant="outline"
                 onClick={() => setViewMode('home')}
@@ -159,7 +176,7 @@ export default function App() {
               </Button>
             </div>
             
-            <div className="bg-white rounded-lg p-8 shadow-sm">
+            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
               <p className="text-center text-gray-600 mb-6">
                 讓命運決定你今天吃什麼吧！轉動轉盤開始選擇...
               </p>
@@ -167,7 +184,7 @@ export default function App() {
                 restaurants={filteredRestaurants}
                 onResult={handleSpinResult}
               />
-              <p className="text-center text-sm text-gray-500 mt-6">
+              <p className="text-center text-sm text-gray-400 mt-8">
                 目前有 {filteredRestaurants.length} 間餐廳在轉盤中
               </p>
             </div>
@@ -184,12 +201,13 @@ export default function App() {
       />
 
       {/* Footer */}
-      <footer className="bg-white border-t mt-12 py-6">
-        <div className="max-w-4xl mx-auto px-4 text-center text-gray-600 text-sm">
-          <div className="flex justify-center gap-8 mb-2">
-            <button className="hover:text-[#E89BA8]">聯絡我們</button>
-            <button className="hover:text-[#E89BA8]">常見問題</button>
-            <button className="hover:text-[#E89BA8]">關於我們</button>
+      <footer className="bg-white border-t mt-12 py-8">
+        <div className="max-w-4xl mx-auto px-4 text-center text-gray-500 text-sm">
+          <p className="mb-4">© 2025 What2Eat 美食轉盤推薦平臺</p>
+          <div className="flex justify-center gap-6">
+            <button className="hover:text-[#E89BA8] transition-colors">聯絡我們</button>
+            <button className="hover:text-[#E89BA8] transition-colors">常見問題</button>
+            <button className="hover:text-[#E89BA8] transition-colors">關於我們</button>
           </div>
         </div>
       </footer>
