@@ -1,11 +1,17 @@
-/// <reference types="vite/client" />
+import path from "path"
+import { fileURLToPath } from "url"
+import react from "@vitejs/plugin-react"
+import { defineConfig } from "vite"
 
-declare module '*.png' {
-  const value: string;
-  export default value;
-}
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
-declare module '*.jpg';
-declare module '*.jpeg';
-declare module '*.svg';
-declare module '*.gif';
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      // 讓 @ 指向根目錄
+      "@": path.resolve(__dirname, "./"),
+    },
+  },
+})
