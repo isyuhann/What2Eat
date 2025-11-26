@@ -179,7 +179,6 @@ function ChartTooltipContent({
     >
       {!nestLabel ? tooltipLabel : null}
       <div className="grid gap-1.5">
-        {/* 這裡加上了 : any 斷言，解決 payload map 的紅字 */}
         {payload.map((item: any, index: number) => {
           const key = `${nameKey || item.name || item.dataKey || "value"}`;
           const itemConfig = getPayloadConfigFromPayload(config, item, key);
@@ -276,7 +275,7 @@ function ChartLegendContent({
         className
       )}
     >
-      {/* 這裡也加上了 : any 斷言 */}
+      {/* ▼▼▼ 修正 3：加上 : any ▼▼▼ */}
       {payload.map((item: any) => {
         const key = `${nameKey || item.dataKey || "value"}`;
         const itemConfig = getPayloadConfigFromPayload(config, item, key);
