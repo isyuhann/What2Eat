@@ -297,28 +297,48 @@ export default function App() {
 
   return (
     <div className="app-container">
-      {/* Navigation */}
-      <div className="nav-shell">
-        <div className="nav-pill">
-          <button className={`nav-link ${viewMode === 'filters' ? 'active' : ''}`} onClick={() => setViewMode('filters')}>Decide Now</button>
-          <button className={`nav-link ${viewMode === 'favorites' ? 'active' : ''}`} onClick={() => setViewMode('favorites')}>Favorites</button>
-          <button className={`nav-link ${viewMode === 'list' ? 'active' : ''}`} onClick={() => setViewMode('list')}>Restaurant List</button>
-          <button className={`nav-link ${viewMode === 'about' ? 'active' : ''}`} onClick={() => setViewMode('about')}>Contact us</button>
+      {/* Navigation - 只在非首頁時顯示 */}
+      {viewMode !== 'home' && (
+        <div className="nav-shell">
+          <div className="nav-pill">
+            <button className={`nav-link ${viewMode === 'filters' ? 'active' : ''}`} onClick={() => setViewMode('filters')}>Decide Now</button>
+            <button className={`nav-link ${viewMode === 'favorites' ? 'active' : ''}`} onClick={() => setViewMode('favorites')}>Favorites</button>
+            <button className={`nav-link ${viewMode === 'list' ? 'active' : ''}`} onClick={() => setViewMode('list')}>Restaurant List</button>
+            <button className={`nav-link ${viewMode === 'about' ? 'active' : ''}`} onClick={() => setViewMode('about')}>Contact us</button>
+          </div>
         </div>
-      </div>
-
+      )}
       {/* HOME */}
       {viewMode === 'home' && (
         <section className="page-section active">
-          {/* 背景動畫 */}
+          {/* 背景動畫 (維持原樣) */}
           <div className="hero-bg-animation" ref={heroBgRef}></div>
-          <div className="hero">
-            <div className="hero-plate">
+          
+          {/* 👇 修改這裡：加入 style 強制變成直式置中排版 */}
+          <div className="hero" style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            textAlign: 'center', 
+            justifyContent: 'center',
+            minHeight: '60vh' /* 確保垂直視覺重心在中間 */
+          }}>
+            
+            {/* 盤子圖 - 加入 margin-bottom 拉開距離 */}
+            <div className="hero-plate" style={{ marginBottom: '32px' }}>
               <img src={plateIcon} alt="Logo" style={{ width: '80%', height: 'auto' }} />
             </div>
+            
             <div>
-              <div className="hero-text-main">What2EAT</div>
-              <div className="hero-sub">選擇困難症的福音 ☺</div>
+              {/* 標題 - 改為全小寫 */}
+              <div className="hero-text-main">what2eat</div>
+              
+              {/* Slogan - 更新文案，並加入 margin 拉開與按鈕的距離 */}
+              <div className="hero-sub" style={{ margin: '16px 0 40px', fontSize: '16px', lineHeight: '1.6' }}>
+                Stop Overthinking, Start Eating.<br/>
+                別再糾結，直接開動！
+              </div>
+              
               <div className="hero-cta">
                 <button className="btn-primary-lg" onClick={() => setViewMode('filters')}>Decide Now</button>
               </div>
@@ -454,11 +474,13 @@ export default function App() {
                 {favoriteList.length === 0 ? <div style={{color:'#999'}}>尚無收藏</div> : favoriteList.map(r => (
                   <div key={r.id} className="fav-item">
                     <div>
-                      <div style={{fontWeight: 600}}>{r.name}</div>
-                      <div style={{fontSize: '12px', color: '#7b7b7b'}}>{r.address}</div>
+                      {/* 改用新 CSS 定義的 class */}
+                      <div className="fav-item-name">{r.name}</div>
+                      <div className="fav-item-address">{r.address}</div>
                     </div>
                     <div style={{ display: 'flex', gap: '8px' }}>
-                       <button className="fav-btn" onClick={() => toggleFavorite(r.name)}>🗑️</button>
+                        {/* 按鈕樣式維持不變，你的 CSS 已經有 .fav-btn */}
+                        <button className="fav-btn" onClick={() => toggleFavorite(r.name)}>🗑️</button>
                     </div>
                   </div>
                 ))}
