@@ -123,6 +123,8 @@ export default function App() {
     categories: [], prices: [], areas: []
   });
 
+  const [selectedRestaurant, setSelectedRestaurant] = useState<any>(null);
+
   const toggleFavorite = (name: string) => {
     setFavorites(prev => {
       const newFavs = prev.includes(name) ? prev.filter(n => n !== name) : [...prev, name];
@@ -159,6 +161,7 @@ export default function App() {
   };
 
   const startSpin = () => {
+    setViewMode('decide'); // 👈 新增這行：強制切換回動畫頁面
     setIsSpinning(true);
     const frames = [spaIcon1, spaIcon2, spaIcon3, spaIcon4];
     let step = 0;
@@ -298,9 +301,12 @@ export default function App() {
 
   return (
     <div className="app-container">
-      {/* Navigation - 只在非首頁時顯示 */}
+    {/* Navigation - 只在非首頁時顯示 */}
       {viewMode !== 'home' && (
         <div className="nav-shell">
+          {/* 👇 新增 Logo (點擊可回首頁) */}
+          <img src={logoImage} alt="When2Eat" className="nav-logo" onClick={() => setViewMode('home')} />
+          
           <div className="nav-pill">
             <button className={`nav-link ${viewMode === 'filters' ? 'active' : ''}`} onClick={() => setViewMode('filters')}>Decide Now</button>
             <button className={`nav-link ${viewMode === 'favorites' ? 'active' : ''}`} onClick={() => setViewMode('favorites')}>Favorites</button>
@@ -417,14 +423,20 @@ export default function App() {
         <section className="page-section active">
           <div className="result-shell">
             <div className="result-title">今天吃這家吧！</div>
-            <div className="carousel">
-               <button className="carousel-arrow" onClick={() => setCarouselIndex(prev => Math.max(0, prev - 1))} disabled={carouselIndex===0}>‹</button>
-               <div className="carousel-track">
-                  {renderCard(spinResult[carouselIndex], true)}
-               </div>
-               <button className="carousel-arrow" onClick={() => setCarouselIndex(prev => Math.min(spinResult.length-1, prev + 1))} disabled={carouselIndex===spinResult.length-1}>›</button>
+            
+            {/* 主要推薦 (顯示第 1 筆，放大) */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '32px' }}>
+               {renderCard(spinResult[0], true)}
             </div>
-            <div style={{ marginTop: '20px', textAlign: 'center' }}>
+
+            {/* 備選餐廳 (顯示第 2~5 筆，一般大小) */}
+            <div className="panel-sub" style={{ fontWeight: 'bold', marginBottom: '12px' }}>或是這幾家也不錯...</div>
+            <div className="result-grid">
+               {/* 使用 slice(1) 取出剩下的餐廳 */}
+               {spinResult.slice(1).map((r: any) => renderCard(r, false))}
+            </div>
+
+            <div style={{ marginTop: '40px', textAlign: 'center' }}>
                <button className="btn btn-primary" onClick={startSpin}>再抽一次</button>
             </div>
             <button className="btn-back" onClick={() => setViewMode('home')}>Back Home</button>
@@ -474,14 +486,20 @@ export default function App() {
              <div className="fav-list" style={{ marginTop: '16px' }}>
                 {favoriteList.length === 0 ? <div style={{color:'#999'}}>尚無收藏</div> : favoriteList.map(r => (
                   <div key={r.id} className="fav-item">
-                    <div>
-                      {/* 改用新 CSS 定義的 class */}
+                    {/* 點擊這個區域開啟彈窗 */}
+                    <div 
+                      style={{ flex: 1, cursor: 'pointer' }} 
+                      onClick={() => setSelectedRestaurant(r)}
+                    >
                       <div className="fav-item-name">{r.name}</div>
                       <div className="fav-item-address">{r.address}</div>
                     </div>
+                    
                     <div style={{ display: 'flex', gap: '8px' }}>
-                        {/* 按鈕樣式維持不變，你的 CSS 已經有 .fav-btn */}
-                        <button className="fav-btn" onClick={() => toggleFavorite(r.name)}>🗑️</button>
+                        <button className="fav-btn" onClick={(e) => {
+                          e.stopPropagation(); // 避免點垃圾桶時同時觸發彈窗
+                          toggleFavorite(r.name);
+                        }}>🗑️</button>
                     </div>
                   </div>
                 ))}
@@ -519,6 +537,55 @@ export default function App() {
            </div>
         </section>
       )}
+      {/* 👇 在這裡插入 Modal 程式碼 👇 */}
+      {selectedRestaurant && (
+        <div className="modal-overlay" onClick={() => setSelectedRestaurant(null)}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+            <button className="btn-close-absolute" onClick={() => setSelectedRestaurant(null)}>×</button>
+            
+            <div className="modal-header">
+              <div className="modal-title">{selectedRestaurant.name}</div>
+              <div className="modal-meta">
+                <span>⭐ {selectedRestaurant.rating}</span>
+                <span>💬 {selectedRestaurant.reviews} 則評論</span>
+                <span className="badge">{selectedRestaurant.category}</span>
+              </div>
+              <div className="modal-date">資料擷取日期：2025/11/25</div>
+            </div>
+
+            <div style={{color: '#555', fontSize: '15px', display:'flex', alignItems:'center', gap:'6px', justifyContent:'center'}}>
+               📍 {selectedRestaurant.address}
+            </div>
+
+            {/* Google Maps Iframe */}
+            <div className="modal-map-container">
+              <iframe 
+                width="100%" 
+                height="100%" 
+                frameBorder="0" 
+                style={{border:0}} 
+                loading="lazy"
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(selectedRestaurant.name + ' ' + selectedRestaurant.address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                title="Google Map"
+              ></iframe>
+            </div>
+
+            <div style={{ textAlign: 'center' }}>
+              <a 
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedRestaurant.name + ' ' + selectedRestaurant.address)}`} 
+                target="_blank" 
+                rel="noreferrer"
+                style={{ textDecoration: 'none' }}
+              >
+                <button className="btn btn-primary" style={{ width: '100%' }}>
+                  🌏 開啟 Google Maps 導航
+                </button>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* 👆 Modal 程式碼結束 👆 */}
     </div>
   );
 }
