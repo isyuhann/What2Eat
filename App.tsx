@@ -327,7 +327,7 @@ export default function App() {
     return RESTAURANTS.filter(r => favorites.includes(r.name));
   }, [favorites]);
 
-  // 預載入轉盤動畫圖片
+  // 預載入轉盤動畫的所有影格
   useEffect(() => {
     const frames = [spaIcon1, spaIcon2, spaIcon3, spaIcon4];
     frames.forEach((src) => {
@@ -436,10 +436,24 @@ export default function App() {
         <div className="nav-shell">
           <img src={logoImage} alt="What2Eat" className="nav-logo" onClick={() => setViewMode('home')} />
           <div className="nav-pill">
-            <button className={`nav-link ${viewMode === 'filters' ? 'active' : ''}`} onClick={() => setViewMode('filters')}>Spinner</button>
-            <button className={`nav-link ${viewMode === 'favorites' ? 'active' : ''}`} onClick={() => setViewMode('favorites')}>Favorites</button>
-            <button className={`nav-link ${viewMode === 'list' ? 'active' : ''}`} onClick={() => setViewMode('list')}>Restaurants</button>
-            <button className={`nav-link ${viewMode === 'about' ? 'active' : ''}`} onClick={() => setViewMode('about')}>About</button>
+            <button className={`nav-link ${viewMode === 'filters' ? 'active' : ''}`} onClick={() => setViewMode('filters')}>
+              <span className="text-desktop">Decide Now</span>
+              <span className="text-mobile">Spinner</span>
+            </button>
+            
+            <button className={`nav-link ${viewMode === 'favorites' ? 'active' : ''}`} onClick={() => setViewMode('favorites')}>
+              Favorites
+            </button>
+            
+            <button className={`nav-link ${viewMode === 'list' ? 'active' : ''}`} onClick={() => setViewMode('list')}>
+              <span className="text-desktop">Restaurant List</span>
+              <span className="text-mobile">Restaurants</span>
+            </button>
+            
+            <button className={`nav-link ${viewMode === 'about' ? 'active' : ''}`} onClick={() => setViewMode('about')}>
+              <span className="text-desktop">About us</span>
+              <span className="text-mobile">About</span>
+            </button>
           </div>
         </div>
       )}

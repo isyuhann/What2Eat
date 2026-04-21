@@ -379,3 +379,12 @@ body {
   .about-plates { gap: 32px; /* 手機版間距小一點 */ } 
   .about-plate { width: 100px; height: 100px; }
 }
+
+/* 預設隱藏手機版文字 */
+.text-mobile { display: none; }
+
+/* 當螢幕小於等於 800px 時切換 */
+@media screen and (max-width: 800px) {
+  .text-desktop { display: none; }
+  .text-mobile { display: inline; }
+}
