@@ -327,6 +327,15 @@ export default function App() {
     return RESTAURANTS.filter(r => favorites.includes(r.name));
   }, [favorites]);
 
+  // 預載入轉盤動畫圖片
+  useEffect(() => {
+    const frames = [spaIcon1, spaIcon2, spaIcon3, spaIcon4];
+    frames.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
+
   const heroBgRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (viewMode !== 'home' || !heroBgRef.current) return;
@@ -427,10 +436,10 @@ export default function App() {
         <div className="nav-shell">
           <img src={logoImage} alt="What2Eat" className="nav-logo" onClick={() => setViewMode('home')} />
           <div className="nav-pill">
-            <button className={`nav-link ${viewMode === 'filters' ? 'active' : ''}`} onClick={() => setViewMode('filters')}>Decide Now</button>
+            <button className={`nav-link ${viewMode === 'filters' ? 'active' : ''}`} onClick={() => setViewMode('filters')}>Spinner</button>
             <button className={`nav-link ${viewMode === 'favorites' ? 'active' : ''}`} onClick={() => setViewMode('favorites')}>Favorites</button>
-            <button className={`nav-link ${viewMode === 'list' ? 'active' : ''}`} onClick={() => setViewMode('list')}>Restaurant List</button>
-            <button className={`nav-link ${viewMode === 'about' ? 'active' : ''}`} onClick={() => setViewMode('about')}>About us</button>
+            <button className={`nav-link ${viewMode === 'list' ? 'active' : ''}`} onClick={() => setViewMode('list')}>Restaurants</button>
+            <button className={`nav-link ${viewMode === 'about' ? 'active' : ''}`} onClick={() => setViewMode('about')}>About</button>
           </div>
         </div>
       )}
