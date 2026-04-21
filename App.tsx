@@ -239,7 +239,7 @@ export default function App() {
   const [isSpinning, setIsSpinning] = useState(false);
   const [currentSpaImg, setCurrentSpaImg] = useState(spaIcon1);
   const [resultIndex, setResultIndex] = useState(0);
-  
+  const [activeAccordion, setActiveAccordion] = useState<string | null>(null);
   const [showListFilter, setShowListFilter] = useState(false);
   const [listFilters, setListFilters] = useState<{categories: string[], prices: string[], areas: string[]}>({
     categories: [], prices: [], areas: []
@@ -255,7 +255,7 @@ export default function App() {
     });
   };
 
-  // 新增：清除所有收藏的函式
+  // 清除所有收藏
   const clearAllFavorites = () => {
     if (window.confirm('確定要清空所有收藏嗎？')) {
       setFavorites([]);
@@ -515,7 +515,7 @@ export default function App() {
               <button className="btn btn-outline" onClick={() => setFilters({categories:[], prices:[], areas:[]})}>Reset</button>
               <button className="btn btn-primary" onClick={applyFilters}>Apply Filters</button>
             </div>
-            <button className="btn-back" onClick={() => setViewMode('home')}>Back</button>
+            <button className="btn-back hide-on-mobile" onClick={() => setViewMode('home')}>Back</button>
           </div>
         </section>
       )}
@@ -534,7 +534,7 @@ export default function App() {
                  {isSpinning ? 'Spinning...' : 'Start'}
                </button>
                <br/>
-               <button className="btn-back" onClick={() => setViewMode('filters')}>Back</button>
+               <button className="btn-back hide-on-mobile" onClick={() => setViewMode('home')}>Back</button>
             </div>
           </div>
         </section>
@@ -588,7 +588,7 @@ export default function App() {
             <div style={{ marginTop: '40px', textAlign: 'center' }}>
                <button className="btn btn-primary" onClick={startSpin}>再抽一次</button>
             </div>
-            <button className="btn-back" onClick={() => setViewMode('home')}>Back Home</button>
+            <button className="btn-back hide-on-mobile" onClick={() => setViewMode('home')}>Back</button>
           </div>
         </section>
       )}
@@ -623,7 +623,7 @@ export default function App() {
             <div className="list-row">
                {filteredList.map(r => renderCard(r, false, true))}
             </div>
-            <button className="btn-back" onClick={() => setViewMode('home')}>Back</button>
+            <button className="btn-back hide-on-mobile" onClick={() => setViewMode('home')}>Back</button>
           </div>
         </section>
       )}
@@ -660,64 +660,86 @@ export default function App() {
                   </div>
                 ))}
              </div>
-             <button className="btn-back" onClick={() => setViewMode('home')}>Back</button>
+             <button className="btn-back hide-on-mobile" onClick={() => setViewMode('home')}>Back</button>
           </div>
         </section>
       )}
 
-      {/* ABOUT (Updated) */}
+      {/* ABOUT */}
       {viewMode === 'about' && (
-        <section className="page-section active">
-           <div className="about">
-              <div className="page-title">About What2Eat</div>
-              <div style={{ marginBottom: '24px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: '700', color: '#333', marginBottom: '8px' }}>💡 專案緣起</h3>
-                <p className="about-desc" style={{ marginBottom: '16px' }}>
+      <section className="page-section active">
+        <div className="about">
+          <div className="page-title">About What2Eat</div>
+          
+          {/* 內容區塊：電腦版顯示原始結構，手機版顯示摺疊結構 */}
+          <div className="about-content-wrapper">
+            
+            {/* --- 專案緣起 --- */}
+            <div className={`about-group ${activeAccordion === 'origin' ? 'is-open' : ''}`}>
+              <h3 className="about-header" onClick={() => setActiveAccordion(activeAccordion === 'origin' ? null : 'origin')}>
+                💡 專案緣起
+              </h3>
+              <div className="about-body">
+                <p className="about-desc">
                   「午餐吃什麼？」大概是臺北大學學生每天最常問、也最難回答的問題。<br/>
-                  為了拯救廣大選擇困難症患者，我們開發了 <strong>What2Eat</strong> —— 一款專為北大師生打造的美食決策助手。整合了三峽校區周邊（正門、側門、後門）的在地美食資訊，讓決定下一餐變得輕鬆又有趣。
+                  為了拯救廣大選擇困難症患者，我們開發了 <strong>What2Eat</strong> —— 一款專為北大師生打造的美食決策助手。
                 </p>
               </div>
-              <div style={{ marginBottom: '24px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: '700', color: '#333', marginBottom: '8px' }}>✨ 特色功能</h3>
-                <ul style={{ listStyle: 'none', padding: 0, color: '#666', fontSize: '15px', lineHeight: '1.8' }}>
-                  <li>🍀 <strong>趣味轉盤決策</strong>：透過可愛的義大利麵動畫，隨機抽出你的命定美食。</li>
-                  <li>🔍 <strong>多重條件篩選</strong>：支援依照「餐廳類型」、「預算範圍」、「校門區域」精準過濾。</li>
-                  <li>❤️ <strong>我的最愛清單</strong>：一鍵收藏喜歡的店家，資料自動儲存不遺失。</li>
-                  <li>🗺️ <strong>地圖一鍵導航</strong>：整合 Google Maps API，查看評價並直接開啟導航。</li>
+            </div>
+
+            {/* --- 特色功能 --- */}
+            <div className={`about-group ${activeAccordion === 'features' ? 'is-open' : ''}`}>
+              <h3 className="about-header" onClick={() => setActiveAccordion(activeAccordion === 'features' ? null : 'features')}>
+                ✨ 特色功能
+              </h3>
+              <div className="about-body">
+                <ul className="about-feature-list">
+                  <li>🍀 <strong>趣味轉盤決策</strong>：隨機抽出你的命定美食。</li>
+                  <li>🔍 <strong>多重條件篩選</strong>：支援依照類型、預算、區域過濾。</li>
+                  <li>❤️ <strong>我的最愛清單</strong>：一鍵收藏喜歡的店家。</li>
+                  <li>🗺️ <strong>地圖一鍵導航</strong>：查看評價並直接開啟導航。</li>
                 </ul>
               </div>
-              <div style={{ marginBottom: '32px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: '700', color: '#333', marginBottom: '8px' }}>🛠️ 使用技術</h3>
+            </div>
+
+            {/* --- 使用技術 --- */}
+            <div className={`about-group ${activeAccordion === 'tech' ? 'is-open' : ''}`}>
+              <h3 className="about-header" onClick={() => setActiveAccordion(activeAccordion === 'tech' ? null : 'tech')}>
+                🛠️ 使用技術
+              </h3>
+              <div className="about-body">
                 <p className="about-desc">
                   本專案採用現代化前端技術堆疊開發：<br/>
-                  <span className="badge" style={{marginRight:'4px'}}>React</span>
-                  <span className="badge" style={{marginRight:'4px'}}>TypeScript</span>
-                  <span className="badge" style={{marginRight:'4px'}}>Tailwind CSS</span>
-                  <span className="badge">Vite</span>
+                  <span className="badge">React</span> <span className="badge">TypeScript</span> <span className="badge">Tailwind CSS</span> <span className="badge">Vite</span>
                 </p>
               </div>
-              <div className="team-section-title">Meet the Team</div>
-              
-              {/* 成員分工列表 */}
-              <div className="about-plates">
-                {TEAM_MEMBERS.map(member => (
-                  <div className="member-item" key={member.name}>
-                    <div className="about-plate">
-                      <img src={member.image} alt={member.name}/>
-                    </div>
-                    <div className="member-name">{member.name}</div>
-                    <ul className="member-roles">
-                      {member.roles.map(role => (
-                        <li key={role}>{role}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
+            </div>
+          </div>
+
+          <div className="team-section-title">Meet the Team</div>
+          
+          {/* 團隊成員：電腦版維持原樣，手機版並排且顯示職稱 */}
+          <div className="about-plates-container">
+            {TEAM_MEMBERS.map(member => (
+              <div className="member-card" key={member.name}>
+                <div className="member-avatar-wrapper">
+                  <img src={member.image} alt={member.name}/>
+                </div>
+                <div className="member-info">
+                  <div className="member-name">{member.name}</div>
+                  {/* 電腦版顯示 roles 清單 */}
+                  <ul className="member-roles-list">
+                    {member.roles.map(role => <li key={role}>{role}</li>)}
+                  </ul>
+                  {/* 手機版顯示單行 title */}
+                  <div className="member-mobile-title">{member.title}</div>
+                </div>
               </div>
-              <button className="btn-back" onClick={() => setViewMode('home')}>Back</button>
-           </div>
-        </section>
-      )}
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
 
       {selectedRestaurant && (
         <div className="modal-overlay" onClick={() => setSelectedRestaurant(null)}>
