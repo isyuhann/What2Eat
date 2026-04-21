@@ -45,21 +45,32 @@ const ICON_MAP: Record<string, string> = {
   default: plateIcon
 };
 
-// 成員資料與分工
-const TEAM_MEMBERS = [
-  {
+// 1. 正確定義成員的型別，包含 title 屬性
+interface TeamMember {
+  name: string;
+  image: string;
+  title: string;
+  roles: string[];
+}
+
+// 2. 指定 TEAM_MEMBERS 陣列使用 TeamMember 型別
+const TEAM_MEMBERS: TeamMember[] = [
+{
     name: '黃雨涵',
     image: yuhanImage,
+    title: 'PM 兼後端工程師',
     roles: ['整體進度掌握', '使用者體驗優化', '系統邏輯設計', 'Bug 修復']
   },
   {
     name: '劉至真',
     image: zhizhenImage,
+    title: '前端工程師',
     roles: ['前端功能實作', '網站系統架構設計']
   },
   {
     name: '廖苡媃',
     image: yirouImage,
+    title: '前端工程師兼 UI/UX 設計師',
     roles: ['使用者介面設計', '網站雛型製作']
   }
 ];
