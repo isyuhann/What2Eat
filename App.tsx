@@ -556,23 +556,48 @@ export default function App() {
         <section className="page-section active">
           <div className="result-shell">
             <div className="page-title">今天吃這家吧！</div>
-            <div className="carousel">
-               <button className="carousel-arrow" disabled={spinResult.length <= 1} onClick={() => setResultIndex(prev => (prev - 1 + spinResult.length) % spinResult.length)}>‹</button>
-               <div className="carousel-track">
-                  {spinResult.length > 1 && (
-                    <div className="card card--side" onClick={() => setResultIndex((resultIndex - 1 + spinResult.length) % spinResult.length)}>
-                      {renderCard(spinResult[(resultIndex - 1 + spinResult.length) % spinResult.length], false, false)}
-                    </div>
-                  )}
-                  <div style={{ zIndex: 10 }}>{renderCard(spinResult[resultIndex], true, false)}</div>
-                  {spinResult.length > 1 && (
-                    <div className="card card--side" onClick={() => setResultIndex((resultIndex + 1) % spinResult.length)}>
-                      {renderCard(spinResult[(resultIndex + 1) % spinResult.length], false, false)}
-                    </div>
-                  )}
-               </div>
-               <button className="carousel-arrow" disabled={spinResult.length <= 1} onClick={() => setResultIndex(prev => (prev + 1) % spinResult.length)}>›</button>
+            {/* 1. 電腦版輪播 */}
+            <div className="carousel hide-on-mobile">
+            <button className="carousel-arrow" disabled={spinResult.length <= 1} onClick={() => setResultIndex(prev => (prev - 1 + spinResult.length) % spinResult.length)}>‹</button>
+            <div className="carousel-track">
+                {spinResult.length > 1 && (
+                  <div className="card card--side" onClick={() => setResultIndex((resultIndex - 1 + spinResult.length) % spinResult.length)}>
+                    {renderCard(spinResult[(resultIndex - 1 + spinResult.length) % spinResult.length], false, false)}
+                  </div>
+                )}
+                <div style={{ zIndex: 10 }}>{renderCard(spinResult[resultIndex], true, false)}</div>
+                {spinResult.length > 1 && (
+                  <div className="card card--side" onClick={() => setResultIndex((resultIndex + 1) % spinResult.length)}>
+                    {renderCard(spinResult[(resultIndex + 1) % spinResult.length], false, false)}
+                  </div>
+                )}
             </div>
+            <button className="carousel-arrow" disabled={spinResult.length <= 1} onClick={() => setResultIndex(prev => (prev + 1) % spinResult.length)}>›</button>
+          </div>
+
+          {/* 2. 手機版專屬的滑動列表 (加上 hide-on-desktop 讓它在電腦消失) */}
+          <div className="result-swipe-mobile hide-on-desktop" style={{ width: '100%', marginTop: '16px' }}>
+            <div className="list-row" style={{ margin: '0 -20px', padding: '10px 20px', scrollBehavior: 'smooth' }}>
+                {spinResult.map((r: any, idx: number) => (
+                  <div 
+                      key={r.id} 
+                      onClick={() => setResultIndex(idx)}
+                      style={{ 
+                        flexShrink: 0, 
+                        transition: 'all 0.3s ease', 
+                        opacity: idx === resultIndex ? 1 : 0.4, 
+                        transform: idx === resultIndex ? 'scale(1)' : 'scale(0.9)',
+                        cursor: 'pointer'
+                      }}
+                  >
+                      {renderCard(r, idx === resultIndex, false)}
+                  </div>
+                ))}
+            </div>
+            <div style={{ fontSize: '13px', color: '#e07793', marginTop: '12px', fontWeight: 'bold' }}>
+                👆 左右滑動，並點擊卡片查看下方詳細資訊
+            </div>
+          </div>
             {(() => {
               const r = spinResult[resultIndex];
               return (

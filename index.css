@@ -567,3 +567,17 @@ body {
     display: inline !important; 
   }
 }
+
+/* --- 電腦版專屬設定 (大於 800px) --- */
+@media screen and (min-width: 801px) {
+  .hide-on-desktop { 
+    display: none !important; 
+  }
+}
+
+/* --- 手機版專屬設定 (小於等於 800px) --- */
+@media screen and (max-width: 800px) {
+  .hide-on-mobile { 
+    display: none !important; 
+  }
+}
