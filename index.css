@@ -536,7 +536,6 @@ body {
   .fav-item { border-radius: 16px; padding: 12px 16px; }
   .about-plates { gap: 32px; /* 手機版間距小一點 */ } 
   .about-plate { width: 100px; height: 100px; }
-  .hide-on-mobile { display: none !important; }
   /* 預設隱藏手機版文字 */
   .text-mobile { display: none; }
 }
@@ -545,4 +544,26 @@ body {
 @media screen and (max-width: 800px) {
   .text-desktop { display: none; }
   .text-mobile { display: inline; }
+}
+
+/* =========================================
+   Navbar 文字響應式切換 (文字長度控制)
+   ========================================= */
+
+/* 1. 全域預設 (電腦版 > 800px) */
+.text-mobile { 
+  display: none !important; 
+}
+.text-desktop { 
+  display: inline !important; 
+}
+
+/* 2. 手機版專屬 (<= 800px) */
+@media screen and (max-width: 800px) {
+  .text-desktop { 
+    display: none !important; 
+  }
+  .text-mobile { 
+    display: inline !important; 
+  }
 }
