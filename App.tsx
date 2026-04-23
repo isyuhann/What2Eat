@@ -595,7 +595,7 @@ export default function App() {
                 ))}
             </div>
             <div style={{ fontSize: '13px', color: '#e07793', marginTop: '12px', fontWeight: 'bold' }}>
-                👆 左右滑動，並點擊卡片查看下方詳細資訊
+              （左右滑動，並點擊卡片查看下方詳細資訊）
             </div>
           </div>
             {(() => {
